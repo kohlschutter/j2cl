@@ -48,26 +48,26 @@ import com.google.j2cl.transpiler.ast.Variable;
 import com.google.j2cl.transpiler.ast.Visibility;
 import com.google.j2cl.transpiler.frontend.common.Nullability;
 import com.google.j2cl.transpiler.frontend.common.PackageInfoCache;
-import com.sun.tools.javac.code.Attribute.TypeCompound;
-import com.sun.tools.javac.code.Flags;
-import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.code.Symbol.ClassSymbol;
-import com.sun.tools.javac.code.Symbol.MethodSymbol;
-import com.sun.tools.javac.code.Symbol.VarSymbol;
-import com.sun.tools.javac.code.TargetType;
-import com.sun.tools.javac.code.Type;
-import com.sun.tools.javac.code.Type.CapturedType;
-import com.sun.tools.javac.code.Type.ClassType;
-import com.sun.tools.javac.code.Type.IntersectionClassType;
-import com.sun.tools.javac.code.Type.JCPrimitiveType;
-import com.sun.tools.javac.code.Type.UnionClassType;
-import com.sun.tools.javac.code.TypeAnnotationPosition;
-import com.sun.tools.javac.code.TypeAnnotationPosition.TypePathEntry;
-import com.sun.tools.javac.code.TypeAnnotationPosition.TypePathEntryKind;
-import com.sun.tools.javac.code.Types;
-import com.sun.tools.javac.model.JavacElements;
-import com.sun.tools.javac.model.JavacTypes;
-import com.sun.tools.javac.util.Context;
+import standalone.com.sun.tools.javac.code.Attribute.TypeCompound;
+import standalone.com.sun.tools.javac.code.Flags;
+import standalone.com.sun.tools.javac.code.Symbol;
+import standalone.com.sun.tools.javac.code.Symbol.ClassSymbol;
+import standalone.com.sun.tools.javac.code.Symbol.MethodSymbol;
+import standalone.com.sun.tools.javac.code.Symbol.VarSymbol;
+import standalone.com.sun.tools.javac.code.TargetType;
+import standalone.com.sun.tools.javac.code.Type;
+import standalone.com.sun.tools.javac.code.Type.CapturedType;
+import standalone.com.sun.tools.javac.code.Type.ClassType;
+import standalone.com.sun.tools.javac.code.Type.IntersectionClassType;
+import standalone.com.sun.tools.javac.code.Type.JCPrimitiveType;
+import standalone.com.sun.tools.javac.code.Type.UnionClassType;
+import standalone.com.sun.tools.javac.code.TypeAnnotationPosition;
+import standalone.com.sun.tools.javac.code.TypeAnnotationPosition.TypePathEntry;
+import standalone.com.sun.tools.javac.code.TypeAnnotationPosition.TypePathEntryKind;
+import standalone.com.sun.tools.javac.code.Types;
+import standalone.com.sun.tools.javac.model.JavacElements;
+import standalone.com.sun.tools.javac.model.JavacTypes;
+import standalone.com.sun.tools.javac.util.Context;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -128,7 +128,7 @@ class JavaEnvironment {
   }
 
   @Nullable
-  static PrefixOperator getPrefixOperator(com.sun.source.tree.Tree.Kind operator) {
+  static PrefixOperator getPrefixOperator(standalone.com.sun.source.tree.Tree.Kind operator) {
     switch (operator) {
       case PREFIX_INCREMENT:
         return PrefixOperator.INCREMENT;
@@ -148,7 +148,7 @@ class JavaEnvironment {
   }
 
   @Nullable
-  static PostfixOperator getPostfixOperator(com.sun.source.tree.Tree.Kind operator) {
+  static PostfixOperator getPostfixOperator(standalone.com.sun.source.tree.Tree.Kind operator) {
     switch (operator) {
       case POSTFIX_INCREMENT:
         return PostfixOperator.INCREMENT;
@@ -160,7 +160,7 @@ class JavaEnvironment {
   }
 
   @Nullable
-  static BinaryOperator getBinaryOperator(com.sun.source.tree.Tree.Kind operator) {
+  static BinaryOperator getBinaryOperator(standalone.com.sun.source.tree.Tree.Kind operator) {
     switch (operator) {
       case ASSIGNMENT:
         return BinaryOperator.ASSIGN;
