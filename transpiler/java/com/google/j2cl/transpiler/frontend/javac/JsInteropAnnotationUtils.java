@@ -33,11 +33,11 @@ import static java.util.stream.Collectors.groupingBy;
 
 import com.google.common.collect.Streams;
 import com.google.j2cl.common.InternalCompilerError;
-import com.sun.tools.javac.code.Attribute.Compound;
-import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.code.Symbol.MethodSymbol;
-import com.sun.tools.javac.code.TargetType;
-import com.sun.tools.javac.code.TypeAnnotationPosition;
+import standalone.com.sun.tools.javac.code.Attribute.Compound;
+import standalone.com.sun.tools.javac.code.Symbol;
+import standalone.com.sun.tools.javac.code.Symbol.MethodSymbol;
+import standalone.com.sun.tools.javac.code.TargetType;
+import standalone.com.sun.tools.javac.code.TypeAnnotationPosition;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;

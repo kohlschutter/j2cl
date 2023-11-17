@@ -15,16 +15,16 @@
  */
 package com.google.j2cl.transpiler.frontend.javac;
 
-import com.sun.source.tree.AnnotatedTypeTree;
-import com.sun.source.tree.AnnotationTree;
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.IdentifierTree;
-import com.sun.source.tree.MemberSelectTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.tree.VariableTree;
-import com.sun.source.util.TreeScanner;
+import standalone.com.sun.source.tree.AnnotatedTypeTree;
+import standalone.com.sun.source.tree.AnnotationTree;
+import standalone.com.sun.source.tree.ClassTree;
+import standalone.com.sun.source.tree.CompilationUnitTree;
+import standalone.com.sun.source.tree.IdentifierTree;
+import standalone.com.sun.source.tree.MemberSelectTree;
+import standalone.com.sun.source.tree.MethodTree;
+import standalone.com.sun.source.tree.Tree;
+import standalone.com.sun.source.tree.VariableTree;
+import standalone.com.sun.source.util.TreeScanner;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
