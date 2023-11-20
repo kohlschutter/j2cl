@@ -133,6 +133,14 @@ def setup_j2cl_workspace(**kwargs):
         artifact_sha256 = "1d8d347a0e1579f3fc86ac04d1974e489afc66357f0009ac9804a7ac30912ed6",
     )
 
+    jvm_maven_import_external(
+        name = "com_sun_tools_javac_standalone",
+        artifact = "com.kohlschutter.jdk.compiler:standalone-jdk11:1.1.3",
+        server_urls = _MAVEN_CENTRAL_URLS,
+        licenses = ["notice"],
+        artifact_sha256 = "5d73a091c0b9a41f670b48127171765ce07b9ae217a4c57238f7a752e1ee933c",
+    )
+
     # Eclipse JARs listed at
     # http://download.eclipse.org/eclipse/updates/4.16/R-4.16-202006040540/plugins/
 
