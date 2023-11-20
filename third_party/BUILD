@@ -70,6 +70,11 @@ alias(
 )
 
 alias(
+    name = "javac_standalone",
+    actual = "@com_sun_tools_javac_standalone//jar",
+)
+
+alias(
     name = "binaryen-legacy",
     actual = "@com_google_binaryen//:wasm-opt-legacy",
 )
