@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.j2cl.common.Problems;
 import com.google.j2cl.transpiler.ast.Library;
 import com.google.j2cl.transpiler.backend.closure.OutputGeneratorStage;
-import com.google.j2cl.transpiler.backend.kotlin.KotlinGeneratorStage;
+//import com.google.j2cl.transpiler.backend.kotlin.KotlinGeneratorStage;
 import com.google.j2cl.transpiler.backend.wasm.WasmGeneratorStage;
 import com.google.j2cl.transpiler.passes.AddAbstractMethodStubs;
 import com.google.j2cl.transpiler.passes.AddBridgeMethods;
@@ -623,7 +623,8 @@ public enum Backend {
   KOTLIN {
     @Override
     public void generateOutputs(BackendOptions options, Library library, Problems problems) {
-      new KotlinGeneratorStage(options.getOutput(), problems).generateOutputs(library);
+      throw new UnsupportedOperationException();
+//      new KotlinGeneratorStage(options.getOutput(), problems).generateOutputs(library);
     }
 
     @Override
