@@ -71,7 +71,7 @@ public class VerifyNormalizedUnits extends NormalizationPass {
             if (!verifyForWasm) {
               // TODO(b/180149762): Review normalizations related to native types.
               // Native and JsFunction types should have been removed from the AST.
-              checkState(!type.isNative());
+              checkState(!type.isNative() || type.isGenerateNativeStub());
               checkState(!type.isJsFunctionInterface());
             }
           }

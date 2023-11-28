@@ -171,6 +171,12 @@ public final class JsInteropUtils {
     return JsInteropAnnotationUtils.isJsNative(declaringType);
   }
 
+  public static boolean isGenerateNativeStub(ITypeBinding declaringType) {
+    return
+        (JsInteropAnnotationUtils.getJsImportAnnotation(declaringType) != null) ||
+        (JsInteropAnnotationUtils.getDumboServiceAnnotation(declaringType) != null);
+  }
+
   public static boolean isJsFunction(ITypeBinding typeBinding) {
     return JsInteropAnnotationUtils.getJsFunctionAnnotation(typeBinding) != null;
   }

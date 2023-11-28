@@ -186,7 +186,7 @@ public abstract class TypeDeclaration
   }
 
   public String getImplModuleName() {
-    return isNative() ? getModuleName() : getModuleName() + "$impl";
+    return isNative() && !isGenerateNativeStub() ? getModuleName() : getModuleName() + "$impl";
   }
 
   /** Returns the fully package qualified name like "com.google.common". */
@@ -281,6 +281,10 @@ public abstract class TypeDeclaration
   /** Returns whether the described type has the "JsExport" annotation. */
   public abstract boolean isAnnotatedWithJsExport();
 
+  /** Returns whether the described type has the "DumboService" annotation. */
+  @Nullable
+  public abstract String getAnnotatedWithDumboService();
+
   @Memoized
   public boolean isJsFunctionImplementation() {
     return isClass()
@@ -308,6 +312,8 @@ public abstract class TypeDeclaration
 
   @Override
   public abstract boolean isNative();
+
+  public abstract boolean isGenerateNativeStub();
 
   @Nullable
   public abstract JsEnumInfo getJsEnumInfo();
@@ -786,6 +792,7 @@ public abstract class TypeDeclaration
         .setHasAbstractModifier(false)
         .setAnonymous(false)
         .setNative(false)
+        .setGenerateNativeStub(false)
         .setAnnotation(false)
         .setCapturingEnclosingInstance(false)
         .setFinal(false)
@@ -795,6 +802,7 @@ public abstract class TypeDeclaration
         .setAnnotatedWithAutoValueBuilder(false)
         .setAnnotatedWithJUnitRunWith(false)
         .setAnnotatedWithJsExport(false)
+        .setAnnotatedWithDumboService(null)
         .setJsFunctionInterface(false)
         .setJsType(false)
         .setLocal(false)
@@ -861,6 +869,8 @@ public abstract class TypeDeclaration
 
     public abstract Builder setAnnotatedWithJsExport(boolean annotatedWithJsExport);
 
+    public abstract Builder setAnnotatedWithDumboService(String annotatedWithDumboService);
+
     public abstract Builder setJsFunctionInterface(boolean isJsFunctionInterface);
 
     public abstract Builder setJsType(boolean isJsType);
@@ -876,6 +886,8 @@ public abstract class TypeDeclaration
     public abstract Builder setLocal(boolean local);
 
     public abstract Builder setNative(boolean isNative);
+
+    public abstract Builder setGenerateNativeStub(boolean isGenerateNativeStub);
 
     public abstract Builder setKtTypeInfo(KtTypeInfo ktTypeInfo);
 

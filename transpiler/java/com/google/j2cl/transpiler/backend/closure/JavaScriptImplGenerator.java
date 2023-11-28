@@ -40,10 +40,14 @@ import com.google.j2cl.transpiler.ast.TypeDescriptors;
 import com.google.j2cl.transpiler.ast.TypeVariable;
 import com.google.j2cl.transpiler.ast.Variable;
 import com.google.j2cl.transpiler.ast.Visibility;
+import com.google.j2cl.transpiler.backend.common.SourceBuilderWithSecondaryOutput;
+import com.google.j2cl.transpiler.backend.common.SourceBuilder;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Generates JavaScript source impl files. */
 public class JavaScriptImplGenerator extends JavaScriptGenerator {
@@ -51,10 +55,19 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
   private final ClosureTypesGenerator closureTypesGenerator;
 
   public static final String FILE_SUFFIX = ".impl.java.js";
+  private boolean haveClassImport = false;
+  private final boolean generateNativeStub;
 
   public JavaScriptImplGenerator(Problems problems, Type type, List<Import> imports) {
-    super(problems, type, imports);
+    this(problems, type, imports, new SourceBuilder());
+  }
+
+  public JavaScriptImplGenerator(Problems problems, Type type, List<Import> imports,
+      SourceBuilder sourceBuilder) {
+    super(problems, type, imports, sourceBuilder);
     this.closureTypesGenerator = new ClosureTypesGenerator(environment);
+
+    this.generateNativeStub = type.getDeclaration().isGenerateNativeStub();
   }
 
   private static String getMethodQualifiers(MethodDescriptor methodDescriptor) {
@@ -173,10 +186,17 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
 
   public void renderClass() {
     renderTypeAnnotation();
+    if (generateNativeStub) {
+      ((SourceBuilderWithSecondaryOutput)sourceBuilder).enableSecondaryOutput(true);
+    }
     renderClassBody();
+    if (generateNativeStub) {
+      ((SourceBuilderWithSecondaryOutput)sourceBuilder).disableSecondaryOutput(true);
+    }
     renderLoadTimeStatements();
     renderNativeSource();
     renderExportClassSymbol();
+    renderDumboServiceRegistration();
   }
 
   private void renderImports() {
@@ -213,6 +233,10 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
         lazyImport -> {
           String alias = lazyImport.getAlias();
           String path = lazyImport.getImplModulePath();
+          if ("Class".equals(alias) && "java.lang.Class$impl".equals(path)) {
+            // FIXME clean up this hacky code
+            this.haveClassImport = true;
+          }
           sourceBuilder.appendln("let " + alias + " = goog.forwardDeclare('" + path + "');");
         });
   }
@@ -301,7 +325,9 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
     sourceBuilder.openBrace();
     sourceBuilder.newLine();
     renderTypeMethods();
-    renderLoadModules();
+    if (!generateNativeStub) {
+      renderLoadModules();
+    }
     sourceBuilder.closeBrace();
   }
 
@@ -318,10 +344,16 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
         sourceBuilder.emitWithMemberMapping(
             method.getDescriptor(),
             () -> {
-              sourceBuilder.append("// ");
-              renderMethodJsDoc(method);
-              sourceBuilder.append("// native ");
-              emitMethodHeader(method);
+              if (generateNativeStub) {
+                renderMethodJsDoc(method);
+                emitMethodHeader(method);
+                sourceBuilder.append("{ }");
+              } else {
+                sourceBuilder.append("// ");
+                renderMethodJsDoc(method);
+                sourceBuilder.append("// native ");
+                emitMethodHeader(method);
+              }
             });
       } else {
 
@@ -341,8 +373,14 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
     if (!Strings.isNullOrEmpty(method.getJsDocDescription())) {
       sourceBuilder.appendln("//" + method.getJsDocDescription());
     }
+    if (generateNativeStub) {
+      ((SourceBuilderWithSecondaryOutput)sourceBuilder).disableSecondaryOutput(false);
+    }
     String jsDoc = getJsDoc(method);
     sourceBuilder.appendln(jsDoc.isEmpty() ? "" : "/**" + jsDoc + " */");
+    if (generateNativeStub) {
+      ((SourceBuilderWithSecondaryOutput)sourceBuilder).enableSecondaryOutput(false);
+    }
   }
 
   private String getJsDoc(Method method) {
@@ -381,7 +419,8 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
       jsDocBuilder.append(" @nodts");
     }
 
-    if (methodDescriptor.getJsInfo().isJsExport()) {
+    if (methodDescriptor.getJsInfo().isJsExport() || methodDescriptor.getEnclosingTypeDescriptor()
+        .getTypeDeclaration().isGenerateNativeStub()) {
       jsDocBuilder.append(" @export");
     }
 
@@ -526,6 +565,26 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
         + ") || {})");
     sourceBuilder.unindent();
     sourceBuilder.appendln("})(globalThis)");
+  }
+
+  private void renderDumboServiceRegistration() {
+    String rpcName;
+    if (!type.isGenerateNativeStub() || (rpcName = type.getUnderlyingTypeDeclaration()
+        .getAnnotatedWithDumboService()) == null) {
+      return;
+    }
+
+    if (!haveClassImport) {
+      sourceBuilder.appendln("let Class = goog.forwardDeclare('java.lang.Class$impl');");
+    }
+
+    sourceBuilder.appendln("if (goog.global.Dumbo && goog.global.Dumbo.setServiceAlias) {");
+    sourceBuilder.indent();
+    sourceBuilder.appendln("// register Dumbo RPC service alias");
+    sourceBuilder.appendln("goog.global.Dumbo.setServiceAlias(Class.$get(" + environment
+        .aliasForType(type.getDeclaration()) + "), '" + rpcName + "');");
+    sourceBuilder.unindent();
+    sourceBuilder.appendln("}");
   }
 
   private void renderExports() {

@@ -27,6 +27,8 @@ import com.google.j2cl.transpiler.ast.CompilationUnit;
 import com.google.j2cl.transpiler.ast.Library;
 import com.google.j2cl.transpiler.ast.Type;
 import com.google.j2cl.transpiler.ast.TypeDeclaration;
+import com.google.j2cl.transpiler.backend.common.SourceBuilderWithSecondaryOutput;
+import com.google.j2cl.transpiler.backend.common.SourceBuilder;
 import com.google.j2cl.transpiler.backend.libraryinfo.LibraryInfoBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -66,7 +68,6 @@ public class OutputGeneratorStage {
   }
 
   public void generateOutputs(Library library) {
-
     // The map must be ordered because it will be iterated over later and if it was not ordered then
     // our output would be unstable. Actually this one can't actually destabilize output but since
     // it's being safely iterated over now it's best to guard against it being unsafely iterated
@@ -75,11 +76,21 @@ public class OutputGeneratorStage {
         NativeJavaScriptFileResolver.create(nativeJavaScriptFiles, problems);
     LibraryInfoBuilder libraryInfoBuilder = new LibraryInfoBuilder();
 
+    final StringBuilder generatedExterns = new StringBuilder();
+
     for (CompilationUnit compilationUnit : library.getCompilationUnits()) {
       for (Type type : compilationUnit.getTypes()) {
         List<Import> imports = ImportGatherer.gatherImports(type);
+
+        final SourceBuilder sourceBuilder;
+        if (type.getDeclaration().isGenerateNativeStub()) {
+          sourceBuilder = new SourceBuilderWithSecondaryOutput(generatedExterns::append, false);
+        } else {
+          sourceBuilder = new SourceBuilder();
+        }
+
         JavaScriptImplGenerator jsImplGenerator =
-            new JavaScriptImplGenerator(problems, type, imports);
+            new JavaScriptImplGenerator(problems, type, imports, sourceBuilder);
 
         String typeRelativePath = getPackageRelativePath(type.getDeclaration());
 
@@ -169,6 +180,11 @@ public class OutputGeneratorStage {
 
     if (libraryInfoOutputPath != null) {
       OutputUtils.writeToFile(libraryInfoOutputPath, libraryInfoBuilder.toByteArray(), problems);
+    }
+
+    if (!generatedExterns.isEmpty()) {
+      output.write("generated-externs.js",
+          "/**\n* @fileoverview Generated extern definitions\n* @externs\n*/\n" + generatedExterns);
     }
 
     // Error if any of the native implementation files were not used.

@@ -40,6 +40,8 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 
+import com.google.j2cl.transpiler.frontend.common.FrontendConstants;
+
 /** Utility methods to get information about Js Interop annotations. */
 public class JsInteropAnnotationUtils {
   private JsInteropAnnotationUtils() {}
@@ -111,6 +113,16 @@ public class JsInteropAnnotationUtils {
         packageBinding.getAnnotations(), JS_PACKAGE_ANNOTATION_NAME);
   }
 
+  public static IAnnotationBinding getDumboServiceAnnotation(ITypeBinding typeBinding) {
+    return JdtAnnotationUtils.findAnnotationBindingByName(typeBinding.getAnnotations(),
+        FrontendConstants.DUMBO_SERVICE_ANNOTATION);
+  }
+
+  public static IAnnotationBinding getJsImportAnnotation(ITypeBinding typeBinding) {
+    return JdtAnnotationUtils.findAnnotationBindingByName(typeBinding.getAnnotations(),
+        FrontendConstants.JS_IMPORT_ANNOTATION_NAME);
+  }
+
   public static boolean isJsExport(IBinding typeBinding) {
     return getJsExportAnnotation(typeBinding) != null;
   }
@@ -120,7 +132,8 @@ public class JsInteropAnnotationUtils {
   }
 
   public static boolean isJsNative(ITypeBinding typeBinding) {
-    return isJsNative(getJsTypeOrJsEnumAnnotation(typeBinding));
+    return isJsNative(getJsTypeOrJsEnumAnnotation(typeBinding)) //
+        || getDumboServiceAnnotation(typeBinding) != null; // DumboServices are implicitly native
   }
 
   private static boolean isJsNative(IAnnotationBinding annotationBinding) {
@@ -172,5 +185,18 @@ public class JsInteropAnnotationUtils {
 
   private static boolean hasCustomValue(IAnnotationBinding annotationBinding) {
     return JdtAnnotationUtils.getBooleanAttribute(annotationBinding, "hasCustomValue", false);
+  }
+
+  public static String getDumboService(ITypeBinding typeBinding) {
+    IAnnotationBinding annotationBinding = getDumboServiceAnnotation(typeBinding);
+    if (annotationBinding == null) {
+      return null;
+    }
+    String rpcName = JdtAnnotationUtils.getStringAttribute(annotationBinding, "rpcName");
+    if (rpcName == null || rpcName.isEmpty()) {
+      // use fully-qualified class name as default
+      rpcName = typeBinding.getQualifiedName();
+    }
+    return rpcName;
   }
 }

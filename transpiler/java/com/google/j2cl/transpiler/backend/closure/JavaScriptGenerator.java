@@ -41,10 +41,14 @@ public abstract class JavaScriptGenerator {
   protected final Type type;
   protected final ClosureGenerationEnvironment environment;
   protected final List<Import> imports;
-  protected final SourceBuilder sourceBuilder = new SourceBuilder();
+  protected final SourceBuilder sourceBuilder;
   protected final Problems problems;
 
   public JavaScriptGenerator(Problems problems, Type type, List<Import> imports) {
+    this(problems, type, imports, new SourceBuilder());
+  }
+
+  public JavaScriptGenerator(Problems problems, Type type, List<Import> imports, SourceBuilder sourceBuilder) {
     this.problems = problems;
     this.type = type;
     this.imports = imports;
@@ -61,6 +65,7 @@ public abstract class JavaScriptGenerator {
         UniqueNamesResolver.computeUniqueNames(
             Sets.union(namesUsedInAliases, JsKeywords.getKeywords()), type);
     environment = new ClosureGenerationEnvironment(imports, uniqueNameByVariable);
+    this.sourceBuilder = sourceBuilder;
   }
 
   public Map<SourcePosition, SourcePosition> getSourceMappings() {

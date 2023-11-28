@@ -316,6 +316,10 @@ public class Type extends Node implements HasSourcePosition, HasJsNameInfo, HasR
     return typeDeclaration.isNative();
   }
 
+  public boolean isGenerateNativeStub() {
+    return typeDeclaration.isGenerateNativeStub();
+  }
+
   @Override
   public SourcePosition getSourcePosition() {
     return sourcePosition;

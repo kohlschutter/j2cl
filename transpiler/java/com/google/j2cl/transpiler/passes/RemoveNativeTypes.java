@@ -25,6 +25,7 @@ public class RemoveNativeTypes extends NormalizationPass {
 
   @Override
   public void applyTo(CompilationUnit compilationUnit) {
-    compilationUnit.getTypes().removeIf(type -> type.isNative() || type.isJsFunctionInterface());
+    compilationUnit.getTypes().removeIf(type -> (type.isNative() && !type.isGenerateNativeStub())
+        || type.isJsFunctionInterface());
   }
 }

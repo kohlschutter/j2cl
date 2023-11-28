@@ -58,6 +58,16 @@ public class ImplementClassMetadataViaConstructors extends NormalizationPass {
       return convertArrayTypeLiteral((ArrayTypeDescriptor) literalTypeDescriptor);
     }
 
+    if (literalTypeDescriptor.isNative() && literalTypeDescriptor.isInterface()) {
+      TypeDeclaration td = literalTypeDescriptor.getMetadataTypeDeclaration();
+      if (td != null) {
+        td = td.getEnclosingTypeDeclaration();
+        if (td != null && td.isGenerateNativeStub()) {
+          return RuntimeMethods.createClassGetMethodCall(new JavaScriptConstructorReference(td));
+        }
+      }
+    }
+
     if (literalTypeDescriptor.isNative()) {
       // class literals of native JsTypes.
       BootstrapType proxyType =

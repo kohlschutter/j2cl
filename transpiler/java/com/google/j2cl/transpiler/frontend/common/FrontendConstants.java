@@ -49,6 +49,10 @@ public final class FrontendConstants {
 
   public static final String JS_EXPORT_ANNOTATION_NAME =
       "com.kohlschutter.jacline.annotations.JsExport";
+  public static final String DUMBO_SERVICE_ANNOTATION =
+      "com.kohlschutter.dumbo.annotations.DumboService";
+  public static final String JS_IMPORT_ANNOTATION_NAME =
+      "com.kohlschutter.jacline.annotations.JsImport";
 
   private FrontendConstants() {}
 }
