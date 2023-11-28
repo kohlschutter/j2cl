@@ -123,8 +123,19 @@ public class JsInteropAnnotationUtils {
         FrontendConstants.JS_IMPORT_ANNOTATION_NAME);
   }
 
+  public static IAnnotationBinding getJsImplementationProvidedSeparatelyAnnotation(
+      IMethodBinding methodBinding) {
+    return JdtAnnotationUtils.findAnnotationBindingByName(methodBinding.getAnnotations(),
+        FrontendConstants.JS_IMPLEMENTATION_PROVIDED_SEPARATELY_ANNOTATION_NAME);
+  }
+
   public static boolean isJsExport(IBinding typeBinding) {
     return getJsExportAnnotation(typeBinding) != null;
+  }
+
+  public static boolean isJsImplementationProvidedSeparately(IBinding binding) {
+    return (binding instanceof IMethodBinding && (getJsImplementationProvidedSeparatelyAnnotation(
+        (IMethodBinding) binding) != null));
   }
 
   public static boolean isJsPackageAnnotation(IAnnotationBinding annotation) {

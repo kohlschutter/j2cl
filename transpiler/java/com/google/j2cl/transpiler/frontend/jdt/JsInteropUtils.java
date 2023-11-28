@@ -79,6 +79,8 @@ public final class JsInteropUtils {
             .setJsOverlay(jsOverlay)
             .setJsAsync(jsAsync)
             .setJsExport(publicMemberOfJsType && JsInteropAnnotationUtils.isJsExport(member))
+            .setJsImplementationProvidedSeparately(JsInteropAnnotationUtils
+                .isJsImplementationProvidedSeparately(member))
             .setHasJsMemberAnnotation(memberAnnotation != null)
             .build();
       }

@@ -1333,7 +1333,8 @@ public class JsInteropRestrictionsChecker {
       case METHOD:
       case GETTER:
       case SETTER:
-        if (!member.isAbstract() && !member.isNative()) {
+        if (!member.isAbstract() && !member.isNative() && !member.getDescriptor()
+            .isJsImplementationProvidedSeparately()) {
           problems.error(
               member.getSourcePosition(),
               "Native JsType method '%s' should be native, abstract or JsOverlay.",

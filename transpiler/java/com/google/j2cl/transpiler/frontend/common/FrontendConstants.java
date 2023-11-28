@@ -53,6 +53,8 @@ public final class FrontendConstants {
       "com.kohlschutter.dumbo.annotations.DumboService";
   public static final String JS_IMPORT_ANNOTATION_NAME =
       "com.kohlschutter.jacline.annotations.JsImport";
+  public static final String JS_IMPLEMENTATION_PROVIDED_SEPARATELY_ANNOTATION_NAME =
+      "com.kohlschutter.jacline.annotations.JsImplementationProvidedSeparately";
 
   private FrontendConstants() {}
 }

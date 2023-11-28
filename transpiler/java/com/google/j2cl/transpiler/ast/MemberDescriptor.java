@@ -194,6 +194,10 @@ public abstract class MemberDescriptor
     return false;
   }
 
+  public boolean isJsImplementationProvidedSeparately() {
+    return getJsInfo().isJsImplementationProvidedSeparately();
+  }
+
   /** Determines whether a method is visible from {@code type} or not (following JLS 6.6.1). */
   public boolean isVisibleFrom(DeclaredTypeDescriptor type) {
     switch (getVisibility()) {
