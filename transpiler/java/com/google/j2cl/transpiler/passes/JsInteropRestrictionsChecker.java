@@ -1293,6 +1293,7 @@ public class JsInteropRestrictionsChecker {
     type.getSuperTypesStream()
         .filter(Predicates.not(TypeDescriptors::isJavaLangObject))
         .filter(Predicates.not(TypeDescriptor::isNative))
+        .filter(Predicates.not(DeclaredTypeDescriptor::isUnusableByJsSuppressed))
         .findFirst()
         .ifPresent(
             t ->
