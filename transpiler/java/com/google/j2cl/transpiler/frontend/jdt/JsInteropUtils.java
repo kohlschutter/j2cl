@@ -183,6 +183,10 @@ public final class JsInteropUtils {
     return JsInteropAnnotationUtils.getJsEntryPointAnnotation(declaringType) != null;
   }
 
+  public static boolean isJsIgnoreType(ITypeBinding declaringType) {
+    return JsInteropAnnotationUtils.getJsIgnoreTypeAnnotation(declaringType) != null;
+  }
+
   public static boolean isJsFunction(ITypeBinding typeBinding) {
     return JsInteropAnnotationUtils.getJsFunctionAnnotation(typeBinding) != null;
   }

@@ -147,6 +147,7 @@ import com.google.j2cl.transpiler.passes.PropagateNullabilityJ2kt;
 import com.google.j2cl.transpiler.passes.RecoverShortcutBooleanOperator;
 import com.google.j2cl.transpiler.passes.RemoveAssertStatements;
 import com.google.j2cl.transpiler.passes.RemoveCustomIsInstanceMethods;
+import com.google.j2cl.transpiler.passes.RemoveJsIgnoreTypes;
 import com.google.j2cl.transpiler.passes.RemoveNativeTypes;
 import com.google.j2cl.transpiler.passes.RemoveNestedBlocks;
 import com.google.j2cl.transpiler.passes.RemoveNoopStatements;
@@ -191,6 +192,7 @@ public enum Backend {
     @Override
     public ImmutableList<Supplier<NormalizationPass>> getDesugaringPassFactories() {
       return ImmutableList.of(
+          RemoveJsIgnoreTypes::new,
           // Early run of determining whether variables are effectively final so that passes that
           // depend on Expression.isEffectivelyInvariant it can take advantage.
           MakeVariablesFinal::new,

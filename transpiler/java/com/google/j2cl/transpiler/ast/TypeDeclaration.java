@@ -317,6 +317,8 @@ public abstract class TypeDeclaration
 
   public abstract boolean isJsEntryPoint();
 
+  public abstract boolean isJsIgnoreType();
+
   @Nullable
   public abstract JsEnumInfo getJsEnumInfo();
 
@@ -796,6 +798,7 @@ public abstract class TypeDeclaration
         .setNative(false)
         .setGenerateNativeStub(false)
         .setJsEntryPoint(false)
+        .setJsIgnoreType(false)
         .setAnnotation(false)
         .setCapturingEnclosingInstance(false)
         .setFinal(false)
@@ -893,6 +896,8 @@ public abstract class TypeDeclaration
     public abstract Builder setGenerateNativeStub(boolean isGenerateNativeStub);
 
     public abstract Builder setJsEntryPoint(boolean isJsEntryPoint);
+
+    public abstract Builder setJsIgnoreType(boolean isJsIgnoreType);
 
     public abstract Builder setKtTypeInfo(KtTypeInfo ktTypeInfo);
 
