@@ -317,6 +317,9 @@ public abstract class TypeDeclaration
 
   public abstract boolean isJsEntryPoint();
 
+  @Nullable
+  public abstract Set<String> getJsServiceProviderServices();
+
   public abstract boolean isJsIgnoreType();
 
   @Nullable
@@ -798,6 +801,7 @@ public abstract class TypeDeclaration
         .setNative(false)
         .setGenerateNativeStub(false)
         .setJsEntryPoint(false)
+        .setJsServiceProviderServices(null)
         .setJsIgnoreType(false)
         .setAnnotation(false)
         .setCapturingEnclosingInstance(false)
@@ -896,6 +900,8 @@ public abstract class TypeDeclaration
     public abstract Builder setGenerateNativeStub(boolean isGenerateNativeStub);
 
     public abstract Builder setJsEntryPoint(boolean isJsEntryPoint);
+
+    public abstract Builder setJsServiceProviderServices(Set<String> services);
 
     public abstract Builder setJsIgnoreType(boolean isJsIgnoreType);
 

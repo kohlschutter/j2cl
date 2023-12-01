@@ -78,6 +78,7 @@ import com.google.j2cl.transpiler.ast.VariableReference;
 import com.google.j2cl.transpiler.passes.ConversionContextVisitor.ContextRewriter;
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -156,6 +157,8 @@ public class JsInteropRestrictionsChecker {
       }
     }
 
+    checkJsServiceProviderServices(type);
+
     if (typeDeclaration.isJsEnum()) {
       checkJsEnum(type);
     }
@@ -188,6 +191,54 @@ public class JsInteropRestrictionsChecker {
 
     checkNativeTypeUsagesInWasm(type);
     checkNativeTypesAssignabilityInWasm(type);
+  }
+
+  private boolean checkJsServiceProviderServices(Type type) {
+    TypeDeclaration decl = type.getDeclaration();
+    Set<String> services = decl.getJsServiceProviderServices();
+    if (services == null) {
+      return true;
+    }
+
+    if (!decl.getVisibility().isPublic()) {
+      problems.error("@JsServiceProvider implementation is not public");
+      return false;
+    }
+
+    boolean havePublicNoArgConstr = false;
+    for (Method m : type.getConstructors()) {
+      if (!m.getParameters().isEmpty()) {
+        continue;
+      }
+      MethodDescriptor descriptor = m.getDescriptor();
+      if (!descriptor.getVisibility().isPublic()) {
+        problems.error(
+            "@JsServiceProvider implementation has a no-arg constructor that is not public");
+        return false;
+      }
+      if (!descriptor.getExceptionTypeDescriptors().isEmpty()) {
+        problems.error(
+            "@JsServiceProvider implementation has a no-arg constructor with declared exceptions");
+        return false;
+      }
+      havePublicNoArgConstr = true;
+    }
+    if (!havePublicNoArgConstr) {
+      problems.error(
+          "@JsServiceProvider implementation must explicitly declare a public no-arg constructor");
+      return false;
+    }
+
+    services = new HashSet<>(services);
+    for (DeclaredTypeDescriptor d : decl.getInterfaceTypeDescriptors()) {
+      services.remove(d.getQualifiedSourceName());
+    }
+    if (!services.isEmpty()) {
+      problems.error("Declared @JsServiceProvider service interfaces not explicitly implemented: "
+          + services);
+      return false;
+    }
+    return true;
   }
 
   private boolean checkJSpecifyUsage(TypeDeclaration typeDeclaration) {

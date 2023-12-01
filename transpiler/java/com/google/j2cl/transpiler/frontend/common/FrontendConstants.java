@@ -59,6 +59,8 @@ public final class FrontendConstants {
       "com.kohlschutter.jacline.annotations.JsEntryPoint";
   public static final String JS_IGNORETYPE_ANNOTATION_NAME =
       "com.kohlschutter.jacline.annotations.JsIgnoreType";
+  public static final String JS_SERVICEPROVIDER_ANNOTATION_NAME =
+      "com.kohlschutter.jacline.annotations.JsServiceProvider";
 
   private FrontendConstants() {}
 }

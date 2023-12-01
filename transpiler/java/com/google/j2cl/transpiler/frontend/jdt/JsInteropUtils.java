@@ -19,9 +19,16 @@ import com.google.j2cl.transpiler.ast.JsEnumInfo;
 import com.google.j2cl.transpiler.ast.JsInfo;
 import com.google.j2cl.transpiler.ast.JsMemberType;
 import com.google.j2cl.transpiler.ast.PrimitiveTypes;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
@@ -191,5 +198,32 @@ public final class JsInteropUtils {
     return JsInteropAnnotationUtils.getJsFunctionAnnotation(typeBinding) != null;
   }
 
-  private JsInteropUtils() {}
+  public static Set<String> getJsServiceProviderServices(ITypeBinding typeBinding) {
+    IAnnotationBinding annotationBinding = JsInteropAnnotationUtils.getJsServiceProviderAnnotation(
+        typeBinding);
+    if (annotationBinding == null) {
+      return null;
+    }
+
+    Set<String> services = new HashSet<>();
+
+    for (IMemberValuePairBinding vpb : annotationBinding.getAllMemberValuePairs()) {
+      if (!vpb.getName().equals("value")) {
+        continue;
+      }
+      for (Object val : (Object[]) vpb.getValue()) {
+        ITypeBinding tb = (ITypeBinding) val;
+        services.add(tb.getQualifiedName());
+      }
+    }
+
+    if (services.isEmpty()) {
+      return null;
+    } else {
+      return services;
+    }
+  }
+
+  private JsInteropUtils() {
+  }
 }

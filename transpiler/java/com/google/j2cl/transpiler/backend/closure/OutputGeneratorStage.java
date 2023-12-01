@@ -33,10 +33,11 @@ import com.google.j2cl.transpiler.backend.libraryinfo.LibraryInfoBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.SecureRandom;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -81,7 +82,7 @@ public class OutputGeneratorStage {
     LibraryInfoBuilder libraryInfoBuilder = new LibraryInfoBuilder();
 
     final StringBuilder generatedExterns = new StringBuilder();
-    final LinkedHashSet<String> generatedEntryPoints = new LinkedHashSet<>();
+    final LinkedHashMap<String, Set<String>> generatedEntryPointsAndServices = new LinkedHashMap<>();
 
     for (CompilationUnit compilationUnit : library.getCompilationUnits()) {
       for (Type type : compilationUnit.getTypes()) {
@@ -94,8 +95,8 @@ public class OutputGeneratorStage {
           sourceBuilder = new SourceBuilder();
         }
 
-        JavaScriptImplGenerator jsImplGenerator =
-            new JavaScriptImplGenerator(problems, type, imports, sourceBuilder, generatedEntryPoints);
+        JavaScriptImplGenerator jsImplGenerator = new JavaScriptImplGenerator(problems, type,
+            imports, sourceBuilder, generatedEntryPointsAndServices);
 
         String typeRelativePath = getPackageRelativePath(type.getDeclaration());
 
@@ -192,15 +193,52 @@ public class OutputGeneratorStage {
           "/**\n* @fileoverview Generated extern definitions\n* @externs\n*/\n" + generatedExterns);
     }
 
-    if (!generatedEntryPoints.isEmpty()) {
+    if (!generatedEntryPointsAndServices.isEmpty()) {
       StringBuilder sb = new StringBuilder();
       sb.append("goog.module('jacline.generated.entrypoints.t_" + Long.toHexString(System
           .nanoTime()) + ".r_" + Long.toHexString(new Random().nextLong()) + "');\n");
       int c = 0;
-      for (String ep : generatedEntryPoints) {
-        String var = "cl_" + (++c);
-        sb.append("var " + var + " = goog.require('" + ep + "');\n");
-        sb.append("if (" + var + ".$clinit) " + var + ".$clinit();\n");
+
+      boolean hasServiceLoaderImport = false;
+
+      for (int phase = 0; phase < 2; phase++) {
+        for (Map.Entry<String, Set<String>> en : generatedEntryPointsAndServices.entrySet()) {
+          String entryPoint = en.getKey();
+          Set<String> services = en.getValue();
+          if (phase == 0) {
+            if (services == null) {
+              continue;
+            }
+          } else {
+            if (services != null) {
+              continue;
+            }
+          }
+
+          if (services != null) {
+            if (!hasServiceLoaderImport) {
+              hasServiceLoaderImport = true;
+              sb.append("var ServiceLoader = goog.require('java.util.ServiceLoader');\n");
+              sb.append("let Class = goog.require('java.lang.Class$impl');\n");
+            }
+          }
+
+          String entryPointVar = "cl_" + (++c);
+          sb.append("var " + entryPointVar + " = goog.require('" + entryPoint + "');\n");
+          sb.append("if (" + entryPointVar + ".$clinit) " + entryPointVar + ".$clinit();\n");
+
+          if (services != null) {
+            for (String service : services) {
+              String serviceVar = "cl_" + (++c);
+              sb.append("var " + serviceVar + " = goog.require('" + service + "');\n");
+              sb.append(
+                  "ServiceLoader.m_jaclineRegisterService__java_lang_Class__java_util_ServiceLoader_ServiceProvider__void(Class.$get("
+                      + serviceVar + "), function() { return " + entryPointVar
+                      + ".$create__(); });\n");
+            }
+          }
+          sb.append("\n");
+        }
       }
 
       output.write("generated-entrypoints.js", "/**\n* @fileoverview Generated entry points\n*/\n"

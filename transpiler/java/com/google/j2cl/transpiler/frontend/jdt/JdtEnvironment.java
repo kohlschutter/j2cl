@@ -1211,6 +1211,7 @@ public class JdtEnvironment {
             .setNative(JsInteropUtils.isJsNativeType(typeBinding))
             .setGenerateNativeStub(JsInteropUtils.isGenerateNativeStub(typeBinding))
             .setJsEntryPoint(JsInteropUtils.isJsEntryPoint(typeBinding))
+            .setJsServiceProviderServices(JsInteropUtils.getJsServiceProviderServices(typeBinding))
             .setJsIgnoreType(JsInteropUtils.isJsIgnoreType(typeBinding))
             .setAnonymous(typeBinding.isAnonymous())
             .setLocal(isLocal(typeBinding))

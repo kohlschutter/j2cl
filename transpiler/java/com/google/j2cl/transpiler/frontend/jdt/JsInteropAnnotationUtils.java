@@ -139,6 +139,11 @@ public class JsInteropAnnotationUtils {
         FrontendConstants.JS_IMPLEMENTATION_PROVIDED_SEPARATELY_ANNOTATION_NAME);
   }
 
+  public static IAnnotationBinding getJsServiceProviderAnnotation(ITypeBinding typeBinding) {
+    return JdtAnnotationUtils.findAnnotationBindingByName(typeBinding.getAnnotations(),
+        FrontendConstants.JS_SERVICEPROVIDER_ANNOTATION_NAME);
+  }
+
   public static boolean isJsExport(IBinding typeBinding) {
     return getJsExportAnnotation(typeBinding) != null;
   }
