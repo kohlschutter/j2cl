@@ -575,7 +575,7 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
     }
 
     if (!haveClassImport) {
-      sourceBuilder.appendln("let Class = goog.forwardDeclare('java.lang.Class$impl');");
+      sourceBuilder.appendln("let Class = goog.require('java.lang.Class$impl');");
     }
 
     sourceBuilder.appendln("if (goog.global.Dumbo && goog.global.Dumbo.setServiceAlias) {");
