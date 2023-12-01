@@ -123,6 +123,11 @@ public class JsInteropAnnotationUtils {
         FrontendConstants.JS_IMPORT_ANNOTATION_NAME);
   }
 
+  public static IAnnotationBinding getJsEntryPointAnnotation(ITypeBinding typeBinding) {
+    return JdtAnnotationUtils.findAnnotationBindingByName(typeBinding.getAnnotations(),
+        FrontendConstants.JS_ENTRYPOINT_ANNOTATION_NAME);
+  }
+
   public static IAnnotationBinding getJsImplementationProvidedSeparatelyAnnotation(
       IMethodBinding methodBinding) {
     return JdtAnnotationUtils.findAnnotationBindingByName(methodBinding.getAnnotations(),

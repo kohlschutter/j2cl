@@ -47,6 +47,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Generates JavaScript source impl files. */
@@ -57,14 +58,12 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
   public static final String FILE_SUFFIX = ".impl.java.js";
   private boolean haveClassImport = false;
   private final boolean generateNativeStub;
-
-  public JavaScriptImplGenerator(Problems problems, Type type, List<Import> imports) {
-    this(problems, type, imports, new SourceBuilder());
-  }
+  private final Set<String> generatedEntryPoints;
 
   public JavaScriptImplGenerator(Problems problems, Type type, List<Import> imports,
-      SourceBuilder sourceBuilder) {
+      SourceBuilder sourceBuilder, Set<String> generatedEntryPoints) {
     super(problems, type, imports, sourceBuilder);
+    this.generatedEntryPoints = generatedEntryPoints;
     this.closureTypesGenerator = new ClosureTypesGenerator(environment);
 
     this.generateNativeStub = type.getDeclaration().isGenerateNativeStub();
@@ -197,6 +196,15 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
     renderNativeSource();
     renderExportClassSymbol();
     renderDumboServiceRegistration();
+    registerGeneratedEntryPoint();
+  }
+
+  private void registerGeneratedEntryPoint() {
+    if (!type.getDeclaration().isJsEntryPoint()) {
+      return;
+    }
+
+    generatedEntryPoints.add(type.getQualifiedJsName());
   }
 
   private void renderImports() {

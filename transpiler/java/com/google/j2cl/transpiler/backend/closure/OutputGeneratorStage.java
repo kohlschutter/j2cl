@@ -32,8 +32,12 @@ import com.google.j2cl.transpiler.backend.common.SourceBuilder;
 import com.google.j2cl.transpiler.backend.libraryinfo.LibraryInfoBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.SecureRandom;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+
 import javax.annotation.Nullable;
 
 /**
@@ -77,6 +81,7 @@ public class OutputGeneratorStage {
     LibraryInfoBuilder libraryInfoBuilder = new LibraryInfoBuilder();
 
     final StringBuilder generatedExterns = new StringBuilder();
+    final LinkedHashSet<String> generatedEntryPoints = new LinkedHashSet<>();
 
     for (CompilationUnit compilationUnit : library.getCompilationUnits()) {
       for (Type type : compilationUnit.getTypes()) {
@@ -90,7 +95,7 @@ public class OutputGeneratorStage {
         }
 
         JavaScriptImplGenerator jsImplGenerator =
-            new JavaScriptImplGenerator(problems, type, imports, sourceBuilder);
+            new JavaScriptImplGenerator(problems, type, imports, sourceBuilder, generatedEntryPoints);
 
         String typeRelativePath = getPackageRelativePath(type.getDeclaration());
 
@@ -185,6 +190,21 @@ public class OutputGeneratorStage {
     if (!generatedExterns.isEmpty()) {
       output.write("generated-externs.js",
           "/**\n* @fileoverview Generated extern definitions\n* @externs\n*/\n" + generatedExterns);
+    }
+
+    if (!generatedEntryPoints.isEmpty()) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("goog.module('jacline.generated.entrypoints.t_" + Long.toHexString(System
+          .nanoTime()) + ".r_" + Long.toHexString(new Random().nextLong()) + "');\n");
+      int c = 0;
+      for (String ep : generatedEntryPoints) {
+        String var = "cl_" + (++c);
+        sb.append("var " + var + " = goog.require('" + ep + "');\n");
+        sb.append("if (" + var + ".$clinit) " + var + ".$clinit();\n");
+      }
+
+      output.write("generated-entrypoints.js", "/**\n* @fileoverview Generated entry points\n*/\n"
+          + sb.toString());
     }
 
     // Error if any of the native implementation files were not used.

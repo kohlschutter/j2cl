@@ -55,6 +55,8 @@ public final class FrontendConstants {
       "com.kohlschutter.jacline.annotations.JsImport";
   public static final String JS_IMPLEMENTATION_PROVIDED_SEPARATELY_ANNOTATION_NAME =
       "com.kohlschutter.jacline.annotations.JsImplementationProvidedSeparately";
+  public static final String JS_ENTRYPOINT_ANNOTATION_NAME =
+      "com.kohlschutter.jacline.annotations.JsEntryPoint";
 
   private FrontendConstants() {}
 }

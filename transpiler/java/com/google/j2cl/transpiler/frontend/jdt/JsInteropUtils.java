@@ -179,6 +179,10 @@ public final class JsInteropUtils {
         (JsInteropAnnotationUtils.getDumboServiceAnnotation(declaringType) != null);
   }
 
+  public static boolean isJsEntryPoint(ITypeBinding declaringType) {
+    return JsInteropAnnotationUtils.getJsEntryPointAnnotation(declaringType) != null;
+  }
+
   public static boolean isJsFunction(ITypeBinding typeBinding) {
     return JsInteropAnnotationUtils.getJsFunctionAnnotation(typeBinding) != null;
   }
