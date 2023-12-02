@@ -7,33 +7,41 @@ public final class SourceBuilderWithSecondaryOutput extends SourceBuilder {
   }
 
   private final Output secondaryOutput;
-  private boolean enabled = false;
+  private int enabled = 0;
 
   public SourceBuilderWithSecondaryOutput(Output secondaryOutput, boolean enabled) {
     super();
     this.secondaryOutput = secondaryOutput;
-    this.enabled = enabled;
+    this.enabled = enabled ? 1 : 0;
+  }
+
+  public boolean isSecondaryEnabled() {
+    return enabled > 0;
   }
 
   @Override
   public void append(String source) {
     super.append(source);
-    if (enabled) {
+    if (enabled > 0) {
       secondaryOutput.append(source);
     }
   }
 
+  public void appendToSecondary(String s) {
+    secondaryOutput.append(s);
+  }
+
   public void enableSecondaryOutput(boolean println) {
-    if (println && !enabled) {
+    if (println && enabled == 0) {
       secondaryOutput.append("\n");
     }
-    this.enabled = true;
+    ++this.enabled;
   }
 
   public void disableSecondaryOutput(boolean println) {
-    if (println && enabled) {
+    if (println && enabled > 0) {
       secondaryOutput.append("\n");
     }
-    this.enabled = false;
+    --this.enabled;
   }
 }

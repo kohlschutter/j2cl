@@ -107,8 +107,10 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
     if (parameter == expression.getJsVarargsParameter()) {
       sourceBuilder.append("...");
     }
+    disableSecondaryOutputIfNecessary();
     sourceBuilder.append(
         "/** " + closureTypesGenerator.getJsDocForParameter(expression, i) + " */ ");
+    enableSecondaryOutputIfNecessary();
     sourceBuilder.emitWithMapping(
         // Only map parameters if they are named.
         AstUtils.removeUnnamedSourcePosition(parameter.getSourcePosition()),
@@ -321,14 +323,26 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
   }
 
   private void renderClassBody() {
+    String classAlias = environment.aliasForType(type.getDeclaration()) //
+        .replace('.', '_'); // "goog.global", etc.
+    boolean isGlobal = "<global>".equals(type.getDeclaration().getJsNamespace());
+    if (generateNativeStub && isGlobal) {
+      ((SourceBuilderWithSecondaryOutput) sourceBuilder).appendToSecondary("var " + classAlias
+          + ";\n");
+    }
     sourceBuilder.append("class ");
     sourceBuilder.emitWithMapping(
         type.getSourcePosition(),
-        () -> sourceBuilder.append(environment.aliasForType(type.getDeclaration())));
+        () -> sourceBuilder.append(classAlias));
+    if (generateNativeStub && isGlobal) {
+      ((SourceBuilderWithSecondaryOutput) sourceBuilder).appendToSecondary("$");
+    }
 
     DeclaredTypeDescriptor superTypeDescriptor = type.getSuperTypeDescriptor();
     if (superTypeDescriptor != null && superTypeDescriptor.isJavaScriptClass()) {
+      disableSecondaryOutputIfNecessary();
       sourceBuilder.append(format(" extends %s", environment.aliasForType(superTypeDescriptor)));
+      enableSecondaryOutputIfNecessary();
     }
 
     sourceBuilder.append(" ");
@@ -341,8 +355,30 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
     sourceBuilder.closeBrace();
   }
 
+  private void disableSecondaryOutputIfNecessary() {
+    if (generateNativeStub) {
+      ((SourceBuilderWithSecondaryOutput) sourceBuilder).disableSecondaryOutput(false);
+    }
+  }
+
+  private boolean isSecondaryEnabled() {
+    return generateNativeStub && ((SourceBuilderWithSecondaryOutput) sourceBuilder)
+        .isSecondaryEnabled();
+  }
+
+  private void enableSecondaryOutputIfNecessary() {
+    if (generateNativeStub) {
+      ((SourceBuilderWithSecondaryOutput) sourceBuilder).enableSecondaryOutput(false);
+    }
+  }
+
   private void renderTypeMethods() {
     for (Method method : type.getMethods()) {
+      boolean skipForExtern = (method.getSimpleJsName().startsWith("$")) || method.isConstructor();
+      try {
+      if (skipForExtern) {
+        disableSecondaryOutputIfNecessary();
+      }
       if (method.isNative()) {
         // If the method is native, output JsDoc comments so it can serve as a template for
         // native.js. However if the method is pointing to a different namespace then there
@@ -372,8 +408,19 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
             () -> {
               renderMethodJsDoc(method);
               emitMethodHeader(method);
+              disableSecondaryOutputIfNecessary();
               StatementTranspiler.render(method.getBody(), environment, sourceBuilder);
+              enableSecondaryOutputIfNecessary();
+              if (isSecondaryEnabled()) {
+                ((SourceBuilderWithSecondaryOutput) sourceBuilder).appendToSecondary(
+                    "{ }");
+              }
             });
+      }
+      } finally {
+        if (skipForExtern) {
+          enableSecondaryOutputIfNecessary();
+        }
       }
       sourceBuilder.newLine();
     }
