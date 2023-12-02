@@ -102,7 +102,6 @@ public class VerifyNormalizedUnits extends NormalizationPass {
               checkState(
                   field.getInitializer() == null || field.getInitializer().isCompileTimeConstant());
             } else {
-              checkState(!field.isNative());
               // JsEnum only contains the enum fields.
               checkState(!getCurrentType().isJsEnum() || field.isStatic());
             }
