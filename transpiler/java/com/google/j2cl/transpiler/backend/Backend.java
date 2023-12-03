@@ -155,6 +155,7 @@ import com.google.j2cl.transpiler.passes.RemoveUnneededCasts;
 import com.google.j2cl.transpiler.passes.RemoveUnneededJsDocCasts;
 import com.google.j2cl.transpiler.passes.RemoveUnreachableCode;
 import com.google.j2cl.transpiler.passes.RemoveUnusedLabeledStatements;
+import com.google.j2cl.transpiler.passes.RemoveCodeWithJsImplementationProvidedSeparately;
 import com.google.j2cl.transpiler.passes.RemoveWasmAnnotatedMethodBodies;
 import com.google.j2cl.transpiler.passes.ResolveCaptures;
 import com.google.j2cl.transpiler.passes.ResolveImplicitInstanceQualifiers;
@@ -326,6 +327,7 @@ public enum Backend {
           NormalizeJsAwaitMethodInvocations::new,
           RemoveUnreachableCode::new,
           RemoveNoopStatements::new,
+          RemoveCodeWithJsImplementationProvidedSeparately::new,
 
           // Add qualifiers to static members after all transformations to simplify the handling
           // in the backend.
