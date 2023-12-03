@@ -128,6 +128,11 @@ public class JsInteropAnnotationUtils {
         FrontendConstants.JS_ENTRYPOINT_ANNOTATION_NAME);
   }
 
+  public static IAnnotationBinding getJsPatchedAnnotation(ITypeBinding typeBinding) {
+    return JdtAnnotationUtils.findAnnotationBindingByName(typeBinding.getAnnotations(),
+        FrontendConstants.JS_PATCHED_ANNOTATION_NAME);
+  }
+
   public static IAnnotationBinding getJsIgnoreTypeAnnotation(ITypeBinding typeBinding) {
     return JdtAnnotationUtils.findAnnotationBindingByName(typeBinding.getAnnotations(),
         FrontendConstants.JS_IGNORETYPE_ANNOTATION_NAME);

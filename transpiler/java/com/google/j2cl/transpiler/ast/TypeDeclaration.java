@@ -317,6 +317,8 @@ public abstract class TypeDeclaration
 
   public abstract boolean isJsEntryPoint();
 
+  public abstract boolean isJsPatched();
+
   @Nullable
   public abstract Set<String> getJsServiceProviderServices();
 
@@ -801,6 +803,7 @@ public abstract class TypeDeclaration
         .setNative(false)
         .setGenerateNativeStub(false)
         .setJsEntryPoint(false)
+        .setJsPatched(false)
         .setJsServiceProviderServices(null)
         .setJsIgnoreType(false)
         .setAnnotation(false)
@@ -900,6 +903,8 @@ public abstract class TypeDeclaration
     public abstract Builder setGenerateNativeStub(boolean isGenerateNativeStub);
 
     public abstract Builder setJsEntryPoint(boolean isJsEntryPoint);
+
+    public abstract Builder setJsPatched(boolean isJsPatched);
 
     public abstract Builder setJsServiceProviderServices(Set<String> services);
 

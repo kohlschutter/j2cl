@@ -190,6 +190,10 @@ public final class JsInteropUtils {
     return JsInteropAnnotationUtils.getJsEntryPointAnnotation(declaringType) != null;
   }
 
+  public static boolean isJsPatched(ITypeBinding declaringType) {
+    return JsInteropAnnotationUtils.getJsPatchedAnnotation(declaringType) != null;
+  }
+
   public static boolean isJsIgnoreType(ITypeBinding declaringType) {
     return JsInteropAnnotationUtils.getJsIgnoreTypeAnnotation(declaringType) != null;
   }

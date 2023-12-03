@@ -61,6 +61,11 @@ public class JavaScriptHeaderGenerator extends JavaScriptGenerator {
 
     String className = environment.aliasForType(type.getDeclaration());
     String implementationPath = typeDeclaration.getImplModuleName();
+
+    if (typeDeclaration.isJsPatched()) {
+      implementationPath += "$patched";
+    }
+
     sourceBuilder.appendLines(
         "const " + className + " = goog.require('" + implementationPath + "');");
     sourceBuilder.newLine();
