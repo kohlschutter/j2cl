@@ -188,7 +188,7 @@ public class OutputGeneratorStage {
       OutputUtils.writeToFile(libraryInfoOutputPath, libraryInfoBuilder.toByteArray(), problems);
     }
 
-    if (!generatedExterns.isEmpty()) {
+    if (generatedExterns.length() > 0 ) {
       output.write("generated-externs.js",
           "/**\n* @fileoverview Generated extern definitions\n* @externs\n*/\n" + generatedExterns);
     }
