@@ -270,7 +270,7 @@ def _get_transitive_classpath(deps):
     return depset(transitive = [d[J2wasmInfo]._private_.transitive_classpath for d in deps])
 
 def _get_transitive_modules(deps):
-    return depset(transitive = [d[J2wasmInfo]._private_.wasm_modular_info.transitive_modules for d in deps], order = "topological")
+    return depset(transitive = [d[J2wasmInfo]._private_.wasm_modular_info.transitive_modules for d in deps], order = "postorder")
 
 def _get_all_classjars(deps):
     return depset(transitive = [d[J2wasmInfo]._private_.java_info.transitive_compile_time_jars for d in deps])
@@ -403,6 +403,8 @@ def j2wasm_application(name, defines = dict(), **kwargs):
     })
     optimized_defines.update(defines)
 
+    transpiler_args = kwargs.pop("internal_transpiler_args", [])
+
     _j2wasm_application(
         name = name,
         binaryen_args = [
@@ -446,7 +448,7 @@ def j2wasm_application(name, defines = dict(), **kwargs):
             # Mark all types as 'final' that we can, to help VMs at runtime.
             "--type-finalizing",
         ],
-        transpiler_args = ["-experimentalWasmRemoveAssertStatement"],
+        transpiler_args = transpiler_args + ["-experimentalWasmRemoveAssertStatement"],
         defines = ["%s=%s" % (k, v) for (k, v) in optimized_defines.items()],
         **kwargs
     )
@@ -458,6 +460,7 @@ def j2wasm_application(name, defines = dict(), **kwargs):
             # Remove the intrinsic import declarations which are not removed by lowering itself.
             "--remove-unused-module-elements",
         ],
+        transpiler_args = transpiler_args,
         defines = ["%s=%s" % (k, v) for (k, v) in dev_defines.items()],
         **kwargs
     )

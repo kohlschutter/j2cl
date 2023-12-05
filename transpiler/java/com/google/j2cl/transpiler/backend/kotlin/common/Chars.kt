@@ -16,6 +16,11 @@
 package com.google.j2cl.transpiler.backend.kotlin.common
 
 // TODO(b/204366308): Remove after switch to Kotlin 1.5.
+/** Returns code of this char. */
 @Suppress("DEPRECATION")
-val Char.code
+val Char.code: Int
   get() = toInt()
+
+/** Returns string with this character backslash escaped. */
+val Char.backslashEscapedString: String
+  get() = "\\$this"

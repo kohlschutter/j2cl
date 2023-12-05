@@ -31,31 +31,18 @@ import com.google.j2cl.transpiler.ast.Variable
 import com.google.j2cl.transpiler.ast.Visibility
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.annotation
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.assignment
-import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.classLiteral
-import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.fileAnnotation
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.literal
 import com.google.j2cl.transpiler.backend.kotlin.ast.CompanionDeclaration
 import com.google.j2cl.transpiler.backend.kotlin.ast.CompanionObject
 import com.google.j2cl.transpiler.backend.kotlin.ast.declaration
 import com.google.j2cl.transpiler.backend.kotlin.common.letIf
 import com.google.j2cl.transpiler.backend.kotlin.common.mapFirst
-import com.google.j2cl.transpiler.backend.kotlin.common.titleCase
+import com.google.j2cl.transpiler.backend.kotlin.common.titleCased
 import com.google.j2cl.transpiler.backend.kotlin.source.Source
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.source
 import com.google.j2cl.transpiler.backend.kotlin.source.orEmpty
 
-private fun Renderer.fileOptInAnnotationSource(features: List<Source>): Source =
-  fileAnnotation(topLevelQualifiedNameSource("kotlin.OptIn"), features)
-
-internal val Renderer.fileOptInAnnotationSource: Source
-  get() =
-    environment.importedOptInQualifiedNames
-      .takeIf { it.isNotEmpty() }
-      ?.map { classLiteral(topLevelQualifiedNameSource(it)) }
-      ?.let { fileOptInAnnotationSource(it) }
-      .orEmpty()
-
-internal fun Renderer.objCNameAnnotationSource(name: String, exact: Boolean? = null): Source =
+internal fun NameRenderer.objCNameAnnotationSource(name: String, exact: Boolean? = null): Source =
   annotation(
     topLevelQualifiedNameSource(
       "kotlin.native.ObjCName",
@@ -65,17 +52,17 @@ internal fun Renderer.objCNameAnnotationSource(name: String, exact: Boolean? = n
     exact?.let { parameterSource("exact", literal(it)) }.orEmpty()
   )
 
-internal fun Renderer.objCAnnotationSource(typeDeclaration: TypeDeclaration): Source =
+internal fun NameRenderer.objCAnnotationSource(typeDeclaration: TypeDeclaration): Source =
   Source.emptyUnless(typeDeclaration.needsObjCNameAnnotation) {
     objCNameAnnotationSource(typeDeclaration.objCName, exact = true)
   }
 
-internal fun Renderer.objCAnnotationSource(companionObject: CompanionObject): Source =
+internal fun NameRenderer.objCAnnotationSource(companionObject: CompanionObject): Source =
   Source.emptyUnless(companionObject.needsObjCNameAnnotation) {
     objCNameAnnotationSource(companionObject.declaration.objCName, exact = true)
   }
 
-internal fun Renderer.objCAnnotationSource(
+internal fun NameRenderer.objCAnnotationSource(
   methodDescriptor: MethodDescriptor,
   methodObjCNames: MethodObjCNames?
 ): Source =
@@ -83,7 +70,7 @@ internal fun Renderer.objCAnnotationSource(
     methodObjCNames?.methodName?.let { objCNameAnnotationSource(it) }.orEmpty()
   }
 
-internal fun Renderer.objCAnnotationSource(fieldDescriptor: FieldDescriptor): Source =
+internal fun NameRenderer.objCAnnotationSource(fieldDescriptor: FieldDescriptor): Source =
   Source.emptyUnless(fieldDescriptor.needsObjCNameAnnotations) {
     objCNameAnnotationSource(fieldDescriptor.objCName)
   }
@@ -233,7 +220,7 @@ private val TypeDeclaration.objCPackagePrefix: String
   get() = packageName?.objCPackagePrefix ?: ""
 
 private val String.objCPackagePrefix: String
-  get() = split('.').joinToString(separator = "") { it.titleCase.objCName }
+  get() = split('.').joinToString(separator = "") { it.titleCased.objCName }
 
 internal val String.objCName
   get() = replace('$', '_')
@@ -281,7 +268,7 @@ private fun TypeVariable.variableObjCName(useId: Boolean): String =
   upperBoundTypeDescriptor.objCName(useId = useId)
 
 private val Variable.objCName: String
-  get() = typeDescriptor.objCName(useId = true).titleCase
+  get() = typeDescriptor.objCName(useId = true).titleCased
 
 internal val FieldDescriptor.objCName: String
   get() = name!!.objCName.escapeJ2ObjCKeyword.letIf(!isEnumConstant) { it + "_" }

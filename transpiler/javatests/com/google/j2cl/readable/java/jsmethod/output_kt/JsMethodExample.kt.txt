@@ -25,6 +25,7 @@ import kotlin.OptIn
 import kotlin.String
 import kotlin.Suppress
 import kotlin.experimental.ExperimentalObjCName
+import kotlin.jvm.JvmStatic
 import kotlin.native.ObjCName
 
 @ObjCName("J2ktJsmethodJsMethodExample", exact = true)
@@ -34,7 +35,7 @@ open class JsMethodExample {
  external open fun <T: ArrayList<String?>?> testMethod(): T
 
  abstract class Base<T> internal constructor() {
-  @JsMethod
+  @JsMethod(name = "m")
   internal open fun m_pp_jsmethod(t: T) {}
  }
 
@@ -64,6 +65,11 @@ open class JsMethodExample {
   open override fun m_pp_jsmethod(arg0: String?) {
    this.m(arg0)
   }
+
+  companion object {
+   @JvmStatic
+   internal fun n_pp_jsmethod() {}
+  }
  }
 
  @JsType
@@ -86,7 +92,6 @@ open class JsMethodExample {
    @ObjCName("withNSString") s: String?
   ) {}
 
-  @JsMethod(name = "renamedM")
   open override fun m_pp_jsmethod(arg0: String?) {
    this.m(arg0)
   }

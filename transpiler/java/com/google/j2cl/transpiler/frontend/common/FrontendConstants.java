@@ -64,5 +64,13 @@ public final class FrontendConstants {
   public static final String JS_PATCHED_ANNOTATION_NAME =
       "com.kohlschutter.jacline.annotations.JsPatched";
 
+  public static final String UNCHECKED_CAST_ANNOTATION_NAME =
+      "javaemul.internal.annotations.UncheckedCast";
+
+  public static final String HAS_NO_SIDE_EFFECTS_ANNOTATION_NAME =
+      "javaemul.internal.annotations.HasNoSideEffects";
+
+  public static final String WASM_ANNOTATION_NAME = "javaemul.internal.annotations.Wasm";
+
   private FrontendConstants() {}
 }

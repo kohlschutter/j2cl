@@ -20,15 +20,18 @@ import com.google.j2cl.transpiler.ast.Method
 import com.google.j2cl.transpiler.ast.Type
 import com.google.j2cl.transpiler.ast.TypeDescriptor
 import com.google.j2cl.transpiler.backend.kotlin.ast.Member as KtMember
+import com.google.j2cl.transpiler.backend.kotlin.ast.Visibility
 import com.google.j2cl.transpiler.backend.kotlin.ast.toCompanionObjectOrNull
 
+/** Returns a list of type descriptors declared on this type. */
 internal val Type.declaredSuperTypeDescriptors: List<TypeDescriptor>
   get() = listOfNotNull(superTypeDescriptor).plus(superInterfaceTypeDescriptors)
 
+/** Returns whether this type has any constructors. */
 internal val Type.hasConstructors: Boolean
   get() = constructors.isNotEmpty()
 
-// Returns the constructor to render as primary in Kotlin.
+/** Returns the constructor to render as primary in Kotlin. */
 internal val Type.ktPrimaryConstructor: Method?
   get() =
     constructors.singleOrNull()?.takeIf {
@@ -51,9 +54,14 @@ internal val Type.ktMembers: List<KtMember>
 
 // TODO(b/310160330): Remove this restriction once Kotlin allows for that:
 // https://github.com/Kotlin/KEEP/blob/master/proposals/jvm-field-annotation-in-interface-companion.md#open-questions
-internal val Type.jvmFieldsAreNotLegal
+/** Returns whether it's illegal to render [@JvmField] annotations in this type. */
+internal val Type.jvmFieldsAreIllegal
   get() =
     isInterface &&
       members.filterIsInstance<Field>().let { fields ->
         fields.any { it.isCompileTimeConstant } && fields.any { !it.isCompileTimeConstant }
       }
+
+internal val Type.needExplicitPrimaryConstructor: Boolean
+  get() =
+    isClass && !hasConstructors && declaration.visibility.memberKtVisibility != Visibility.PUBLIC

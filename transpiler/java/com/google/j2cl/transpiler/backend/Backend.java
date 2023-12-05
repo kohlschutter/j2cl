@@ -571,6 +571,7 @@ public enum Backend {
           NormalizeFieldInitialization::new,
           ImplementInstanceInitialization::new,
           NormalizeLabels::new,
+          NormalizeInstantiationThroughFactoryMethods::new,
           ImplementStaticInitializationViaConditionChecks::new,
           ImplementClassMetadataViaGetters::new,
           ImplementStringCompileTimeConstants::new,

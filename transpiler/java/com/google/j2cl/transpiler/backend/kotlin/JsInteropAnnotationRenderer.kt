@@ -31,88 +31,98 @@ import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.dotSepa
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.source
 import com.google.j2cl.transpiler.backend.kotlin.source.orEmpty
 
-internal fun Renderer.jsInteropAnnotationsSource(typeDeclaration: TypeDeclaration): Source =
+internal fun NameRenderer.jsInteropAnnotationsSource(typeDeclaration: TypeDeclaration): Source =
   jsFunctionAnnotationSource(typeDeclaration)
     .ifEmpty { jsTypeAnnotationSource(typeDeclaration) }
     .ifEmpty { jsEnumAnnotationSource(typeDeclaration) }
 
-internal fun Renderer.jsInteropAnnotationsSource(fieldDescriptor: FieldDescriptor): Source =
+internal fun NameRenderer.jsInteropAnnotationsSource(fieldDescriptor: FieldDescriptor): Source =
   jsPropertyAnnotationSource(fieldDescriptor)
     .ifEmpty { jsIgnoreAnnotationSource(fieldDescriptor) }
     .ifEmpty { jsOverlayAnnotationSource(fieldDescriptor) }
 
-internal fun Renderer.jsInteropAnnotationsSource(methodDescriptor: MethodDescriptor): Source =
+internal fun NameRenderer.jsInteropAnnotationsSource(methodDescriptor: MethodDescriptor): Source =
   jsPropertyAnnotationSource(methodDescriptor)
     .ifEmpty { jsMethodAnnotationSource(methodDescriptor) }
     .ifEmpty { jsConstructorAnnotationSource(methodDescriptor) }
     .ifEmpty { jsIgnoreAnnotationSource(methodDescriptor) }
     .ifEmpty { jsOverlayAnnotationSource(methodDescriptor) }
 
-internal fun Renderer.jsInteropAnnotationsSource(parameterDescriptor: ParameterDescriptor): Source =
+internal fun NameRenderer.jsInteropAnnotationsSource(
+  parameterDescriptor: ParameterDescriptor
+): Source =
   parameterDescriptor
     .takeIf { it.isJsOptional }
     ?.let { annotation(topLevelQualifiedNameSource("jsinterop.annotations.JsOptional")) }
     .orEmpty()
 
-private fun Renderer.jsPropertyAnnotationSource(fieldDescriptor: FieldDescriptor): Source =
-  fieldDescriptor
-    .takeIf { it.hasJsPropertyAnnotation }
-    ?.let { jsPropertyAnnotationSource(it.jsInfo.jsName, it.jsInfo.jsNamespace) }
+private fun NameRenderer.jsPropertyAnnotationSource(memberDescriptor: MemberDescriptor): Source =
+  memberDescriptor
+    .takeIf { it.isJsProperty }
+    ?.let { jsInteropAnnotationSource(memberDescriptor, "jsinterop.annotations.JsProperty") }
     .orEmpty()
 
-private fun Renderer.jsPropertyAnnotationSource(methodDescriptor: MethodDescriptor): Source =
-  // Emit an annotation only if the original java method had a `JsProperty` annotation defined on
-  // it.
-  methodDescriptor
-    .takeIf { it.hasJsPropertyAnnotation }
-    ?.let { jsPropertyAnnotationSource(it.originalJsInfo.jsName, it.originalJsInfo.jsNamespace) }
-    .orEmpty()
-
-private fun Renderer.jsPropertyAnnotationSource(jsName: String?, jsNamespace: String?): Source =
-  annotation(
-    topLevelQualifiedNameSource("jsinterop.annotations.JsProperty"),
-    nameParameterSource(jsName),
-    namespaceParameterSource(jsNamespace)
-  )
-
-private fun Renderer.jsIgnoreAnnotationSource(memberDescriptor: MemberDescriptor): Source =
+private fun NameRenderer.jsIgnoreAnnotationSource(memberDescriptor: MemberDescriptor): Source =
   memberDescriptor
     .takeIf { it.hasJsIgnoreAnnotation }
     ?.let { annotation(topLevelQualifiedNameSource("jsinterop.annotations.JsIgnore")) }
     .orEmpty()
 
-private fun Renderer.jsOverlayAnnotationSource(memberDescriptor: MemberDescriptor): Source =
+private fun NameRenderer.jsOverlayAnnotationSource(memberDescriptor: MemberDescriptor): Source =
   memberDescriptor
     .takeIf { it.isJsOverlay }
     ?.let { annotation(topLevelQualifiedNameSource("jsinterop.annotations.JsOverlay")) }
     .orEmpty()
 
-private fun Renderer.jsConstructorAnnotationSource(methodDescriptor: MethodDescriptor): Source =
+private fun NameRenderer.jsConstructorAnnotationSource(methodDescriptor: MethodDescriptor): Source =
   methodDescriptor
     .takeIf { it.hasJsConstructorAnnotation }
     ?.let { annotation(topLevelQualifiedNameSource("jsinterop.annotations.JsConstructor")) }
     .orEmpty()
 
-private fun Renderer.jsMethodAnnotationSource(methodDescriptor: MethodDescriptor): Source =
-  // Emit an annotation only if the original java method had a `JsMethod` annotation defined on it.
+private fun NameRenderer.jsMethodAnnotationSource(methodDescriptor: MethodDescriptor): Source =
   methodDescriptor
-    .takeIf { it.hasJsMethodAnnotation }
+    .takeIf { it.isJsMethod }
+    ?.let { jsInteropAnnotationSource(methodDescriptor, "jsinterop.annotations.JsMethod") }
+    .orEmpty()
+
+/**
+ * Render the `annotationQualifiedName` annotation if the member had an annotation in the source or
+ * if it requires one to restore its jsname.
+ */
+private fun NameRenderer.jsInteropAnnotationSource(
+  memberDescriptor: MemberDescriptor,
+  annotationQualifiedName: String
+): Source =
+  memberDescriptor
+    .takeIf {
+      it.originalJsInfo.hasJsMemberAnnotation ||
+        // If the name is mangled but it overrides a member (which means that one was already
+        // mangled) then the annotation is already emitted in the overridden member.
+        (it.isKtNameMangled && !it.isKtOverride)
+    }
     ?.let {
+      val nameParameterValue =
+        it.originalJsInfo.jsName
+          // if there is no name specified in the original annotation but the name is mangled in
+          // Kotlin, use the simpleJsName otherwise do not emit any name.
+          ?: if (it.isKtNameMangled) it.simpleJsName else null
+
       annotation(
-        topLevelQualifiedNameSource("jsinterop.annotations.JsMethod"),
-        nameParameterSource(it.jsInfo.jsName),
-        namespaceParameterSource(it.jsInfo.jsNamespace)
+        topLevelQualifiedNameSource(annotationQualifiedName),
+        nameParameterSource(nameParameterValue),
+        namespaceParameterSource(it.originalJsInfo.jsNamespace)
       )
     }
     .orEmpty()
 
-private fun Renderer.jsFunctionAnnotationSource(typeDeclaration: TypeDeclaration): Source =
+private fun NameRenderer.jsFunctionAnnotationSource(typeDeclaration: TypeDeclaration): Source =
   typeDeclaration
     .takeIf { it.isJsFunctionInterface }
     ?.let { annotation(topLevelQualifiedNameSource("jsinterop.annotations.JsFunction")) }
     .orEmpty()
 
-private fun Renderer.jsEnumAnnotationSource(typeDeclaration: TypeDeclaration): Source =
+private fun NameRenderer.jsEnumAnnotationSource(typeDeclaration: TypeDeclaration): Source =
   typeDeclaration
     .takeIf { it.isJsEnum }
     ?.let {
@@ -130,7 +140,7 @@ private fun Renderer.jsEnumAnnotationSource(typeDeclaration: TypeDeclaration): S
     }
     .orEmpty()
 
-private fun Renderer.jsTypeAnnotationSource(typeDeclaration: TypeDeclaration): Source =
+private fun NameRenderer.jsTypeAnnotationSource(typeDeclaration: TypeDeclaration): Source =
   typeDeclaration
     .takeIf { it.isJsType }
     ?.let {
@@ -152,23 +162,23 @@ private fun nameParameterSource(typeDeclaration: TypeDeclaration): Source =
 private fun nameParameterSource(value: String?): Source =
   value?.let { assignment(source("name"), literal(it)) }.orEmpty()
 
-private fun Renderer.namespaceParameterSource(typeDeclaration: TypeDeclaration): Source =
+private fun NameRenderer.namespaceParameterSource(typeDeclaration: TypeDeclaration): Source =
   typeDeclaration
     .takeIf { it.hasCustomizedJsNamespace() }
     ?.let { namespaceParameterSource(it.jsNamespace) }
     .orEmpty()
 
-private fun Renderer.namespaceParameterSource(namespace: String?): Source =
+private fun NameRenderer.namespaceParameterSource(namespace: String?): Source =
   namespace?.let { assignment(source("namespace"), namespaceSource(it)) }.orEmpty()
 
-private fun Renderer.namespaceSource(namespace: String): Source =
+private fun NameRenderer.namespaceSource(namespace: String): Source =
   if (JsUtils.isGlobal(namespace)) {
     globalNamespaceSource()
   } else {
     literal(namespace)
   }
 
-private fun Renderer.globalNamespaceSource(): Source =
+private fun NameRenderer.globalNamespaceSource(): Source =
   dotSeparated(
     topLevelQualifiedNameSource("jsinterop.annotations.JsPackage"),
     identifierSource("GLOBAL")
@@ -180,18 +190,8 @@ private fun isNativeParameterSource(value: Boolean): Source =
 private fun booleanParameterSource(name: String, value: Boolean, defaultValue: Boolean): Source =
   value.takeIf { it != defaultValue }?.let { assignment(source(name), literal(it)) }.orEmpty()
 
-private val MethodDescriptor.hasJsPropertyAnnotation
-  get() =
-    originalJsInfo.hasJsMemberAnnotation &&
-      (originalJsInfo.jsMemberType == JsMemberType.GETTER ||
-        originalJsInfo.jsMemberType == JsMemberType.SETTER)
-
-private val MethodDescriptor.hasJsMethodAnnotation
-  get() = originalJsInfo.hasJsMemberAnnotation && originalJsInfo.jsMemberType == JsMemberType.METHOD
-
 private val MethodDescriptor.hasJsConstructorAnnotation
-  get() =
-    originalJsInfo.hasJsMemberAnnotation && originalJsInfo.jsMemberType == JsMemberType.CONSTRUCTOR
+  get() = originalJsInfo.hasJsMemberAnnotation && isJsConstructor
 
 private val MemberDescriptor.hasJsIgnoreAnnotation
   get() =
@@ -204,5 +204,5 @@ private val MemberDescriptor.hasJsIgnoreAnnotation
       ktVisibility == KtVisibility.PUBLIC &&
       originalJsInfo.jsMemberType == JsMemberType.NONE
 
-private val FieldDescriptor.hasJsPropertyAnnotation
-  get() = originalJsInfo.hasJsMemberAnnotation && isJsProperty
+private val MemberDescriptor.isKtNameMangled: Boolean
+  get() = name != ktMangledName
