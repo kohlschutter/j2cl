@@ -196,7 +196,7 @@ public class JsInteropRestrictionsChecker {
   private boolean checkJsServiceProviderServices(Type type) {
     TypeDeclaration decl = type.getDeclaration();
     Set<String> services = decl.getJsServiceProviderServices();
-    if (services == null) {
+    if (services == null || services.isEmpty()) {
       return true;
     }
 
@@ -234,8 +234,7 @@ public class JsInteropRestrictionsChecker {
       services.remove(d.getQualifiedSourceName());
     }
     if (!services.isEmpty()) {
-      problems.error("Declared @JsServiceProvider service interfaces not explicitly implemented: "
-          + services);
+      problems.error("Declared @JsServiceProvider service interfaces not explicitly implemented");
       return false;
     }
     return true;
