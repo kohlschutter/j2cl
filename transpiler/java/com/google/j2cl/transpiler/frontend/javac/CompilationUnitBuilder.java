@@ -1090,7 +1090,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
         || symbol.getKind() == ElementKind.RESOURCE_VARIABLE
         || symbol.getKind() == ElementKind.PARAMETER
         || symbol.getKind() == ElementKind.EXCEPTION_PARAMETER) {
-      Variable variable = variableByVariableElement.get(symbol);
+      Variable variable = variableByVariableElement.get(varSymbol);
       return variable.createReference();
     }
 
