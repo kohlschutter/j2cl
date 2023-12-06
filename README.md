@@ -1,5 +1,7 @@
 # j2cl fork for jacline
 
+See the [here](https://github.com/kohlschutter/j2cl) for an overview of changes compared to upstream.
+
 ## Ignore text below, see here for [jacline](https://github.com/kohlschutter/jacline)'s main repository.
 
 # [J2CL](http://j2cl.io)  &middot; [![Build Status](https://github.com/google/j2cl/actions/workflows/ci.yaml/badge.svg)](https://github.com/google/j2cl/actions/workflows/ci.yaml)
