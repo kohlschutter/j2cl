@@ -40,6 +40,18 @@ import com.google.j2cl.transpiler.backend.kotlin.source.orEmpty
  * @property nameRenderer underlying name renderer
  */
 internal data class TypeRenderer(val nameRenderer: NameRenderer) {
+  private fun memberRenderer(type: Type): MemberRenderer =
+    MemberRenderer(nameRenderer.plusLocalNames(type.localNamesSet), type)
+
+  private fun expressionRenderer(type: Type): ExpressionRenderer =
+    ExpressionRenderer(nameRenderer.plusLocalNames(type.localNamesSet), type)
+
+  private val jsInteropAnnotationRenderer: JsInteropAnnotationRenderer
+    get() = JsInteropAnnotationRenderer(nameRenderer)
+
+  private val objCNameRenderer: ObjCNameRenderer
+    get() = ObjCNameRenderer(nameRenderer)
+
   /** Returns source for the given type. */
   fun typeSource(type: Type): Source =
     type.declaration.let { typeDeclaration ->
@@ -47,8 +59,8 @@ internal data class TypeRenderer(val nameRenderer: NameRenderer) {
         nativeTypeSource(typeDeclaration)
       } else {
         newLineSeparated(
-          nameRenderer.objCAnnotationSource(typeDeclaration),
-          nameRenderer.jsInteropAnnotationsSource(typeDeclaration),
+          objCNameRenderer.objCAnnotationSource(typeDeclaration),
+          jsInteropAnnotationRenderer.jsInteropAnnotationsSource(typeDeclaration),
           spaceSeparated(
             inheritanceModifierSource(typeDeclaration),
             classModifiersSource(typeDeclaration),
@@ -66,9 +78,6 @@ internal data class TypeRenderer(val nameRenderer: NameRenderer) {
         )
       }
     }
-
-  private fun memberRenderer(type: Type): MemberRenderer =
-    MemberRenderer(nameRenderer.plusLocalNames(type.localNamesSet), type)
 
   /** Returns source with body of the given type. */
   fun typeBodySource(type: Type): Source =
@@ -133,7 +142,7 @@ internal data class TypeRenderer(val nameRenderer: NameRenderer) {
     }
 
   private fun constructorInvocationSource(type: Type, method: Method): Source =
-    getConstructorInvocation(method)?.let { memberRenderer(type).invocationSource(it) }
+    getConstructorInvocation(method)?.let { expressionRenderer(type).invocationSource(it) }
       ?: inParentheses(Source.EMPTY)
 
   private companion object {
