@@ -113,6 +113,7 @@ import com.google.j2cl.transpiler.passes.NormalizeInterfaceMethods;
 import com.google.j2cl.transpiler.passes.NormalizeInterfaces;
 import com.google.j2cl.transpiler.passes.NormalizeJsAwaitMethodInvocations;
 import com.google.j2cl.transpiler.passes.NormalizeJsDocCastExpressions;
+import com.google.j2cl.transpiler.passes.NormalizeJsEnumInstanceOfAndCasts;
 import com.google.j2cl.transpiler.passes.NormalizeJsEnums;
 import com.google.j2cl.transpiler.passes.NormalizeJsFunctionPropertyInvocations;
 import com.google.j2cl.transpiler.passes.NormalizeJsVarargs;
@@ -162,6 +163,7 @@ import com.google.j2cl.transpiler.passes.ResolveImplicitInstanceQualifiers;
 import com.google.j2cl.transpiler.passes.ResolveImplicitStaticQualifiers;
 import com.google.j2cl.transpiler.passes.RestoreVariableScoping;
 import com.google.j2cl.transpiler.passes.RewriteAssignmentExpressions;
+import com.google.j2cl.transpiler.passes.RewriteJsEnumNullChecks;
 import com.google.j2cl.transpiler.passes.RewriteReferenceEqualityOperations;
 import com.google.j2cl.transpiler.passes.RewriteShortcutOperators;
 import com.google.j2cl.transpiler.passes.RewriteUnaryExpressions;
@@ -400,6 +402,8 @@ public enum Backend {
           NormalizeTryWithResources::new,
           NormalizeCatchClauses::new,
           () -> new NormalizeEnumClasses(/* useMakeEnumNameIndirection= */ false),
+          // Must run after NormalizeEnumClasses and before NormalizeOverlayMembers.
+          NormalizeJsEnums::new,
           NormalizeOverlayMembers::new,
           NormalizeInstanceCompileTimeConstants::new,
           () -> new NormalizeShifts(/* narrowAllToInt= */ false),
@@ -417,14 +421,22 @@ public enum Backend {
           StaticallyEvaluateStringConcatenation::new,
           StaticallyEvaluateStringComparison::new,
           ImplementStringConcatenation::new,
-          // TODO(b/288145845): Add InsertJsEnumBoxingAndUnboxingConversions here.
-          // Must run after InsertJsEnumBoxingAndUnboxingConversions.
+          // Must run after NormalizeSwitchStatements, ImplementStringConcatenation.
+          InsertJsEnumBoxingAndUnboxingConversions::new,
           PropagateJsEnumConstants::new,
           InsertNarrowingReferenceConversions::new,
           () -> new InsertUnboxingConversions(/* areBooleanAndDoubleBoxed= */ true),
           () -> new InsertBoxingConversions(/* areBooleanAndDoubleBoxed= */ true),
           () -> new InsertNarrowingPrimitiveConversions(/* treatFloatAsDouble= */ false),
           () -> new InsertWideningPrimitiveConversions(/* needFloatOrDoubleWidening= */ true),
+          // Must run after primitive conversions, otherwise it will remove int conversions.
+          // Must run before RewriteReferenceEqualityOperations, because it could introduce null
+          // checks.
+          NormalizeJsEnumInstanceOfAndCasts::new,
+          // Rewrite 'a != b' to '!(a == b)'
+          // Must run after InsertJsEnumBoxingAndUnboxingConversions.
+          RewriteReferenceEqualityOperations::new,
+          RewriteJsEnumNullChecks::new,
           ImplementDivisionOperations::new,
           ImplementFloatingPointRemainderOperation::new,
           // Rewrite 'a || b' into 'a ? true : b' and 'a && b' into 'a ? b : false'
@@ -539,6 +551,8 @@ public enum Backend {
           NormalizeTryWithResources::new,
           NormalizeCatchClauses::new,
           () -> new NormalizeEnumClasses(/* useMakeEnumNameIndirection= */ false),
+          // Must run after NormalizeEnumClasses
+          NormalizeJsEnums::new,
           NormalizeOverlayMembers::new,
           NormalizeInstanceCompileTimeConstants::new,
           () -> new NormalizeShifts(/* narrowAllToInt= */ false),
@@ -556,14 +570,22 @@ public enum Backend {
           StaticallyEvaluateStringConcatenation::new,
           StaticallyEvaluateStringComparison::new,
           ImplementStringConcatenation::new,
-          // TODO(b/288145845): Add InsertJsEnumBoxingAndUnboxingConversions here.
-          // Must run after InsertJsEnumBoxingAndUnboxingConversions.
+          // Must run after NormalizeSwitchStatements, ImplementStringConcatenation.
+          InsertJsEnumBoxingAndUnboxingConversions::new,
           PropagateJsEnumConstants::new,
           InsertNarrowingReferenceConversions::new,
           () -> new InsertUnboxingConversions(/* areBooleanAndDoubleBoxed= */ true),
           () -> new InsertBoxingConversions(/* areBooleanAndDoubleBoxed= */ true),
           () -> new InsertNarrowingPrimitiveConversions(/* treatFloatAsDouble= */ false),
           () -> new InsertWideningPrimitiveConversions(/* needFloatOrDoubleWidening= */ true),
+          // Must run after primitive conversions, otherwise it will remove int conversions.
+          // Must run before RewriteReferenceEqualityOperations, because it could introduce null
+          // checks.
+          NormalizeJsEnumInstanceOfAndCasts::new,
+          // Rewrite 'a != b' to '!(a == b)'
+          // Must run after InsertJsEnumBoxingAndUnboxingConversions.
+          RewriteReferenceEqualityOperations::new,
+          RewriteJsEnumNullChecks::new,
           ImplementDivisionOperations::new,
           ImplementFloatingPointRemainderOperation::new,
           // Rewrite 'a || b' into 'a ? true : b' and 'a && b' into 'a ? b : false'

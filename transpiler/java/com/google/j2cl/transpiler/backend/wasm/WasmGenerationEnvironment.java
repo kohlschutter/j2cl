@@ -31,6 +31,7 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.SetMultimap;
 import com.google.j2cl.transpiler.ast.ArrayLiteral;
 import com.google.j2cl.transpiler.ast.ArrayTypeDescriptor;
+import com.google.j2cl.transpiler.ast.AstUtils;
 import com.google.j2cl.transpiler.ast.DeclaredTypeDescriptor;
 import com.google.j2cl.transpiler.ast.Field;
 import com.google.j2cl.transpiler.ast.FieldDescriptor;
@@ -52,6 +53,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 /** Allows mapping of middle end constructors to the backend. */
 class WasmGenerationEnvironment {
@@ -109,14 +111,24 @@ class WasmGenerationEnvironment {
 
   /** Returns the wasm type layout for a Java declared type. */
   WasmTypeLayout getWasmTypeLayout(TypeDeclaration typeDeclaration) {
-    return wasmTypeLayoutByTypeDeclaration.get(typeDeclaration);
+    return checkNotNull(wasmTypeLayoutByTypeDeclaration.get(typeDeclaration));
   }
 
   String getWasmType(TypeDescriptor typeDescriptor) {
+    if (typeDescriptor.isJsEnum()) {
+      return getWasmEnumType(typeDescriptor);
+    }
     if (typeDescriptor.isPrimitive()) {
       return getWasmTypeForPrimitive(typeDescriptor);
     }
     return "(ref null " + getWasmTypeName(typeDescriptor) + ")";
+  }
+
+  String getWasmEnumType(TypeDescriptor typeDescriptor) {
+    TypeDeclaration typeDeclaration =
+        ((DeclaredTypeDescriptor) typeDescriptor).getTypeDeclaration();
+    TypeDescriptor valueFieldType = AstUtils.getJsEnumValueFieldType(typeDeclaration);
+    return getWasmType(valueFieldType);
   }
 
   /**
@@ -310,6 +322,7 @@ class WasmGenerationEnvironment {
 
   private final Map<TypeDeclaration, Integer> slotByInterfaceTypeDeclaration = new HashMap<>();
 
+  @Nullable
   public String getInterfaceSlotFieldName(TypeDeclaration typeDeclaration) {
     if (isModular) {
       return getTypeSignature(typeDeclaration.toUnparameterizedTypeDescriptor());
@@ -412,7 +425,7 @@ class WasmGenerationEnvironment {
             t -> {
               TypeDeclaration typeDeclaration = t.getDeclaration();
               WasmTypeLayout superWasmLayout =
-                  getWasmLayout(typeDeclaration.getSuperTypeDeclaration());
+                  getOrCreateWasmTypeLayout(typeDeclaration.getSuperTypeDeclaration());
               var previous =
                   wasmTypeLayoutByTypeDeclaration.put(
                       typeDeclaration, WasmTypeLayout.createFromType(t, superWasmLayout));
@@ -432,19 +445,26 @@ class WasmGenerationEnvironment {
     this(library, jsImports, /* isModular= */ false);
   }
 
-  private WasmTypeLayout getWasmLayout(TypeDeclaration typeDeclaration) {
+  /** Returns a wasm layout creating it from a type declaration if it wasn't created before. */
+  @Nullable
+  private WasmTypeLayout getOrCreateWasmTypeLayout(TypeDeclaration typeDeclaration) {
     if (typeDeclaration == null) {
       return null;
     }
     if (!wasmTypeLayoutByTypeDeclaration.containsKey(typeDeclaration)) {
-      WasmTypeLayout wasmTypeLayout =
-          WasmTypeLayout.createFromTypeDeclaration(
-              typeDeclaration, getWasmTypeLayout(typeDeclaration.getSuperTypeDeclaration()));
+      // Get the wasm layout for the supertype. Note that the supertype might be or not in the
+      // current library, so its layout might need to be created from a declaration. This is
+      // accomplished by calling recursively "getOrCreateWasmTypeLayout" rather than assuming it
+      // was already created and would be returned by "getWasmTypeLayout'.
+      WasmTypeLayout superTypeLayout =
+          getOrCreateWasmTypeLayout(typeDeclaration.getSuperTypeDeclaration());
+      WasmTypeLayout typeLayout =
+          WasmTypeLayout.createFromTypeDeclaration(typeDeclaration, superTypeLayout);
       // If the supertype layout was not created by the type it is requested here,
       // it means that the type is from a different library and is ok to
       // create its layout from the type model.
-      wasmTypeLayoutByTypeDeclaration.put(typeDeclaration, wasmTypeLayout);
-      return wasmTypeLayout;
+      wasmTypeLayoutByTypeDeclaration.put(typeDeclaration, typeLayout);
+      return typeLayout;
     }
     return wasmTypeLayoutByTypeDeclaration.get(typeDeclaration);
   }
