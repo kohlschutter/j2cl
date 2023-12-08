@@ -1,6 +1,6 @@
-# j2cl fork for jacline
+# j2cl [fork](https://github.com/kohlschutter/j2cl) for [jacline](https://github.com/kohlschutter/jacline)
 
-See the [here](https://github.com/kohlschutter/j2cl) for an overview of changes compared to upstream.
+See the [here](https://github.com/google/j2cl/compare/master...kohlschutter:j2cl:master) for an overview of changes compared to upstream.
 
 ## Ignore text below, see here for [jacline](https://github.com/kohlschutter/jacline)'s main repository.
 
