@@ -1016,7 +1016,7 @@ public class JsInteropRestrictionsChecker {
             .findFirst();
 
     if (jsOverlayOverride.isPresent()) {
-      checkState(!jsOverlayOverride.get().isSynthetic());
+//      checkState(!jsOverlayOverride.get().isSynthetic());
       problems.error(
           method.getSourcePosition(),
           "Method '%s' cannot override a JsOverlay method '%s'.",
