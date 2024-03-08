@@ -58,7 +58,8 @@ public class ImplementClassMetadataViaConstructors extends NormalizationPass {
       return convertArrayTypeLiteral((ArrayTypeDescriptor) literalTypeDescriptor);
     }
 
-    if (literalTypeDescriptor.isNative() && literalTypeDescriptor.isInterface()) {
+    if (literalTypeDescriptor.isNative() && (literalTypeDescriptor.isInterface()
+        || literalTypeDescriptor.isClass())) {
       TypeDeclaration td = literalTypeDescriptor.getMetadataTypeDeclaration();
       if (td != null) {
         td = td.getEnclosingTypeDeclaration();
