@@ -164,7 +164,8 @@ public class JsInteropAnnotationUtils {
 
   public static boolean isJsNative(ITypeBinding typeBinding) {
     return isJsNative(getJsTypeOrJsEnumAnnotation(typeBinding)) //
-        || getDumboServiceAnnotation(typeBinding) != null; // DumboServices are implicitly native
+        // DumboService interfaces are implicitly native
+        || (typeBinding.isInterface() && getDumboServiceAnnotation(typeBinding) != null);
   }
 
   private static boolean isJsNative(IAnnotationBinding annotationBinding) {

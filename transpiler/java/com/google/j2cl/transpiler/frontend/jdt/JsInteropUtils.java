@@ -183,8 +183,9 @@ public final class JsInteropUtils {
   public static boolean isGenerateNativeStub(ITypeBinding declaringType) {
     return
         (JsInteropAnnotationUtils.getJsImportAnnotation(declaringType) != null) ||
-        (JsInteropAnnotationUtils.getDumboServiceAnnotation(declaringType) != null);
-  }
+            (declaringType.isInterface() && JsInteropAnnotationUtils.getDumboServiceAnnotation(
+                declaringType) != null);
+      }
 
   public static boolean isJsEntryPoint(ITypeBinding declaringType) {
     return JsInteropAnnotationUtils.getJsEntryPointAnnotation(declaringType) != null;
