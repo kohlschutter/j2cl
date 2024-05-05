@@ -164,6 +164,7 @@ import com.google.j2cl.transpiler.passes.ResolveImplicitStaticQualifiers;
 import com.google.j2cl.transpiler.passes.RestoreVariableScoping;
 import com.google.j2cl.transpiler.passes.RewriteAssignmentExpressions;
 import com.google.j2cl.transpiler.passes.RewriteConditionalExpressions;
+import com.google.j2cl.transpiler.passes.RewriteIfStatements;
 import com.google.j2cl.transpiler.passes.RewriteJsEnumNullChecks;
 import com.google.j2cl.transpiler.passes.RewriteReferenceEqualityOperations;
 import com.google.j2cl.transpiler.passes.RewriteShortcutOperators;
@@ -284,6 +285,7 @@ public enum Backend {
           // Java semantic conversions.
           InsertJsEnumBoxingAndUnboxingConversions::new,
           RemoveUnneededCasts::new,
+          RewriteIfStatements::new,
           RewriteConditionalExpressions::new,
           NormalizeSwitchStatements::new,
           NormalizeArrayAccesses::new,
@@ -415,6 +417,7 @@ public enum Backend {
           // Rewrite operations that do not have direct support in wasm into ones that have.
           () -> new ExpandCompoundAssignments(/* expandAll= */ true),
           InsertErasureTypeSafetyCasts::new,
+          RewriteIfStatements::new,
           RewriteConditionalExpressions::new,
           RewriteUnaryExpressions::new,
           NormalizeSwitchStatements::new,
@@ -565,6 +568,7 @@ public enum Backend {
           // Rewrite operations that do not have direct support in wasm into ones that have.
           () -> new ExpandCompoundAssignments(/* expandAll= */ true),
           InsertErasureTypeSafetyCasts::new,
+          RewriteIfStatements::new,
           RewriteConditionalExpressions::new,
           RewriteUnaryExpressions::new,
           NormalizeSwitchStatements::new,
