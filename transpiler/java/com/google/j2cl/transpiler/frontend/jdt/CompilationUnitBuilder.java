@@ -1100,6 +1100,14 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       MethodDescriptor methodDescriptor = environment.createMethodDescriptor(methodBinding);
       List<Expression> arguments =
           convertArguments(methodBinding, JdtEnvironment.asTypedList(methodInvocation.arguments()));
+
+      // This will always evaluate to true in JavaScript -- simplifying it here will enable some
+      // more optimizations
+      if ("com.kohlschutter.jacline.lib.util.JaclineUtil.isJavaScriptEnvironment".equals(
+          methodDescriptor.getQualifiedBinaryName())) {
+        return BooleanLiteral.get(true);
+      }
+
       return MethodCall.Builder.from(methodDescriptor)
           .setQualifier(qualifier)
           .setArguments(arguments)
