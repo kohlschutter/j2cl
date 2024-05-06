@@ -33,13 +33,15 @@ import static com.google.j2cl.transpiler.frontend.jdt.JdtAnnotationUtils.getAnno
 import static java.util.Arrays.stream;
 
 import java.util.Optional;
+import java.util.function.Supplier;
+
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.j2cl.transpiler.frontend.common.FrontendConstants;
 
 /** Utility methods to get information about Js Interop annotations. */
@@ -181,6 +183,17 @@ public class JsInteropAnnotationUtils {
     }
     Object[] suppressions = JdtAnnotationUtils.getArrayAttribute(suppressWarningsBinding, "value");
     return stream(suppressions).anyMatch("unusable-by-js"::equals);
+  }
+
+  public static ImmutableSet<String> getSuppressWarnings(IBinding binding) {
+    IAnnotationBinding suppressWarningsBinding =
+        JdtAnnotationUtils.findAnnotationBindingByName(
+            binding.getAnnotations(), SUPPRESS_WARNINGS_ANNOTATION_NAME);
+    if (suppressWarningsBinding == null) {
+      return ImmutableSet.of();
+    }
+    Object[] suppressions = JdtAnnotationUtils.getArrayAttribute(suppressWarningsBinding, "value");
+    return (ImmutableSet<String>)(ImmutableSet<?>)ImmutableSet.copyOf(suppressions);
   }
 
   public static String getJsNamespace(PackageDeclaration packageDeclaration) {

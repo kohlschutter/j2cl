@@ -19,11 +19,14 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.stream.Collectors.joining;
 
+import java.util.Collections;
+
 import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.memoized.Memoized;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import com.google.j2cl.common.ThreadLocalInterner;
@@ -284,6 +287,9 @@ public abstract class TypeDeclaration
   /** Returns whether the described type has the "DumboService" annotation. */
   @Nullable
   public abstract String getAnnotatedWithDumboService();
+
+  /** Returns any "SuppressedWarnings" strings annotated for the described type. */
+  public abstract ImmutableSet<String> getSuppressWarnings();
 
   @Memoized
   public boolean isJsFunctionImplementation() {
@@ -816,6 +822,7 @@ public abstract class TypeDeclaration
         .setAnnotatedWithJUnitRunWith(false)
         .setAnnotatedWithJsExport(false)
         .setAnnotatedWithDumboService(null)
+        .setSuppressWarnings(ImmutableSet.of())
         .setJsFunctionInterface(false)
         .setJsType(false)
         .setLocal(false)
@@ -893,6 +900,8 @@ public abstract class TypeDeclaration
     public abstract Builder setAnnotatedWithJsExport(boolean annotatedWithJsExport);
 
     public abstract Builder setAnnotatedWithDumboService(String annotatedWithDumboService);
+
+    public abstract Builder setSuppressWarnings(ImmutableSet<String> annotatedWithDumboService);
 
     public abstract Builder setJsFunctionInterface(boolean isJsFunctionInterface);
 

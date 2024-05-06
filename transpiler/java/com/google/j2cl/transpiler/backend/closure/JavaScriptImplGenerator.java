@@ -23,6 +23,8 @@ import static java.util.stream.Collectors.joining;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.j2cl.common.FilePosition;
 import com.google.j2cl.common.InternalCompilerError;
 import com.google.j2cl.common.Problems;
@@ -45,6 +47,8 @@ import com.google.j2cl.transpiler.backend.common.SourceBuilder;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,6 +63,7 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
   private boolean haveClassImport = false;
   private final boolean generateNativeStub;
   private final Map<String, Set<String>> generatedEntryPointsAndServices;
+  private final Set<String> jscSuppressions;
 
   public JavaScriptImplGenerator(Problems problems, Type type, List<Import> imports,
       SourceBuilder sourceBuilder, Map<String, Set<String>> generatedEntryPointsAndServices) {
@@ -67,6 +72,7 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
     this.closureTypesGenerator = new ClosureTypesGenerator(environment);
 
     this.generateNativeStub = type.getDeclaration().isGenerateNativeStub();
+    this.jscSuppressions = determineJscSuppressions();
   }
 
   private static String getMethodQualifiers(MethodDescriptor methodDescriptor) {
@@ -108,8 +114,10 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
       sourceBuilder.append("...");
     }
     disableSecondaryOutputIfNecessary();
-    sourceBuilder.append(
-        "/** " + closureTypesGenerator.getJsDocForParameter(expression, i) + " */ ");
+    if (!jscSuppressions.contains("dangerousUnrecognizedTypeError")) {
+      sourceBuilder.append(
+          "/** " + closureTypesGenerator.getJsDocForParameter(expression, i) + " */ ");
+    }
     enableSecondaryOutputIfNecessary();
     sourceBuilder.emitWithMapping(
         // Only map parameters if they are named.
@@ -253,10 +261,55 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
         });
   }
 
+  // https://github.com/google/closure-compiler/wiki/@suppress-annotations
+  private static final Map<String, String> JSC_SUPPRESS_WARNINGS_MAP = ImmutableMap.of(
+      "JSC_UNRECOGNIZED_TYPE_ERROR", "dangerousUnrecognizedTypeError" //
+      , "JSC_UNKNOWN_OVERRIDE", "checkTypes" //
+      , "JSC_TYPE_MISMATCH", "checkTypes" //
+      , "JSC_IMPLEMENTS_NON_INTERFACE", "checkTypes" //
+      , "dangerousUnrecognizedTypeError", "dangerousUnrecognizedTypeError" //
+      , "checkTypes", "checkTypes" //
+  );
+
+  private Set<String> determineJscSuppressions() {
+    ImmutableSet<String> suppressWarnings = type.getUnderlyingTypeDeclaration()
+        .getSuppressWarnings();
+    if (suppressWarnings.isEmpty()) {
+      return ImmutableSet.of();
+    }
+    Set<String> set = new HashSet<>();
+    for (String w : suppressWarnings) {
+      String mapping = JSC_SUPPRESS_WARNINGS_MAP.get(w);
+      if (mapping != null) {
+        set.add(mapping);
+      }
+    }
+    return set;
+  }
+
+  private String suppressString(Set<String> set) {
+    if (set.isEmpty()) {
+      return "";
+    }
+    StringBuilder sb = new StringBuilder();
+    sb.append("\n * @suppress {");
+    for (Iterator<String> it = set.iterator(); it.hasNext();) {
+      sb.append(it.next());
+      if (it.hasNext()) {
+        sb.append('|');
+      } else {
+        break;
+      }
+    }
+    sb.append("}\n");
+    return sb.toString();
+  }
+
   private void renderTypeAnnotation() {
+    String suppress = suppressString(jscSuppressions);
     if (type.isOverlayImplementation()) {
       // Overlays do not need any other JsDoc.
-      sourceBuilder.appendln("/** @nodts */");
+      sourceBuilder.appendln("/** @nodts" + suppress + " */");
       return;
     }
     StringBuilder sb = new StringBuilder();
@@ -269,6 +322,10 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
     if (type.getDeclaration().isFinal()) {
       appendWithNewLine(sb, " * @final");
     }
+    if (!suppress.isEmpty()) {
+      appendWithNewLine(sb, " " + suppress.trim());
+    }
+
     if (type.getDeclaration().hasTypeParameters()) {
       appendWithNewLine(
           sb,
@@ -511,6 +568,7 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
 
   private boolean needsReturnJsDoc(MethodDescriptor methodDescriptor) {
     return !methodDescriptor.isConstructor()
+        && !jscSuppressions.contains("dangerousUnrecognizedTypeError")
         && !TypeDescriptors.isPrimitiveVoid(methodDescriptor.getReturnTypeDescriptor());
   }
 

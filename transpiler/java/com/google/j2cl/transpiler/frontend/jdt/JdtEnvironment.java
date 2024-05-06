@@ -1208,6 +1208,7 @@ public class JdtEnvironment {
             .setAnnotatedWithJUnitRunWith(isAnnotatedWithJUnitRunWith(typeBinding))
             .setAnnotatedWithJsExport(JsInteropAnnotationUtils.isJsExport(typeBinding))
             .setAnnotatedWithDumboService(JsInteropAnnotationUtils.getDumboService(typeBinding))
+            .setSuppressWarnings(JsInteropAnnotationUtils.getSuppressWarnings(typeBinding))
             .setJsType(JsInteropUtils.isJsType(typeBinding))
             .setJsEnumInfo(JsInteropUtils.getJsEnumInfo(typeBinding))
             .setWasmInfo(getWasmInfo(typeBinding))
