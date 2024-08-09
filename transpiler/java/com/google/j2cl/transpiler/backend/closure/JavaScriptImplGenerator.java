@@ -32,6 +32,7 @@ import com.google.j2cl.common.SourcePosition;
 import com.google.j2cl.transpiler.ast.AstUtils;
 import com.google.j2cl.transpiler.ast.DeclaredTypeDescriptor;
 import com.google.j2cl.transpiler.ast.Field;
+import com.google.j2cl.transpiler.ast.FieldDescriptor;
 import com.google.j2cl.transpiler.ast.Method;
 import com.google.j2cl.transpiler.ast.MethodDescriptor;
 import com.google.j2cl.transpiler.ast.MethodLike;
@@ -380,20 +381,17 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
   }
 
   private void renderClassBody() {
+    String namespace = type.getDeclaration().getJsNamespace();
+
     String classAlias = environment.aliasForType(type.getDeclaration()) //
         .replace('.', '_'); // "goog.global", etc.
-    boolean isGlobal = "<global>".equals(type.getDeclaration().getJsNamespace());
-    if (generateNativeStub && isGlobal) {
-      ((SourceBuilderWithSecondaryOutput) sourceBuilder).appendToSecondary("var " + classAlias
-          + ";\n");
-    }
+    boolean isGlobal = "<global>".equals(namespace);
+
     sourceBuilder.append("class ");
+
     sourceBuilder.emitWithMapping(
         type.getSourcePosition(),
         () -> sourceBuilder.append(classAlias));
-    if (generateNativeStub && isGlobal) {
-      ((SourceBuilderWithSecondaryOutput) sourceBuilder).appendToSecondary("$");
-    }
 
     DeclaredTypeDescriptor superTypeDescriptor = type.getSuperTypeDescriptor();
     if (superTypeDescriptor != null && superTypeDescriptor.isJavaScriptClass()) {
@@ -410,6 +408,24 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
       renderLoadModules();
     }
     sourceBuilder.closeBrace();
+
+    if (generateNativeStub && isGlobal && isSecondaryEnabled()) {
+      SourceBuilderWithSecondaryOutput sb = ((SourceBuilderWithSecondaryOutput) sourceBuilder);
+      sb.appendToSecondary("\n");
+      for (Field f : type.getFields()) {
+        FieldDescriptor fd = f.getDescriptor();
+        if (!fd.getVisibility().isPublicOrProtected()) {
+          continue;
+        }
+        if (fd.isStatic()) {
+          sb.appendToSecondary(classAlias + "." + f.getSimpleJsName() + ";\n");
+        } else {
+          sb.appendToSecondary(classAlias + ".prototype." + f.getSimpleJsName()
+              + ";\n");
+        }
+      }
+    }
+
   }
 
   private void disableSecondaryOutputIfNecessary() {
@@ -431,7 +447,7 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
 
   private void renderTypeMethods() {
     for (Method method : type.getMethods()) {
-      boolean skipForExtern = (method.getSimpleJsName().startsWith("$")) || method.isConstructor();
+      boolean skipForExtern = (method.getSimpleJsName().startsWith("$"));
       try {
       if (skipForExtern) {
         disableSecondaryOutputIfNecessary();
