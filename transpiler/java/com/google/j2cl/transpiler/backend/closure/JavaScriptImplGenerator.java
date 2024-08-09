@@ -692,10 +692,10 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
       sourceBuilder.appendln("let Class = goog.require('java.lang.Class$impl');");
     }
 
-    sourceBuilder.appendln("if (goog.global.Dumbo && goog.global.Dumbo.setServiceAlias) {");
+    sourceBuilder.appendln("if (globalThis['Dumbo'] && globalThis['Dumbo'].setServiceAlias) {");
     sourceBuilder.indent();
     sourceBuilder.appendln("// register Dumbo RPC service alias");
-    sourceBuilder.appendln("goog.global.Dumbo.setServiceAlias(Class.$get(" + environment
+    sourceBuilder.appendln("globalThis['Dumbo'].setServiceAlias(Class.$get(" + environment
         .aliasForType(type.getDeclaration()) + "), '" + rpcName + "');");
     sourceBuilder.unindent();
     sourceBuilder.appendln("}");
