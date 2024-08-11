@@ -190,7 +190,7 @@ public class OutputGeneratorStage {
 
     if (generatedExterns.length() > 0 ) {
       output.write("generated-externs.js",
-          "/**\n* @fileoverview Generated extern definitions\n* @externs\n*/\n" + generatedExterns);
+          "/**\n* @fileoverview Generated extern definitions\n* @suppress {checkVars}\n* @externs\n*/\n" + generatedExterns);
     }
 
     if (!generatedEntryPointsAndServices.isEmpty()) {
