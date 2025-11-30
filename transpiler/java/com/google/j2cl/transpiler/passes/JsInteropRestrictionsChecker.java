@@ -2340,7 +2340,11 @@ public class JsInteropRestrictionsChecker {
   }
 
   private void warnIfUnusableByJs(TypeDescriptor typeDescriptor, String prefix, Member member) {
-    if (typeDescriptor.canBeReferencedExternally() || typeDescriptor.getMetadataTypeDeclaration()
+    if (typeDescriptor.canBeReferencedExternally()) {
+      return;
+    }
+    TypeDeclaration metadataTypeDeclaration = typeDescriptor.getMetadataTypeDeclaration();
+    if (metadataTypeDeclaration != null && metadataTypeDeclaration
         .getAnnotatedWithDumboService() != null) {
       return;
     }

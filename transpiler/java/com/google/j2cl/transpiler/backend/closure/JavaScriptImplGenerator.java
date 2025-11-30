@@ -700,7 +700,9 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
 
   private void renderDumboServiceRegistration() {
     String rpcName;
-    if ((rpcName = type.getUnderlyingTypeDeclaration().getAnnotatedWithDumboService()) == null) {
+    TypeDeclaration underlyingTypeDeclaration = type.getUnderlyingTypeDeclaration();
+    if (underlyingTypeDeclaration == null || ((rpcName = type.getUnderlyingTypeDeclaration()
+        .getAnnotatedWithDumboService()) == null)) {
       return;
     }
 
