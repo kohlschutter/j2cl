@@ -64,7 +64,7 @@ public class ImplementClassMetadataViaConstructors extends NormalizationPass {
       if (td != null) {
         td = td.getEnclosingTypeDeclaration();
         if (td != null && td.isGenerateNativeStub()) {
-          return RuntimeMethods.createClassGetMethodCall(new JavaScriptConstructorReference(td));
+          return RuntimeMethods.createClassGetMethodCall(new JsConstructorReference(td));
         }
       }
     }
