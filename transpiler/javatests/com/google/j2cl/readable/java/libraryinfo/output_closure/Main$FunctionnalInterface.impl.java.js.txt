@@ -10,7 +10,7 @@ let $LambdaAdaptor = goog.forwardDeclare('libraryinfo.Main.FunctionnalInterface.
 class FunctionnalInterface {
  /** @abstract @nodts */
  m_foo__void() {}
- /** @nodts @return {FunctionnalInterface} */
+ /** @nodts @return {!FunctionnalInterface} */
  static $adapt(/** ?function():void */ fn) {
   FunctionnalInterface.$clinit();
   return new $LambdaAdaptor(fn);
@@ -35,7 +35,7 @@ class FunctionnalInterface {
  }
 }
 FunctionnalInterface.$markImplementor(/**@type {Function}*/ (FunctionnalInterface));
-$Util.$setClassMetadataForInterface(FunctionnalInterface, 'libraryinfo.Main$FunctionnalInterface');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (FunctionnalInterface), 'libraryinfo.Main$FunctionnalInterface');
 
 exports = FunctionnalInterface;
 

@@ -1,4 +1,4 @@
-[//]: # TOC
+ <!-- TOC -->
 
 # J2CL Best Practices
 
@@ -136,7 +136,7 @@ optimizations:
 ```python
 load("//build_defs:rules.bzl", "J2CL_OPTIMIZED_DEFS")
 
-js_binary(
+closure_js_binary(
     name = "optimized_j2cl_app",
     defs = J2CL_OPTIMIZED_DEFS,
     deps = [":js_lib"],
@@ -210,8 +210,23 @@ production JavaScript code.
 ### Custom Compile-Time Code Stripping
 
 You can implement your own configuration based stripping with
-`System.getProperty()`. In the following example, the compiler will statically
-evaluate the condition and remove the entire if/else control statement.
+`System.getProperty()` paired with a `goog.define` property in JS. In the
+following example, the compiler will statically evaluate the condition and
+remove the entire if/else control statement.
+
+```js
+const {addSystemPropertyFromGoogDefine} = goog.require('jre');
+
+// First declare the goog.define name. If you don't use a string type, it will
+// be stringified when read in Java.
+/** @define {string} */
+const whatever = goog.define('some.define', 'NO');
+
+// Add the define to the set of system properties. The name must match the
+// goog.define name, and the value must be the result of the corresponding
+// goog.define call.
+addSystemPropertyFromGoogDefine('some.define', whatever);
+```
 
 ```java
 if (System.getProperty("some.define") == "YES") {
@@ -221,8 +236,8 @@ if (System.getProperty("some.define") == "YES") {
 }
 ```
 
-```python
-js_binary(
+```build
+closure_js_binary(
     name = "optimized_j2cl_app",
     defs = ["--define=some.define=YES"] + J2CL_OPTIMIZED_DEFS,
     deps = [":js_lib"],

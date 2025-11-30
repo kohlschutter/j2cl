@@ -8,8 +8,4 @@ package(
     licenses = ["notice"],
 )
 
-integration_test(
-    name = "packageprivatemethods",
-    srcs = glob(["**/*.java"]),
-    enable_kt = False,
-)
+integration_test(srcs = glob(["**/*.java"]))

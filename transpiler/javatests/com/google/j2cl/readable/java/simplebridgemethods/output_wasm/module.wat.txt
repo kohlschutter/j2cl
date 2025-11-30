@@ -1,136 +1,207 @@
- ;;; Code for simplebridgemethods.Callable [type definition]
- (type $simplebridgemethods.Callable.vtable (sub (struct
-  (field $m_call__java_lang_Object__void (ref $function.m_call__java_lang_Object__void))
-  ))
- )
+;;; Code for simplebridgemethods.Callable [type definition]
+(type $simplebridgemethods.Callable.vtable (sub (struct
+ (field $m_call__java_lang_Object__void (ref $function.m_call__java_lang_Object__void))
+ ))
+)
 
- ;;; Code for simplebridgemethods.Superclass [type definition]
- (type $simplebridgemethods.Superclass (sub $java.lang.Object (struct
-  (field $vtable (ref $simplebridgemethods.Superclass.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $simplebridgemethods.Superclass.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m1__java_lang_Error__void (ref $function.m_m1__java_lang_Error__void))
-  ))
- )
+;;; Code for simplebridgemethods.Superclass [type definition]
+(type $simplebridgemethods.Superclass (sub $java.lang.Object (struct
+ (field $vtable (ref $simplebridgemethods.Superclass.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $simplebridgemethods.Superclass.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m1__java_lang_Error__void (ref $function.m_m1__java_lang_Error__void))
+ ))
+)
 
- ;;; Code for simplebridgemethods.Task [type definition]
- (type $simplebridgemethods.Task (sub $java.lang.Object (struct
-  (field $vtable (ref $simplebridgemethods.Task.vtable))
-  (field $itable (ref $simplebridgemethods.Task.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $simplebridgemethods.Task.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_call__java_lang_Object__void (ref $function.m_call__java_lang_Object__void))
-  ))
- )
- (type $simplebridgemethods.Task.itable (sub $itable (struct
- (field $slot0 (ref $simplebridgemethods.Callable.vtable))
- (field $slot1 (ref null struct))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for simplebridgemethods.Task [type definition]
+(type $simplebridgemethods.Task (sub $java.lang.Object (struct
+ (field $vtable (ref $simplebridgemethods.Task.vtable))
+ (field $itable (ref $simplebridgemethods.Task.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $simplebridgemethods.Task.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_call__java_lang_Object__void (ref $function.m_call__java_lang_Object__void))
+ ))
+)
 
- ;;; Code for simplebridgemethods.AnotherTask [type definition]
- (type $simplebridgemethods.AnotherTask (sub $java.lang.Object (struct
-  (field $vtable (ref $simplebridgemethods.AnotherTask.vtable))
-  (field $itable (ref $simplebridgemethods.AnotherTask.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $simplebridgemethods.AnotherTask.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_call__java_lang_Object__void (ref $function.m_call__java_lang_Object__void))
-  (field $m_call__simplebridgemethods_Superclass__void (ref $function.m_call__simplebridgemethods_Superclass__void))
-  ))
- )
- (type $simplebridgemethods.AnotherTask.itable (sub $itable (struct
- (field $slot0 (ref $simplebridgemethods.Callable.vtable))
- (field $slot1 (ref null struct))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for simplebridgemethods.AnotherTask [type definition]
+(type $simplebridgemethods.AnotherTask (sub $java.lang.Object (struct
+ (field $vtable (ref $simplebridgemethods.AnotherTask.vtable))
+ (field $itable (ref $simplebridgemethods.AnotherTask.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $simplebridgemethods.AnotherTask.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_call__java_lang_Object__void (ref $function.m_call__java_lang_Object__void))
+ (field $m_call__simplebridgemethods_Superclass__void (ref $function.m_call__simplebridgemethods_Superclass__void))
+ ))
+)
 
- ;;; Code for simplebridgemethods.SimpleBridgeMethods [type definition]
- (type $simplebridgemethods.SimpleBridgeMethods (sub $java.lang.Object (struct
-  (field $vtable (ref $simplebridgemethods.SimpleBridgeMethods.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $simplebridgemethods.SimpleBridgeMethods.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  ))
- )
+;;; Code for simplebridgemethods.SimpleBridgeMethods [type definition]
+(type $simplebridgemethods.SimpleBridgeMethods (sub $java.lang.Object (struct
+ (field $vtable (ref $simplebridgemethods.SimpleBridgeMethods.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $simplebridgemethods.SimpleBridgeMethods.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ ))
+)
 
- ;;; Code for simplebridgemethods.Subclass [type definition]
- (type $simplebridgemethods.Subclass (sub $simplebridgemethods.Superclass (struct
-  (field $vtable (ref $simplebridgemethods.Subclass.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $simplebridgemethods.Subclass.vtable (sub $simplebridgemethods.Superclass.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m1__java_lang_Error__void (ref $function.m_m1__java_lang_Error__void))
-  (field $m_m1__java_lang_AssertionError__void (ref $function.m_m1__java_lang_AssertionError__void))
-  ))
- )
+;;; Code for simplebridgemethods.Callable.$LambdaAdaptor [type definition]
+(type $simplebridgemethods.Callable.$LambdaAdaptor (sub $java.lang.Object (struct
+ (field $vtable (ref $simplebridgemethods.Callable.$LambdaAdaptor.vtable))
+ (field $itable (ref $simplebridgemethods.Callable.$LambdaAdaptor.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $simplebridgemethods.Callable.$LambdaAdaptor.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_call__java_lang_Object__void (ref $function.m_call__java_lang_Object__void))
+ ))
+)
 
- ;;; Code for simplebridgemethods.AnotherSubclass [type definition]
- (type $simplebridgemethods.AnotherSubclass (sub $simplebridgemethods.Superclass (struct
-  (field $vtable (ref $simplebridgemethods.AnotherSubclass.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $simplebridgemethods.AnotherSubclass.vtable (sub $simplebridgemethods.Superclass.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m1__java_lang_Error__void (ref $function.m_m1__java_lang_Error__void))
-  ))
- )
+;;; Code for simplebridgemethods.Subclass [type definition]
+(type $simplebridgemethods.Subclass (sub $simplebridgemethods.Superclass (struct
+ (field $vtable (ref $simplebridgemethods.Subclass.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $simplebridgemethods.Subclass.vtable (sub $simplebridgemethods.Superclass.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m1__java_lang_Error__void (ref $function.m_m1__java_lang_Error__void))
+ (field $m_m1__java_lang_AssertionError__void (ref $function.m_m1__java_lang_AssertionError__void))
+ ))
+)
+
+;;; Code for simplebridgemethods.AnotherSubclass [type definition]
+(type $simplebridgemethods.AnotherSubclass (sub $simplebridgemethods.Superclass (struct
+ (field $vtable (ref $simplebridgemethods.AnotherSubclass.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $simplebridgemethods.AnotherSubclass.vtable (sub $simplebridgemethods.Superclass.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m1__java_lang_Error__void (ref $function.m_m1__java_lang_Error__void))
+ ))
+)
+
+;;; Code for simplebridgemethods.Callable [imports]
+
+;;; Code for simplebridgemethods.Superclass [imports]
+
+;;; Code for simplebridgemethods.Task [imports]
+
+;;; Code for simplebridgemethods.AnotherTask [imports]
+
+;;; Code for simplebridgemethods.SimpleBridgeMethods [imports]
+
+;;; Code for simplebridgemethods.Callable.$LambdaAdaptor [imports]
+
+;;; Code for simplebridgemethods.Subclass [imports]
+
+;;; Code for simplebridgemethods.AnotherSubclass [imports]
+
+;;; Code for simplebridgemethods.Superclass [static fields]
+(global $$class-initialized@simplebridgemethods.Superclass (mut i32)
+ (i32.const 0)
+)
+(global $$class@simplebridgemethods.Superclass (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for simplebridgemethods.Subclass [static fields]
+(global $$class-initialized@simplebridgemethods.Subclass (mut i32)
+ (i32.const 0)
+)
+(global $$class@simplebridgemethods.Subclass (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for simplebridgemethods.AnotherSubclass [static fields]
+(global $$class-initialized@simplebridgemethods.AnotherSubclass (mut i32)
+ (i32.const 0)
+)
+(global $$class@simplebridgemethods.AnotherSubclass (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for simplebridgemethods.Callable [static fields]
+(global $$class-initialized@simplebridgemethods.Callable (mut i32)
+ (i32.const 0)
+)
+(global $$class@simplebridgemethods.Callable (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for simplebridgemethods.Task [static fields]
+(global $$class-initialized@simplebridgemethods.Task (mut i32)
+ (i32.const 0)
+)
+(global $$class@simplebridgemethods.Task (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for simplebridgemethods.AnotherTask [static fields]
+(global $$class-initialized@simplebridgemethods.AnotherTask (mut i32)
+ (i32.const 0)
+)
+(global $$class@simplebridgemethods.AnotherTask (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for simplebridgemethods.SimpleBridgeMethods [static fields]
+(global $$class-initialized@simplebridgemethods.SimpleBridgeMethods (mut i32)
+ (i32.const 0)
+)
+(global $$class@simplebridgemethods.SimpleBridgeMethods (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for simplebridgemethods.Callable.$LambdaAdaptor [static fields]
+(global $$class-initialized@simplebridgemethods.Callable.$LambdaAdaptor (mut i32)
+ (i32.const 0)
+)
+(global $$class@simplebridgemethods.Callable.$LambdaAdaptor (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
 
 ;;; Code for simplebridgemethods.Superclass [vtable.init]
 (global $simplebridgemethods.Superclass.vtable (ref $simplebridgemethods.Superclass.vtable)
  (struct.new $simplebridgemethods.Superclass.vtable
   (ref.func $$getClassImpl__java_lang_Class@simplebridgemethods.Superclass)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_m1__java_lang_Error__void@simplebridgemethods.Superclass)
@@ -142,7 +213,6 @@
  (struct.new $simplebridgemethods.Subclass.vtable
   (ref.func $$getClassImpl__java_lang_Class@simplebridgemethods.Subclass)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_m1__java_lang_Error__void@simplebridgemethods.Subclass)
@@ -155,7 +225,6 @@
  (struct.new $simplebridgemethods.AnotherSubclass.vtable
   (ref.func $$getClassImpl__java_lang_Class@simplebridgemethods.AnotherSubclass)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_m1__java_lang_Error__void@simplebridgemethods.Superclass)
@@ -167,29 +236,14 @@
  (struct.new $simplebridgemethods.Task.vtable
   (ref.func $$getClassImpl__java_lang_Class@simplebridgemethods.Task)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_call__java_lang_Object__void@simplebridgemethods.Task)
  )
 )
-
-;;; Code for simplebridgemethods.Task [itable.init]
-
 (global $simplebridgemethods.Callable.vtable@$simplebridgemethods.Task (ref $simplebridgemethods.Callable.vtable)
  (struct.new $simplebridgemethods.Callable.vtable
   (ref.func $m_call__java_lang_Object__void@simplebridgemethods.Task)
- )
-)
-(global $simplebridgemethods.Task.itable (ref $simplebridgemethods.Task.itable)
- (struct.new $simplebridgemethods.Task.itable
-   (global.get $simplebridgemethods.Callable.vtable@$simplebridgemethods.Task)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
  )
 )
 
@@ -198,30 +252,15 @@
  (struct.new $simplebridgemethods.AnotherTask.vtable
   (ref.func $$getClassImpl__java_lang_Class@simplebridgemethods.AnotherTask)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_call__java_lang_Object__void@simplebridgemethods.AnotherTask)
   (ref.func $m_call__simplebridgemethods_Superclass__void@simplebridgemethods.AnotherTask)
  )
 )
-
-;;; Code for simplebridgemethods.AnotherTask [itable.init]
-
 (global $simplebridgemethods.Callable.vtable@$simplebridgemethods.AnotherTask (ref $simplebridgemethods.Callable.vtable)
  (struct.new $simplebridgemethods.Callable.vtable
   (ref.func $m_call__java_lang_Object__void@simplebridgemethods.AnotherTask)
- )
-)
-(global $simplebridgemethods.AnotherTask.itable (ref $simplebridgemethods.AnotherTask.itable)
- (struct.new $simplebridgemethods.AnotherTask.itable
-   (global.get $simplebridgemethods.Callable.vtable@$simplebridgemethods.AnotherTask)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
  )
 )
 
@@ -230,130 +269,40 @@
  (struct.new $simplebridgemethods.SimpleBridgeMethods.vtable
   (ref.func $$getClassImpl__java_lang_Class@simplebridgemethods.SimpleBridgeMethods)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
  )
 )
 
-;;; Code for simplebridgemethods.Superclass [static fields]
-(global $f_$initialized__simplebridgemethods_Superclass (mut i32)
- (i32.const 0)
-)
-(global $f_$class__simplebridgemethods_Superclass (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|simplebridge...|__simplebridgemethods_Superclass (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for simplebridgemethods.Subclass [static fields]
-(global $f_$initialized__simplebridgemethods_Subclass (mut i32)
- (i32.const 0)
-)
-(global $f_$class__simplebridgemethods_Subclass (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|simplebridge...|__simplebridgemethods_Subclass (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for simplebridgemethods.AnotherSubclass [static fields]
-(global $f_$initialized__simplebridgemethods_AnotherSubclass (mut i32)
- (i32.const 0)
-)
-(global $f_$class__simplebridgemethods_AnotherSubclass (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|simplebridge...|__simplebridgemethods_AnotherSubclass (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for simplebridgemethods.Callable [static fields]
-(global $f_$initialized__simplebridgemethods_Callable (mut i32)
- (i32.const 0)
-)
-(global $f_$class__simplebridgemethods_Callable (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|simplebridge...|__simplebridgemethods_Callable (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for simplebridgemethods.Task [static fields]
-(global $f_$initialized__simplebridgemethods_Task (mut i32)
- (i32.const 0)
-)
-(global $f_$class__simplebridgemethods_Task (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|simplebridge...|__simplebridgemethods_Task (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for simplebridgemethods.AnotherTask [static fields]
-(global $f_$initialized__simplebridgemethods_AnotherTask (mut i32)
- (i32.const 0)
-)
-(global $f_$class__simplebridgemethods_AnotherTask (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|simplebridge...|__simplebridgemethods_AnotherTask (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for simplebridgemethods.SimpleBridgeMethods [static fields]
-(global $f_$initialized__simplebridgemethods_SimpleBridgeMethods (mut i32)
- (i32.const 0)
-)
-(global $f_$class__simplebridgemethods_SimpleBridgeMethods (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|simplebridge...|__simplebridgemethods_SimpleBridgeMethods (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
 ;;; Code for simplebridgemethods.Callable [methods]
 
 ;;; void Callable.$clinit()
-(func $$clinit__void@simplebridgemethods.Callable
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:34:10
+(func $$clinit__void_<once>_@simplebridgemethods.Callable
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:34:10
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:34:10
-  (if (global.get $f_$initialized__simplebridgemethods_Callable)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:34:10
+  (if (global.get $$class-initialized@simplebridgemethods.Callable)
    (then
-    ;;@ simplebridgemethods/SimpleBridgeMethods.java:34:10
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:34:10
     (return )
    )
   )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:34:10
-  (global.set $f_$initialized__simplebridgemethods_Callable (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:34:10
+  (global.set $$class-initialized@simplebridgemethods.Callable (i32.const 1))
  )
 )
 
 ;;; Class<T> Callable.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@simplebridgemethods.Callable
+(func $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.Callable
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__simplebridgemethods_Callable))
+  (if (i32.eqz (ref.is_null (global.get $$class@simplebridgemethods.Callable)))
    (then
-    (global.set $f_$class__simplebridgemethods_Callable (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|simplebridge...|__java_lang_String (ref.func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.Callable) )))
+    (return (global.get $$class@simplebridgemethods.Callable))
    )
   )
-  (return (global.get $f_$class__simplebridgemethods_Callable))
- )
-)
-
-;;; String Callable.$getString_|simplebridge...|()
-(func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.Callable
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|simplebridge...|__simplebridgemethods_Callable))
-   (then
-    (global.set $f_$string_|simplebridge...|__simplebridgemethods_Callable (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "simplebridgemethods.Callable")))
-   )
-  )
-  (return (global.get $f_$string_|simplebridge...|__simplebridgemethods_Callable))
+  (global.set $$class@simplebridgemethods.Callable (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $$getString_|simplebridge...|__java_lang_String_<once>_@simplebridgemethods.Callable )))
+  (return (global.get $$class@simplebridgemethods.Callable))
  )
 )
 
@@ -362,16 +311,16 @@
 ;;; Superclass<T> Superclass.$create()
 (func $$create__@simplebridgemethods.Superclass
  (result (ref null $simplebridgemethods.Superclass))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
  (local $$instance (ref null $simplebridgemethods.Superclass))
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
-  (call $$clinit__void@simplebridgemethods.Superclass )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
-  (local.set $$instance (struct.new $simplebridgemethods.Superclass (ref.as_non_null (global.get $simplebridgemethods.Superclass.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
+  (call $$clinit__void_<once>_@simplebridgemethods.Superclass )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
+  (local.set $$instance (struct.new $simplebridgemethods.Superclass (global.get $simplebridgemethods.Superclass.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
   (call $$ctor__void_$p_simplebridgemethods_Superclass@simplebridgemethods.Superclass (ref.as_non_null (local.get $$instance)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
   (return (local.get $$instance))
  )
 )
@@ -379,9 +328,9 @@
 ;;; void Superclass.$ctor()
 (func $$ctor__void_$p_simplebridgemethods_Superclass@simplebridgemethods.Superclass
  (param $this (ref null $simplebridgemethods.Superclass))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -391,7 +340,7 @@
  (type $function.m_m1__java_lang_Error__void)
  (param $this.untyped (ref $java.lang.Object))
  (param $t (ref null $java.lang.Error))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:19:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:19:14
  (local $this (ref null $simplebridgemethods.Superclass))
  (local.set $this (ref.cast (ref $simplebridgemethods.Superclass) (local.get $this.untyped)))
  (block
@@ -400,33 +349,34 @@
 (elem declare func $m_m1__java_lang_Error__void@simplebridgemethods.Superclass)
 
 ;;; void Superclass.$clinit()
-(func $$clinit__void@simplebridgemethods.Superclass
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
+(func $$clinit__void_<once>_@simplebridgemethods.Superclass
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
-  (if (global.get $f_$initialized__simplebridgemethods_Superclass)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
+  (if (global.get $$class-initialized@simplebridgemethods.Superclass)
    (then
-    ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
     (return )
    )
   )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
-  (global.set $f_$initialized__simplebridgemethods_Superclass (i32.const 1))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:18:6
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
+  (global.set $$class-initialized@simplebridgemethods.Superclass (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:18:6
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> Superclass.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@simplebridgemethods.Superclass
+(func $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.Superclass
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__simplebridgemethods_Superclass))
+  (if (i32.eqz (ref.is_null (global.get $$class@simplebridgemethods.Superclass)))
    (then
-    (global.set $f_$class__simplebridgemethods_Superclass (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|simplebridge...|__java_lang_String (ref.func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.Superclass) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@simplebridgemethods.Superclass))
    )
   )
-  (return (global.get $f_$class__simplebridgemethods_Superclass))
+  (global.set $$class@simplebridgemethods.Superclass (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|simplebridge...|__java_lang_String_<once>_@simplebridgemethods.Superclass )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@simplebridgemethods.Superclass))
  )
 )
 
@@ -438,39 +388,26 @@
  (local $this (ref null $simplebridgemethods.Superclass))
  (local.set $this (ref.cast (ref $simplebridgemethods.Superclass) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@simplebridgemethods.Superclass) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.Superclass ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@simplebridgemethods.Superclass)
-
-;;; String Superclass.$getString_|simplebridge...|()
-(func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.Superclass
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|simplebridge...|__simplebridgemethods_Superclass))
-   (then
-    (global.set $f_$string_|simplebridge...|__simplebridgemethods_Superclass (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "simplebridgemethods.Superclass")))
-   )
-  )
-  (return (global.get $f_$string_|simplebridge...|__simplebridgemethods_Superclass))
- )
-)
 
 ;;; Code for simplebridgemethods.Task [methods]
 
 ;;; Task<T> Task.$create()
 (func $$create__@simplebridgemethods.Task
  (result (ref null $simplebridgemethods.Task))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
  (local $$instance (ref null $simplebridgemethods.Task))
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
-  (call $$clinit__void@simplebridgemethods.Task )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
-  (local.set $$instance (struct.new $simplebridgemethods.Task (ref.as_non_null (global.get $simplebridgemethods.Task.vtable)) (ref.as_non_null (global.get $simplebridgemethods.Task.itable)) (i32.const 0)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
+  (call $$clinit__void_<once>_@simplebridgemethods.Task )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
+  (local.set $$instance (struct.new $simplebridgemethods.Task (global.get $simplebridgemethods.Task.vtable) (global.get $simplebridgemethods.Task.itable) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
   (call $$ctor__void_$p_simplebridgemethods_Task@simplebridgemethods.Task (ref.as_non_null (local.get $$instance)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
   (return (local.get $$instance))
  )
 )
@@ -478,9 +415,9 @@
 ;;; void Task.$ctor()
 (func $$ctor__void_$p_simplebridgemethods_Task@simplebridgemethods.Task
  (param $this (ref null $simplebridgemethods.Task))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -490,7 +427,7 @@
  (type $function.m_call__java_lang_Object__void)
  (param $this.untyped (ref $java.lang.Object))
  (param $t (ref null $java.lang.Object))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:42:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:42:14
  (local $this (ref null $simplebridgemethods.Task))
  (local.set $this (ref.cast (ref $simplebridgemethods.Task) (local.get $this.untyped)))
  (block
@@ -499,33 +436,34 @@
 (elem declare func $m_call__java_lang_Object__void@simplebridgemethods.Task)
 
 ;;; void Task.$clinit()
-(func $$clinit__void@simplebridgemethods.Task
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
+(func $$clinit__void_<once>_@simplebridgemethods.Task
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
-  (if (global.get $f_$initialized__simplebridgemethods_Task)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
+  (if (global.get $$class-initialized@simplebridgemethods.Task)
    (then
-    ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
     (return )
    )
   )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
-  (global.set $f_$initialized__simplebridgemethods_Task (i32.const 1))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:39:6
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
+  (global.set $$class-initialized@simplebridgemethods.Task (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:39:6
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> Task.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@simplebridgemethods.Task
+(func $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.Task
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__simplebridgemethods_Task))
+  (if (i32.eqz (ref.is_null (global.get $$class@simplebridgemethods.Task)))
    (then
-    (global.set $f_$class__simplebridgemethods_Task (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|simplebridge...|__java_lang_String (ref.func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.Task) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@simplebridgemethods.Task))
    )
   )
-  (return (global.get $f_$class__simplebridgemethods_Task))
+  (global.set $$class@simplebridgemethods.Task (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|simplebridge...|__java_lang_String_<once>_@simplebridgemethods.Task )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@simplebridgemethods.Task))
  )
 )
 
@@ -537,39 +475,26 @@
  (local $this (ref null $simplebridgemethods.Task))
  (local.set $this (ref.cast (ref $simplebridgemethods.Task) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@simplebridgemethods.Task) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.Task ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@simplebridgemethods.Task)
-
-;;; String Task.$getString_|simplebridge...|()
-(func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.Task
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|simplebridge...|__simplebridgemethods_Task))
-   (then
-    (global.set $f_$string_|simplebridge...|__simplebridgemethods_Task (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "simplebridgemethods.Task")))
-   )
-  )
-  (return (global.get $f_$string_|simplebridge...|__simplebridgemethods_Task))
- )
-)
 
 ;;; Code for simplebridgemethods.AnotherTask [methods]
 
 ;;; AnotherTask<T> AnotherTask.$create()
 (func $$create__@simplebridgemethods.AnotherTask
  (result (ref null $simplebridgemethods.AnotherTask))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
  (local $$instance (ref null $simplebridgemethods.AnotherTask))
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
-  (call $$clinit__void@simplebridgemethods.AnotherTask )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
-  (local.set $$instance (struct.new $simplebridgemethods.AnotherTask (ref.as_non_null (global.get $simplebridgemethods.AnotherTask.vtable)) (ref.as_non_null (global.get $simplebridgemethods.AnotherTask.itable)) (i32.const 0)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
+  (call $$clinit__void_<once>_@simplebridgemethods.AnotherTask )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
+  (local.set $$instance (struct.new $simplebridgemethods.AnotherTask (global.get $simplebridgemethods.AnotherTask.vtable) (global.get $simplebridgemethods.AnotherTask.itable) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
   (call $$ctor__void_$p_simplebridgemethods_AnotherTask@simplebridgemethods.AnotherTask (ref.as_non_null (local.get $$instance)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
   (return (local.get $$instance))
  )
 )
@@ -577,9 +502,9 @@
 ;;; void AnotherTask.$ctor()
 (func $$ctor__void_$p_simplebridgemethods_AnotherTask@simplebridgemethods.AnotherTask
  (param $this (ref null $simplebridgemethods.AnotherTask))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -589,7 +514,7 @@
  (type $function.m_call__simplebridgemethods_Superclass__void)
  (param $this.untyped (ref $java.lang.Object))
  (param $t (ref null $simplebridgemethods.Superclass))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:50:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:50:14
  (local $this (ref null $simplebridgemethods.AnotherTask))
  (local.set $this (ref.cast (ref $simplebridgemethods.AnotherTask) (local.get $this.untyped)))
  (block
@@ -602,44 +527,45 @@
  (type $function.m_call__java_lang_Object__void)
  (param $this.untyped (ref $java.lang.Object))
  (param $arg0 (ref null $java.lang.Object))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
  (local $this (ref null $simplebridgemethods.AnotherTask))
  (local.set $this (ref.cast (ref $simplebridgemethods.AnotherTask) (local.get $this.untyped)))
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
   (call_ref $function.m_call__simplebridgemethods_Superclass__void (ref.as_non_null (local.get $this))(ref.cast (ref null $simplebridgemethods.Superclass) (local.get $arg0))(struct.get $simplebridgemethods.AnotherTask.vtable $m_call__simplebridgemethods_Superclass__void (struct.get $simplebridgemethods.AnotherTask $vtable(local.get $this))))
  )
 )
 (elem declare func $m_call__java_lang_Object__void@simplebridgemethods.AnotherTask)
 
 ;;; void AnotherTask.$clinit()
-(func $$clinit__void@simplebridgemethods.AnotherTask
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
+(func $$clinit__void_<once>_@simplebridgemethods.AnotherTask
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
-  (if (global.get $f_$initialized__simplebridgemethods_AnotherTask)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
+  (if (global.get $$class-initialized@simplebridgemethods.AnotherTask)
    (then
-    ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
     (return )
    )
   )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
-  (global.set $f_$initialized__simplebridgemethods_AnotherTask (i32.const 1))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:46:6
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
+  (global.set $$class-initialized@simplebridgemethods.AnotherTask (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:46:6
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> AnotherTask.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@simplebridgemethods.AnotherTask
+(func $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.AnotherTask
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__simplebridgemethods_AnotherTask))
+  (if (i32.eqz (ref.is_null (global.get $$class@simplebridgemethods.AnotherTask)))
    (then
-    (global.set $f_$class__simplebridgemethods_AnotherTask (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|simplebridge...|__java_lang_String (ref.func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.AnotherTask) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@simplebridgemethods.AnotherTask))
    )
   )
-  (return (global.get $f_$class__simplebridgemethods_AnotherTask))
+  (global.set $$class@simplebridgemethods.AnotherTask (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|simplebridge...|__java_lang_String_<once>_@simplebridgemethods.AnotherTask )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@simplebridgemethods.AnotherTask))
  )
 )
 
@@ -651,39 +577,26 @@
  (local $this (ref null $simplebridgemethods.AnotherTask))
  (local.set $this (ref.cast (ref $simplebridgemethods.AnotherTask) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@simplebridgemethods.AnotherTask) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.AnotherTask ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@simplebridgemethods.AnotherTask)
-
-;;; String AnotherTask.$getString_|simplebridge...|()
-(func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.AnotherTask
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|simplebridge...|__simplebridgemethods_AnotherTask))
-   (then
-    (global.set $f_$string_|simplebridge...|__simplebridgemethods_AnotherTask (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "simplebridgemethods.AnotherTask")))
-   )
-  )
-  (return (global.get $f_$string_|simplebridge...|__simplebridgemethods_AnotherTask))
- )
-)
 
 ;;; Code for simplebridgemethods.SimpleBridgeMethods [methods]
 
 ;;; SimpleBridgeMethods SimpleBridgeMethods.$create()
 (func $$create__@simplebridgemethods.SimpleBridgeMethods
  (result (ref null $simplebridgemethods.SimpleBridgeMethods))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
  (local $$instance (ref null $simplebridgemethods.SimpleBridgeMethods))
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
-  (call $$clinit__void@simplebridgemethods.SimpleBridgeMethods )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
-  (local.set $$instance (struct.new $simplebridgemethods.SimpleBridgeMethods (ref.as_non_null (global.get $simplebridgemethods.SimpleBridgeMethods.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
+  (call $$clinit__void_<once>_@simplebridgemethods.SimpleBridgeMethods )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
+  (local.set $$instance (struct.new $simplebridgemethods.SimpleBridgeMethods (global.get $simplebridgemethods.SimpleBridgeMethods.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
   (call $$ctor__void_$p_simplebridgemethods_SimpleBridgeMethods@simplebridgemethods.SimpleBridgeMethods (ref.as_non_null (local.get $$instance)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
   (return (local.get $$instance))
  )
 )
@@ -691,41 +604,42 @@
 ;;; void SimpleBridgeMethods.$ctor()
 (func $$ctor__void_$p_simplebridgemethods_SimpleBridgeMethods@simplebridgemethods.SimpleBridgeMethods
  (param $this (ref null $simplebridgemethods.SimpleBridgeMethods))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
 
 ;;; void SimpleBridgeMethods.$clinit()
-(func $$clinit__void@simplebridgemethods.SimpleBridgeMethods
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
+(func $$clinit__void_<once>_@simplebridgemethods.SimpleBridgeMethods
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
-  (if (global.get $f_$initialized__simplebridgemethods_SimpleBridgeMethods)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
+  (if (global.get $$class-initialized@simplebridgemethods.SimpleBridgeMethods)
    (then
-    ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
     (return )
    )
   )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
-  (global.set $f_$initialized__simplebridgemethods_SimpleBridgeMethods (i32.const 1))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:53:13
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
+  (global.set $$class-initialized@simplebridgemethods.SimpleBridgeMethods (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:53:13
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> SimpleBridgeMethods.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@simplebridgemethods.SimpleBridgeMethods
+(func $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.SimpleBridgeMethods
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__simplebridgemethods_SimpleBridgeMethods))
+  (if (i32.eqz (ref.is_null (global.get $$class@simplebridgemethods.SimpleBridgeMethods)))
    (then
-    (global.set $f_$class__simplebridgemethods_SimpleBridgeMethods (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|simplebridge...|__java_lang_String (ref.func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.SimpleBridgeMethods) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@simplebridgemethods.SimpleBridgeMethods))
    )
   )
-  (return (global.get $f_$class__simplebridgemethods_SimpleBridgeMethods))
+  (global.set $$class@simplebridgemethods.SimpleBridgeMethods (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|simplebridge...|__java_lang_String_<once>_@simplebridgemethods.SimpleBridgeMethods )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@simplebridgemethods.SimpleBridgeMethods))
  )
 )
 
@@ -737,39 +651,83 @@
  (local $this (ref null $simplebridgemethods.SimpleBridgeMethods))
  (local.set $this (ref.cast (ref $simplebridgemethods.SimpleBridgeMethods) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@simplebridgemethods.SimpleBridgeMethods) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.SimpleBridgeMethods ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@simplebridgemethods.SimpleBridgeMethods)
 
-;;; String SimpleBridgeMethods.$getString_|simplebridge...|()
-(func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.SimpleBridgeMethods
- (result (ref null $java.lang.String))
+;;; Code for simplebridgemethods.Callable.$LambdaAdaptor [methods]
+
+;;; void $LambdaAdaptor.$ctor()
+(func $$ctor__void_$p_simplebridgemethods_Callable_$LambdaAdaptor@simplebridgemethods.Callable.$LambdaAdaptor
+ (param $this (ref null $simplebridgemethods.Callable.$LambdaAdaptor))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:34:10
  (block
-  (if (ref.is_null (global.get $f_$string_|simplebridge...|__simplebridgemethods_SimpleBridgeMethods))
-   (then
-    (global.set $f_$string_|simplebridge...|__simplebridgemethods_SimpleBridgeMethods (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "simplebridgemethods.SimpleBridgeMethods")))
-   )
-  )
-  (return (global.get $f_$string_|simplebridge...|__simplebridgemethods_SimpleBridgeMethods))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:34:10
+  (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
+
+;;; void $LambdaAdaptor.$clinit()
+(func $$clinit__void_<once>_@simplebridgemethods.Callable.$LambdaAdaptor
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:34:10
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:34:10
+  (if (global.get $$class-initialized@simplebridgemethods.Callable.$LambdaAdaptor)
+   (then
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:34:10
+    (return )
+   )
+  )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:34:10
+  (global.set $$class-initialized@simplebridgemethods.Callable.$LambdaAdaptor (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:34:10
+  (call $$clinit__void_<once>_@java.lang.Object )
+ )
+)
+
+;;; Class<T> $LambdaAdaptor.$getClassMetadata()
+(func $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.Callable.$LambdaAdaptor
+ (result (ref null $java.lang.Class))
+ (block
+  (if (i32.eqz (ref.is_null (global.get $$class@simplebridgemethods.Callable.$LambdaAdaptor)))
+   (then
+    (return (global.get $$class@simplebridgemethods.Callable.$LambdaAdaptor))
+   )
+  )
+  (global.set $$class@simplebridgemethods.Callable.$LambdaAdaptor (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|simplebridge...|__java_lang_String_<once>_@simplebridgemethods.Callable.$LambdaAdaptor )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@simplebridgemethods.Callable.$LambdaAdaptor))
+ )
+)
+
+;;; Class<?> $LambdaAdaptor.$getClassImpl()
+(func $$getClassImpl__java_lang_Class@simplebridgemethods.Callable.$LambdaAdaptor
+ (type $function.$getClassImpl__java_lang_Class)
+ (param $this.untyped (ref $java.lang.Object))
+ (result (ref null $java.lang.Class))
+ (local $this (ref null $simplebridgemethods.Callable.$LambdaAdaptor))
+ (local.set $this (ref.cast (ref $simplebridgemethods.Callable.$LambdaAdaptor) (local.get $this.untyped)))
+ (block
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.Callable.$LambdaAdaptor ))
+ )
+)
+(elem declare func $$getClassImpl__java_lang_Class@simplebridgemethods.Callable.$LambdaAdaptor)
 
 ;;; Code for simplebridgemethods.Subclass [methods]
 
 ;;; Subclass Subclass.$create()
 (func $$create__@simplebridgemethods.Subclass
  (result (ref null $simplebridgemethods.Subclass))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
  (local $$instance (ref null $simplebridgemethods.Subclass))
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
-  (call $$clinit__void@simplebridgemethods.Subclass )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
-  (local.set $$instance (struct.new $simplebridgemethods.Subclass (ref.as_non_null (global.get $simplebridgemethods.Subclass.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
+  (call $$clinit__void_<once>_@simplebridgemethods.Subclass )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
+  (local.set $$instance (struct.new $simplebridgemethods.Subclass (global.get $simplebridgemethods.Subclass.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
   (call $$ctor__void_$p_simplebridgemethods_Subclass@simplebridgemethods.Subclass (ref.as_non_null (local.get $$instance)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
   (return (local.get $$instance))
  )
 )
@@ -777,9 +735,9 @@
 ;;; void Subclass.$ctor()
 (func $$ctor__void_$p_simplebridgemethods_Subclass@simplebridgemethods.Subclass
  (param $this (ref null $simplebridgemethods.Subclass))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
   (call $$ctor__void_$p_simplebridgemethods_Superclass@simplebridgemethods.Superclass (ref.as_non_null (local.get $this)))
  )
 )
@@ -789,7 +747,7 @@
  (type $function.m_m1__java_lang_AssertionError__void)
  (param $this.untyped (ref $java.lang.Object))
  (param $a (ref null $java.lang.AssertionError))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:26:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:26:14
  (local $this (ref null $simplebridgemethods.Subclass))
  (local.set $this (ref.cast (ref $simplebridgemethods.Subclass) (local.get $this.untyped)))
  (block
@@ -802,44 +760,45 @@
  (type $function.m_m1__java_lang_Error__void)
  (param $this.untyped (ref $java.lang.Object))
  (param $arg0 (ref null $java.lang.Error))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
  (local $this (ref null $simplebridgemethods.Subclass))
  (local.set $this (ref.cast (ref $simplebridgemethods.Subclass) (local.get $this.untyped)))
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
   (call_ref $function.m_m1__java_lang_AssertionError__void (ref.as_non_null (local.get $this))(ref.cast (ref null $java.lang.AssertionError) (local.get $arg0))(struct.get $simplebridgemethods.Subclass.vtable $m_m1__java_lang_AssertionError__void (struct.get $simplebridgemethods.Subclass $vtable(local.get $this))))
  )
 )
 (elem declare func $m_m1__java_lang_Error__void@simplebridgemethods.Subclass)
 
 ;;; void Subclass.$clinit()
-(func $$clinit__void@simplebridgemethods.Subclass
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
+(func $$clinit__void_<once>_@simplebridgemethods.Subclass
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
-  (if (global.get $f_$initialized__simplebridgemethods_Subclass)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
+  (if (global.get $$class-initialized@simplebridgemethods.Subclass)
    (then
-    ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
     (return )
    )
   )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
-  (global.set $f_$initialized__simplebridgemethods_Subclass (i32.const 1))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:23:6
-  (call $$clinit__void@simplebridgemethods.Superclass )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
+  (global.set $$class-initialized@simplebridgemethods.Subclass (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:23:6
+  (call $$clinit__void_<once>_@simplebridgemethods.Superclass )
  )
 )
 
 ;;; Class<T> Subclass.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@simplebridgemethods.Subclass
+(func $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.Subclass
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__simplebridgemethods_Subclass))
+  (if (i32.eqz (ref.is_null (global.get $$class@simplebridgemethods.Subclass)))
    (then
-    (global.set $f_$class__simplebridgemethods_Subclass (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|simplebridge...|__java_lang_String (ref.func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.Subclass) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@simplebridgemethods.Superclass) )))
+    (return (global.get $$class@simplebridgemethods.Subclass))
    )
   )
-  (return (global.get $f_$class__simplebridgemethods_Subclass))
+  (global.set $$class@simplebridgemethods.Subclass (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|simplebridge...|__java_lang_String_<once>_@simplebridgemethods.Subclass )(call $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.Superclass )))
+  (return (global.get $$class@simplebridgemethods.Subclass))
  )
 )
 
@@ -851,39 +810,26 @@
  (local $this (ref null $simplebridgemethods.Subclass))
  (local.set $this (ref.cast (ref $simplebridgemethods.Subclass) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@simplebridgemethods.Subclass) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.Subclass ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@simplebridgemethods.Subclass)
-
-;;; String Subclass.$getString_|simplebridge...|()
-(func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.Subclass
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|simplebridge...|__simplebridgemethods_Subclass))
-   (then
-    (global.set $f_$string_|simplebridge...|__simplebridgemethods_Subclass (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "simplebridgemethods.Subclass")))
-   )
-  )
-  (return (global.get $f_$string_|simplebridge...|__simplebridgemethods_Subclass))
- )
-)
 
 ;;; Code for simplebridgemethods.AnotherSubclass [methods]
 
 ;;; AnotherSubclass AnotherSubclass.$create()
 (func $$create__@simplebridgemethods.AnotherSubclass
  (result (ref null $simplebridgemethods.AnotherSubclass))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
  (local $$instance (ref null $simplebridgemethods.AnotherSubclass))
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
-  (call $$clinit__void@simplebridgemethods.AnotherSubclass )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
-  (local.set $$instance (struct.new $simplebridgemethods.AnotherSubclass (ref.as_non_null (global.get $simplebridgemethods.AnotherSubclass.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
+  (call $$clinit__void_<once>_@simplebridgemethods.AnotherSubclass )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
+  (local.set $$instance (struct.new $simplebridgemethods.AnotherSubclass (global.get $simplebridgemethods.AnotherSubclass.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
   (call $$ctor__void_$p_simplebridgemethods_AnotherSubclass@simplebridgemethods.AnotherSubclass (ref.as_non_null (local.get $$instance)))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
   (return (local.get $$instance))
  )
 )
@@ -891,41 +837,42 @@
 ;;; void AnotherSubclass.$ctor()
 (func $$ctor__void_$p_simplebridgemethods_AnotherSubclass@simplebridgemethods.AnotherSubclass
  (param $this (ref null $simplebridgemethods.AnotherSubclass))
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
   (call $$ctor__void_$p_simplebridgemethods_Superclass@simplebridgemethods.Superclass (ref.as_non_null (local.get $this)))
  )
 )
 
 ;;; void AnotherSubclass.$clinit()
-(func $$clinit__void@simplebridgemethods.AnotherSubclass
- ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
+(func $$clinit__void_<once>_@simplebridgemethods.AnotherSubclass
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
  (block
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
-  (if (global.get $f_$initialized__simplebridgemethods_AnotherSubclass)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
+  (if (global.get $$class-initialized@simplebridgemethods.AnotherSubclass)
    (then
-    ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
     (return )
    )
   )
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
-  (global.set $f_$initialized__simplebridgemethods_AnotherSubclass (i32.const 1))
-  ;;@ simplebridgemethods/SimpleBridgeMethods.java:30:6
-  (call $$clinit__void@simplebridgemethods.Superclass )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
+  (global.set $$class-initialized@simplebridgemethods.AnotherSubclass (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/simplebridgemethods/readable-j2wasm.js/simplebridgemethods/SimpleBridgeMethods.java:30:6
+  (call $$clinit__void_<once>_@simplebridgemethods.Superclass )
  )
 )
 
 ;;; Class<T> AnotherSubclass.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@simplebridgemethods.AnotherSubclass
+(func $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.AnotherSubclass
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__simplebridgemethods_AnotherSubclass))
+  (if (i32.eqz (ref.is_null (global.get $$class@simplebridgemethods.AnotherSubclass)))
    (then
-    (global.set $f_$class__simplebridgemethods_AnotherSubclass (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|simplebridge...|__java_lang_String (ref.func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.AnotherSubclass) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@simplebridgemethods.Superclass) )))
+    (return (global.get $$class@simplebridgemethods.AnotherSubclass))
    )
   )
-  (return (global.get $f_$class__simplebridgemethods_AnotherSubclass))
+  (global.set $$class@simplebridgemethods.AnotherSubclass (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|simplebridge...|__java_lang_String_<once>_@simplebridgemethods.AnotherSubclass )(call $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.Superclass )))
+  (return (global.get $$class@simplebridgemethods.AnotherSubclass))
  )
 )
 
@@ -937,20 +884,7 @@
  (local $this (ref null $simplebridgemethods.AnotherSubclass))
  (local.set $this (ref.cast (ref $simplebridgemethods.AnotherSubclass) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@simplebridgemethods.AnotherSubclass) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@simplebridgemethods.AnotherSubclass ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@simplebridgemethods.AnotherSubclass)
-
-;;; String AnotherSubclass.$getString_|simplebridge...|()
-(func $$getString_|simplebridge...|__java_lang_String@simplebridgemethods.AnotherSubclass
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|simplebridge...|__simplebridgemethods_AnotherSubclass))
-   (then
-    (global.set $f_$string_|simplebridge...|__simplebridgemethods_AnotherSubclass (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "simplebridgemethods.AnotherSubclass")))
-   )
-  )
-  (return (global.get $f_$string_|simplebridge...|__simplebridgemethods_AnotherSubclass))
- )
-)

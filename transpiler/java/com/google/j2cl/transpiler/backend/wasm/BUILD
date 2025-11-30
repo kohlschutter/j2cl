@@ -1,3 +1,5 @@
+load("@rules_java//java:defs.bzl", "java_library")
+
 package(
     default_applicable_licenses = ["//:j2cl_license"],
     default_visibility = [
@@ -22,6 +24,7 @@ java_library(
     deps = [
         ":summary_java_proto",
         "//third_party:auto_value",
+        "//third_party:error_prone_annotations",
         "//third_party:gson",
         "//third_party:guava",
         "//third_party:jsr305_annotations",

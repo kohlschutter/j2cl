@@ -15,8 +15,13 @@
  */
 package casts;
 
+import static com.google.j2cl.integration.testing.Asserts.assertEquals;
 import static com.google.j2cl.integration.testing.Asserts.assertThrowsClassCastException;
 import static com.google.j2cl.integration.testing.Asserts.assertTrue;
+import static com.google.j2cl.integration.testing.Asserts.fail;
+import static com.google.j2cl.integration.testing.TestUtils.isJ2Kt;
+import static com.google.j2cl.integration.testing.TestUtils.isJ2KtJvm;
+import static com.google.j2cl.integration.testing.TestUtils.isJ2KtNative;
 import static com.google.j2cl.integration.testing.TestUtils.isJvm;
 
 import java.io.Serializable;
@@ -29,7 +34,7 @@ public class Main {
 
   public static void main(String... args) {
     testCasts_basics();
-    testCasts_generics();
+    testCasts_generics(0L, 0L);
     testCasts_typeVariableWithNativeBound();
     testCasts_parameterizedNativeType();
     testCasts_exceptionMessages();
@@ -48,6 +53,7 @@ public class Main {
     testDevirtualizedCasts_comparable();
     testDevirtualizedCasts_charSequence();
     testDevirtualizedCasts_void();
+    testPrecedence();
   }
 
   public interface Interface {}
@@ -83,7 +89,7 @@ public class Main {
     o = new Object[] {}; // Actually emits as the JS array literal "[]".
     o = (Object[]) o;
 
-    // Cast JS "$Arrays.$init([], Object, 2))" to Object[][]
+    // Cast JS "$Arrays.stampType([], Object, 2))" to Object[][]
     o = new Object[][] {};
     o = (Object[][]) o;
   }
@@ -102,23 +108,26 @@ public class Main {
     o = (Object[]) charSequences;
     o = (CharSequence[]) charSequences;
 
-    assertThrowsClassCastException(
-        () -> {
-          Object unused = (String[]) objects;
-        },
-        String[].class);
+    // TODO(b/420648962): Does not throw on Kotlin/Native
+    if (!isJ2KtNative()) {
+      assertThrowsClassCastException(
+          () -> {
+            Object unused = (String[]) objects;
+          },
+          String[].class);
 
-    assertThrowsClassCastException(
-        () -> {
-          Object unused = (CharSequence[]) objects;
-        },
-        CharSequence[].class);
+      assertThrowsClassCastException(
+          () -> {
+            Object unused = (CharSequence[]) objects;
+          },
+          CharSequence[].class);
 
-    assertThrowsClassCastException(
-        () -> {
-          Object unused = (String[]) charSequences;
-        },
-        String[].class);
+      assertThrowsClassCastException(
+          () -> {
+            Object unused = (String[]) charSequences;
+          },
+          String[].class);
+    }
   }
 
   private static void testArrayCasts_differentDimensions() {
@@ -128,19 +137,22 @@ public class Main {
     Object[] object1d = (Object[]) object;
     Object[][] object2d = (Object[][]) object;
 
-    // A 2d array cannot be cast to a 3d array.
-    assertThrowsClassCastException(
-        () -> {
-          Object[][][] unused = (Object[][][]) object2d;
-        },
-        Object[][][].class);
+    // TODO(b/420648962): Does not throw on Kotlin/Native
+    if (!isJ2KtNative()) {
+      // A 2d array cannot be cast to a 3d array.
+      assertThrowsClassCastException(
+          () -> {
+            Object[][][] unused = (Object[][][]) object2d;
+          },
+          Object[][][].class);
 
-    // A non-array cannot be cast to an array.
-    assertThrowsClassCastException(
-        () -> {
-          Object[] unused = (Object[]) new Object();
-        },
-        Object[].class);
+      // A non-array cannot be cast to an array.
+      assertThrowsClassCastException(
+          () -> {
+            Object[] unused = (Object[]) new Object();
+          },
+          Object[].class);
+    }
   }
 
   private static void testArrayCasts_erasureCastsOnArrayAccess_fromArrayOfT() {
@@ -152,19 +164,24 @@ public class Main {
 
     // Array of the wrong type.
     ArrayContainer<String> objectArrayInArrayContainer = new ArrayContainer<>(new Object[1]);
-    assertThrowsClassCastException(
-        () -> {
-          String unused = objectArrayInArrayContainer.data[0];
-        },
-        String[].class);
+    // TODO(b/420648962): Does not throw on Kotlin/Native
+    if (!isJ2KtNative()) {
+      assertThrowsClassCastException(
+          () -> {
+            String unused = objectArrayInArrayContainer.data[0];
+          },
+          String[].class);
+    }
     // Make sure access to the length field performs the right cast. The length field
     // has special handling in CompilationUnitBuider.
-    assertThrowsClassCastException(
-        () -> {
-          int unused = objectArrayInArrayContainer.data.length;
-        },
-        String[].class);
-
+    // TODO(b/368266647): Erasure cast is missing in Kotlin
+    if (!isJ2Kt()) {
+      assertThrowsClassCastException(
+          () -> {
+            int unused = objectArrayInArrayContainer.data.length;
+          },
+          String[].class);
+    }
     // Not even an array.
     assertThrowsClassCastException(
         () -> {
@@ -190,29 +207,35 @@ public class Main {
 
     // Array of the wrong type.
     Container<String[]> objectArrayInContainer = new Container<>(new Object[1]);
-    assertThrowsClassCastException(
-        () -> {
-          String unused = objectArrayInContainer.data[0];
-        },
-        String[].class);
-    assertThrowsClassCastException(
-        () -> {
-          int unused = objectArrayInContainer.data.length;
-        },
-        String[].class);
+    // TODO(b/368266647): Erasure cast is missing in Kotlin
+    if (!isJ2Kt()) {
+      assertThrowsClassCastException(
+          () -> {
+            String unused = objectArrayInContainer.data[0];
+          },
+          String[].class);
+      assertThrowsClassCastException(
+          () -> {
+            int unused = objectArrayInContainer.data.length;
+          },
+          String[].class);
+    }
 
     // Not even an array.
-    Container<String[]> notAnArrayInContainer = new Container<>(new Object());
-    assertThrowsClassCastException(
-        () -> {
-          String unused = notAnArrayInContainer.data[0];
-        },
-        String[].class);
-    assertThrowsClassCastException(
-        () -> {
-          int unused = notAnArrayInContainer.data.length;
-        },
-        String[].class);
+    // TODO(b/420648962): Does not throw on Kotlin/Native, and crashes because of memory corruption.
+    if (!isJ2KtNative()) {
+      Container<String[]> notAnArrayInContainer = new Container<>(new Object());
+      assertThrowsClassCastException(
+          () -> {
+            String unused = notAnArrayInContainer.data[0];
+          },
+          String[].class);
+      assertThrowsClassCastException(
+          () -> {
+            int unused = notAnArrayInContainer.data.length;
+          },
+          String[].class);
+    }
   }
 
   private static class Container<T> {
@@ -442,7 +465,13 @@ public class Main {
   }
 
   @SuppressWarnings({"unused", "unchecked"})
-  private static <T, E extends Number> void testCasts_generics() {
+  private static <T, E extends Number> void testCasts_generics(
+      T unusedForInference1, E unusedForInference2) {
+    // TODO(b/420648962): Does not throw on Kotlin/Native
+    if (isJ2KtNative()) {
+      return;
+    }
+
     Object o = new Integer(1);
     E e = (E) o; // cast to type variable with bound, casting Integer instance to Number
     T t = (T) o; // cast to type variable without bound, casting Integer instance to Object
@@ -474,6 +503,9 @@ public class Main {
 
   @Wasm("nop") // Casts to/from native types not yet supported in Wasm.
   @SuppressWarnings({"rawtypes", "unchecked"})
+  // TODO(b/443341543): To enable this test for J2KT, the type variable T should be able
+  // to be assigned a native type.
+  @J2ktIncompatible
   private static <T extends NativeMap<?, ?>> void testCasts_typeVariableWithNativeBound() {
     // Casting Object[] to NativeMap[] is invalid on the JVM.
     if (isJvm()) {
@@ -490,6 +522,14 @@ public class Main {
     {
       Object o = new NativeMap();
       T unused = (T) o;
+    }
+  }
+
+  @interface J2ktIncompatible {}
+
+  private static void testCasts_typeVariableWithNativeBound(Object... unused) {
+    if (!isJ2Kt()) {
+      fail();
     }
   }
 
@@ -551,39 +591,53 @@ public class Main {
 
   @Wasm("nop") // Casts to/from native types not yet supported in Wasm.
   private static void testCasts_exceptionMessages_jsType() {
-    if (!isJvm()) {
-      Object object = new Foo();
-      // Baz is a native JsType pointing to JavaScript string; the assertion does not make sense in
-      // Java/JVM.
-      assertThrowsClassCastException(
-          () -> {
-            Baz baz = (Baz) object;
-          },
-          "String");
-
-      // Qux is a native function; the assertion does not make sense in Java/JVM.
-      assertThrowsClassCastException(
-          () -> {
-            Qux qux = (Qux) object;
-          },
-          "<native function>");
+    if (isJvm() || isJ2KtNative()) {
+      return;
     }
+
+    Object object = new Foo();
+    // Baz is a native JsType pointing to JavaScript string; the assertion does not make sense in
+    // Java/JVM and J2KT/Native
+    assertThrowsClassCastException(
+        () -> {
+          Baz baz = (Baz) object;
+        },
+        "String");
+
+    // Qux is a native function; the assertion does not make sense in Java/JVM and J2KT/Native
+    assertThrowsClassCastException(
+        () -> {
+          Qux qux = (Qux) object;
+        },
+        "<native function>");
   }
 
   private static void testCasts_erasureCastOnThrow() {
+    // TODO(b/420648962): Crashes on Kotlin/Native because of memory corruption.
+    if (isJ2KtNative()) {
+      return;
+    }
+
     assertThrowsClassCastException(
         () -> {
           throw returnObjectAsT(new RuntimeException());
         },
-        RuntimeException.class);
+        // TODO(b/368266647): On J2KT/JVM it reports Throwable.
+        !isJ2KtJvm() ? RuntimeException.class : Throwable.class);
   }
 
   private static void testCasts_erasureCastOnConversion() {
+    // TODO(b/420648962): Crashes on Kotlin/Native because of memory corruption.
+    if (isJ2KtNative()) {
+      return;
+    }
+
     assertThrowsClassCastException(
         () -> {
           int i = (int) returnObjectAsT(new Integer(1));
         },
-        Integer.class);
+        // TODO(b/368266647): On J2KT/JVM it reports Number.
+        !isJ2KtJvm() ? Integer.class : Number.class);
   }
 
   private static <T> T returnObjectAsT(T unused) {
@@ -626,5 +680,16 @@ public class Main {
             Foo foo = (Foo) h.reset().f;
           }
         });
+  }
+
+  private static void testPrecedence() {
+    Object foo = "foo";
+    Object bar = "bar";
+    Integer notString = 123;
+    assertEquals("bar", (String) (false ? foo : bar));
+
+    // Should be translated to: {@code ("foo" + notString) as String}
+    // and not: {@code "foo" + notString as String} which would cause class cast exception.
+    assertEquals("foo123", (String) ("foo" + notString));
   }
 }

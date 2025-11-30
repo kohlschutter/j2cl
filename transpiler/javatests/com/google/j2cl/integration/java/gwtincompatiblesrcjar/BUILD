@@ -1,3 +1,4 @@
+load("@rules_java//java:defs.bzl", "java_library")
 load(
     "//transpiler/javatests/com/google/j2cl/integration:integration_test.bzl",
     "integration_test",
@@ -26,7 +27,6 @@ java_library(
 )
 
 integration_test(
-    name = "gwtincompatible-with-srcjar",
     srcs = [
         ":libgwtincompatibleMain-src.jar",
         ":libgwtincompatibleOther-src.jar",

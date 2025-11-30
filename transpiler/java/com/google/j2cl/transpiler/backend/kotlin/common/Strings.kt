@@ -24,12 +24,7 @@ fun String.camelCaseStartsWith(prefix: String): Boolean =
 
 /** Returns title-cased version of this string. */
 val String.titleCased: String
-  get() = replaceFirstChar { it.toUpperCase() }
-
-// TODO(b/204366308): Remove after switch to Kotlin 1.5.
-/** Returns this string with first character replaced using the given function. */
-fun String.replaceFirstChar(fn: (Char) -> Char): String =
-  firstOrNull()?.let { fn(it) + drop(1) } ?: this
+  get() = replaceFirstChar { it.uppercase() }
 
 /** Returns this string in single quotes. */
 val String.inSingleQuotes: String

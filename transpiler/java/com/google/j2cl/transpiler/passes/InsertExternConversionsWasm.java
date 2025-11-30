@@ -16,6 +16,7 @@
 package com.google.j2cl.transpiler.passes;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.j2cl.transpiler.ast.AstUtils.isAnnotatedWithWasm;
 
 import com.google.common.collect.Streams;
 import com.google.j2cl.transpiler.ast.AbstractRewriter;
@@ -40,7 +41,7 @@ public class InsertExternConversionsWasm extends NormalizationPass {
           @Override
           public Method rewriteMethod(Method method) {
             MethodDescriptor descriptor = method.getDescriptor();
-            MethodDescriptor newDescriptor = rewriteMethodDescriptor(descriptor);
+            MethodDescriptor newDescriptor = createExportedMethodDescriptor(descriptor);
             if (descriptor != newDescriptor) {
               method
                   .getParameters()
@@ -55,7 +56,7 @@ public class InsertExternConversionsWasm extends NormalizationPass {
 
           @Override
           public Expression rewriteInvocation(Invocation invocation) {
-            if (!isNative(invocation.getTarget())) {
+            if (!isJavaScriptMethod(invocation.getTarget())) {
               return invocation;
             }
             return insertWasmExternConversions(invocation);
@@ -76,15 +77,15 @@ public class InsertExternConversionsWasm extends NormalizationPass {
                                 ? RuntimeMethods.createJsStringFromStringMethodCall(arg)
                                 : arg)
                     .collect(toImmutableList()))
-            .setTarget(rewriteMethodDescriptor(methodDescriptor))
+            .setTarget(createExportedMethodDescriptor(methodDescriptor))
             .build();
     return TypeDescriptors.isJavaLangString(methodDescriptor.getReturnTypeDescriptor())
         ? RuntimeMethods.createStringFromJsStringMethodCall(newInvocation)
         : newInvocation;
   }
 
-  private static MethodDescriptor rewriteMethodDescriptor(MethodDescriptor descriptor) {
-    if (!isNative(descriptor)) {
+  private static MethodDescriptor createExportedMethodDescriptor(MethodDescriptor descriptor) {
+    if (!isJavaScriptMethod(descriptor)) {
       return descriptor;
     }
     return descriptor.transform(
@@ -94,7 +95,7 @@ public class InsertExternConversionsWasm extends NormalizationPass {
                     replaceStringWithNativeString(builder.getReturnTypeDescriptor()))
                 .updateParameterTypeDescriptors(
                     builder.getParameterTypeDescriptors().stream()
-                        .map(x -> replaceStringWithNativeString(x))
+                        .map(InsertExternConversionsWasm::replaceStringWithNativeString)
                         .collect(toImmutableList())));
   }
 
@@ -105,7 +106,10 @@ public class InsertExternConversionsWasm extends NormalizationPass {
     return typeDescriptor;
   }
 
-  private static boolean isNative(MethodDescriptor descriptor) {
+  private static boolean isJavaScriptMethod(MethodDescriptor descriptor) {
+    if (isAnnotatedWithWasm(descriptor)) {
+      return false;
+    }
     return descriptor.isNative()
         // TODO(b/264676817): Consider refactoring to have MethodDescriptor.isNative return true for
         // native constructors, or exposing isNativeConstructor from MethodDescriptor.

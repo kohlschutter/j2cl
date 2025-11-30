@@ -7,6 +7,7 @@ let j_l_String = goog.forwardDeclare('java.lang.String$impl');
 let ArrayList = goog.forwardDeclare('java.util.ArrayList$impl');
 let List = goog.forwardDeclare('java.util.List$impl');
 let Marker = goog.forwardDeclare('nullability.Marker$impl');
+let NonNullInterface = goog.forwardDeclare('nullability.Nullability.NonNullInterface$impl');
 let ParameterizedDefaultNullability = goog.forwardDeclare('nullability.Nullability.ParameterizedDefaultNullability$impl');
 let ParameterizedNonNullable = goog.forwardDeclare('nullability.Nullability.ParameterizedNonNullable$impl');
 let ParameterizedNullable = goog.forwardDeclare('nullability.Nullability.ParameterizedNullable$impl');
@@ -68,7 +69,7 @@ class Nullability extends j_l_Object {
  }
  /** @return {?string} */
  m3(/** string */ a, .../** ...string */ args) {
-  $Arrays.$stampType(args, j_l_String, 1);
+  $Arrays.$stampType(args, j_l_String);
   return null;
  }
  /** @nodts */
@@ -155,19 +156,25 @@ class Nullability extends j_l_Object {
   let generic = /**@type {!RecursiveNullableParam<T>}*/ (RecursiveNullableParam.$create__());
   let parametrized = /**@type {!RecursiveNullableParam<RecursiveNullableChild>}*/ (RecursiveNullableParam.$create__());
  }
+ /** @nodts */
+ static m_testMethodNullmarked__void() {
+  Nullability.$clinit();
+ }
+ /** @nodts */
+ m_testNonNullOnType__nullability_Nullability_NonNullInterface__nullability_Nullability_NonNullInterface__nullability_Nullability_NonNullInterface__void_$pp_nullability(/** NonNullInterface */ unannotated, /** !NonNullInterface */ annotatedNonNull, /** NonNullInterface */ annotatedNullable) {}
  /** @private @nodts */
  $init__void_$p_nullability_Nullability() {
   this.f_f1__nullability_Nullability_ = 'Hello';
   this.f_f2__nullability_Nullability_ = null;
   this.f_f3__nullability_Nullability_ = null;
-  this.f_f4__nullability_Nullability_ = /**@type {!ArrayList<string>}*/ (ArrayList.$create__());
-  this.f_f5__nullability_Nullability_ = /**@type {!ArrayList<string>}*/ (ArrayList.$create__());
-  this.f_f6__nullability_Nullability_ = /**@type {!ArrayList<?string>}*/ (ArrayList.$create__());
+  this.f_f4__nullability_Nullability_ = (/**@type {!ArrayList<?string>}*/ (ArrayList.$create__()));
+  this.f_f5__nullability_Nullability_ = (/**@type {!ArrayList<?string>}*/ (ArrayList.$create__()));
+  this.f_f6__nullability_Nullability_ = (/**@type {!ArrayList<?string>}*/ (ArrayList.$create__()));
   this.f_f7__nullability_Nullability_ = null;
-  this.f_f8__nullability_Nullability_ = /**@type {!Array<string>}*/ ($Arrays.$init([], j_l_String));
-  this.f_f9__nullability_Nullability_ = /**@type {!Array<?string>}*/ ($Arrays.$init([], j_l_String));
-  this.f_f10__nullability_Nullability_ = /**@type {!Array<string>}*/ ($Arrays.$init([], j_l_String));
-  this.f_f12__nullability_Nullability_ = /**@type {!ArrayList<?string>}*/ (ArrayList.$create__());
+  this.f_f8__nullability_Nullability_ = (/**@type {!Array<string>}*/ ($Arrays.$create([0], j_l_String)));
+  this.f_f9__nullability_Nullability_ = (/**@type {!Array<?string>}*/ ($Arrays.$create([0], j_l_String)));
+  this.f_f10__nullability_Nullability_ = (/**@type {!Array<string>}*/ ($Arrays.$create([0], j_l_String)));
+  this.f_f12__nullability_Nullability_ = (/**@type {!ArrayList<?string>}*/ (ArrayList.$create__()));
  }
  /** @nodts */
  static $clinit() {

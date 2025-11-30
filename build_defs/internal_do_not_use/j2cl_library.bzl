@@ -25,6 +25,12 @@ j2cl_library(
 
 """
 
+load("//build_defs/internal_do_not_use/allowlists:allowlists.bzl", "allowlists")
+load("//build_defs/internal_do_not_use/allowlists:j2kt_jvm.bzl", "J2KT_JVM_ALLOWLIST")
+load("//build_defs/internal_do_not_use/allowlists:j2kt_native.bzl", "J2KT_NATIVE_ALLOWLIST")
+load("//build_defs/internal_do_not_use/allowlists:j2kt_web.bzl", "J2KT_WEB_DISABLED", "J2KT_WEB_ENABLED", "J2KT_WEB_EXPERIMENT_ENABLED")
+load("//build_defs/internal_do_not_use/allowlists:j2wasm.bzl", "J2WASM_ALLOWLIST")
+load("//build_defs/internal_do_not_use/allowlists:kotlin.bzl", "KOTLIN_ALLOWLIST")
 load(":j2cl_java_library.bzl", j2cl_library_rule = "j2cl_library")
 load(":j2cl_library_build_test.bzl", "build_test")
 load(":j2cl_util.bzl", "to_parallel_targets")
@@ -32,100 +38,13 @@ load(":j2kt_common.bzl", "j2kt_common")
 load(":j2kt_library.bzl", "J2KT_JVM_LIB_ATTRS", "J2KT_NATIVE_LIB_ATTRS", "j2kt_jvm_library", "j2kt_native_library")
 load(":j2wasm_common.bzl", "j2wasm_common")
 load(":j2wasm_library.bzl", "J2WASM_LIB_ATTRS", "j2wasm_library")
-load(":provider.bzl", "J2clInfo", "J2wasmInfo")
-
-# Packages that j2cl rule will generate j2kt jvm packages by default. Used to simplify test
-# rules.
-_J2KT_JVM_PACKAGES = [
-    "third_party/java_src/animal_sniffer",
-    "third_party/java_src/google_common/current/java/com/google/common/annotations",
-    "benchmarking/java/com/google/j2cl/benchmarks/octane/raytrace",
-    "build_defs/internal_do_not_use",
-    "transpiler/javatests/com/google/j2cl/integration/java",
-    "transpiler/javatests/com/google/j2cl/integration/testing",
-    "transpiler/javatests/com/google/j2cl/readable/java",
-    "jre/javatests",
-    "junit/generator/java/com/google/j2cl/junit/apt",
-    "junit/generator/java/com/google/j2cl/junit/runtime",
-    "junit/generator/javatests/com/google/j2cl/junit/integration",
-    "third_party/java_src/j2objc/annotations",
-    "third_party/java/animal_sniffer",
-    "third_party/java/auto",
-    "third_party/java/checker_framework_annotations",
-    "third_party/java/error_prone",
-    "third_party/java/j2objc",
-    "third_party/java/jsr250_annotations",
-    "third_party/java/jsr330_inject",
-    "third_party/java/junit",
-]
-
-# Packages that j2cl_library macro will generate j2kt web packages by default.
-_J2KT_WEB_PACKAGES = [
-    "samples/box2d/src/main/java",
-    "transpiler/javatests/com/google/j2cl/integration/java",
-    "transpiler/javatests/com/google/j2cl/readable/java",
-]
-
-# Packages that j2cl rule will generate j2kt native packages by default. Used to simplify test
-# rules.
-_J2KT_NATIVE_PACKAGES = [
-    "java/com/google/thirdparty/publicsuffix",
-    "third_party/java/animal_sniffer",
-    "third_party/java/auto",
-    "third_party/java/checker_framework_annotations",
-    "third_party/java/error_prone",
-    "third_party/java/findurl",
-    "third_party/java/googicu",
-    "third_party/java/j2objc",
-    "third_party/java/joda_time",
-    "third_party/java/jsr250_annotations",
-    "third_party/java/jsr330_inject",
-    "third_party/java/junit",
-    "third_party/java_src/animal_sniffer",
-    "third_party/java_src/findurl",
-    "third_party/java_src/googicu",
-    "build_defs/internal_do_not_use",
-    "junit/generator/java/com/google/j2cl/junit/apt",
-    "junit/generator/java/com/google/j2cl/junit/runtime",
-    "junit/generator/javatests/com/google/j2cl/junit/integration",
-    "transpiler/javatests/com/google/j2cl/integration/java",
-    "transpiler/javatests/com/google/j2cl/integration/testing",
-    "transpiler/javatests/com/google/j2cl/readable/java",
-    "third_party/java_src/j2objc/annotations",
-    "third_party/java_src/jsr330_inject",
-]
-
-_J2WASM_PACKAGES = [
-    "third_party/java/animal_sniffer",
-    "third_party/java/auto",
-    "third_party/java/checker_framework_annotations",
-    "third_party/java/error_prone",
-    "third_party/java/jsr250_annotations",
-    "third_party/java/jsr330_inject",
-    "third_party/java/junit",
-    "third_party/java/re2j",
-    "third_party/java/truth",
-    "third_party/java_src/animal_sniffer",
-    "third_party/java_src/google_common/current",
-    "third_party/java_src/j2cl",
-    "build_defs/internal_do_not_use",
-    "junit",
-    "samples",
-    "third_party",
-    "third_party/java_src/jsr330_inject",
-    "third_party/java_src/re2j",
-    "third_party/java_src/truth",
-]
+load(":provider.bzl", "J2clInfo")
 
 _KOTLIN_STDLIB_TARGET = "//build_defs/internal_do_not_use:kotlin_stdlib"
 _JRE_J2KT_TARGET = "//third_party/java_src/xplat/j2kt/jre/java:jre-j2kt-web"
 
 def _tree_artifact_proxy_impl(ctx):
-    files = []
-    if J2clInfo in ctx.attr.j2cl_library:
-        files = ctx.attr.j2cl_library[J2clInfo]._private_.output_js
-    elif J2wasmInfo in ctx.attr.j2cl_library:
-        files = ctx.attr.j2cl_library[J2wasmInfo]._private_.wasm_modular_info.provider._private_.output_js
+    files = ctx.attr.j2cl_library[J2clInfo]._private_.output_js
     return DefaultInfo(files = depset([files]), runfiles = ctx.runfiles([files]))
 
 _tree_artifact_proxy = rule(
@@ -163,43 +82,47 @@ def j2cl_library(
         args.get("srcs") and any([s for s in args.get("srcs") if s.endswith(".kt")])
     )
 
-    is_j2kt_web_allowed = any([p for p in _J2KT_WEB_PACKAGES if native.package_name().startswith(p)])
-
-    # These arguments should not be set by the user.
-    args["j2cl_transpiler_override"] = None
-    args["j2kt_web_experiment_enabled"] = False
-
-    if has_kotlin_srcs:
-        # TODO(b/217287994): Replace with more traditional allow-listing.
-        args["j2cl_transpiler_override"] = (
-            "//build_defs/internal_do_not_use:BazelJ2clBuilderWithKotlinSupport"
+    if has_kotlin_srcs and not allowlists.is_package_allowed(native.package_name(), KOTLIN_ALLOWLIST):
+        fail(
+            "Package '%s' is not permitted to have Kotlin inputs." % native.package_name(),
+            "See: //build_defs/internal_do_not_use/allowlists/kotlin.bzl",
         )
 
+    if has_kotlin_srcs:
         if target_name != "//ktstdlib:j2cl_kt_stdlib":
             args["deps"] = args.get("deps", []) + [_KOTLIN_STDLIB_TARGET]
 
-    elif is_j2kt_web_allowed:
+    # J2KT Web can be in one of three states for a given target:
+    #  1. enabled: the target is always transpiled through J2KT
+    #  2. experiment enabled: the target is transpiled through J2KT if the blaze flag is set.
+    #  3. disabled: the target is either not in the previous two sets, or is explicitly disabled
+    #               despite being in one of the previous two sets.
+    is_j2kt_web_always_enabled = allowlists.is_package_allowed(native.package_name(), J2KT_WEB_ENABLED)
+    is_j2kt_web_experiment_enabled = allowlists.is_package_allowed(native.package_name(), J2KT_WEB_EXPERIMENT_ENABLED)
+    maybe_enable_j2kt_web = (
+        not has_kotlin_srcs and
+        (is_j2kt_web_always_enabled or is_j2kt_web_experiment_enabled) and
+        not allowlists.is_target_allowed(target_name, J2KT_WEB_DISABLED)
+    )
+
+    # These arguments should not be set by the user.
+    args["enable_j2kt_web"] = False
+
+    if maybe_enable_j2kt_web:
         # Enable j2kt-web if the blaze flag is set to True
-        args["j2kt_web_experiment_enabled"] = select({
+        args["enable_j2kt_web"] = True if is_j2kt_web_always_enabled else select({
             "//build_defs/internal_do_not_use:j2kt_web_enabled": True,
             "//conditions:default": False,
         })
 
         if has_srcs:
-            # If j2kt-web is enabled, the java files are first transpiled to Kotlin before being
-            # send to the J2CL transpiler. In that case, we need to use the j2cl transpiler binary
-            # embedding the Kotlin frontend.
-            args["j2cl_transpiler_override"] = select({
-                "//build_defs/internal_do_not_use:j2kt_web_enabled": "//build_defs/internal_do_not_use:BazelJ2clBuilderWithKotlinSupport",
-                "//conditions:default": None,
+            # If j2kt-web is enabled, we need to add the J2KT JRE and Kotlin stdlib as deps.
+            j2kt_deps = [_JRE_J2KT_TARGET, _KOTLIN_STDLIB_TARGET]
+            extra_deps = select({
+                "//build_defs/internal_do_not_use:j2kt_web_enabled": j2kt_deps,
+                "//conditions:default": j2kt_deps if is_j2kt_web_always_enabled else [],
             })
-
-            # If j2kt-web is enabled, we need to add _JRE_J2KT_TARGET (to resolve calls added by
-            # j2kt) and _KOTLIN_STDLIB_TARGET as dependencies.
-            args["deps"] = args.get("deps", []) + select({
-                "//build_defs/internal_do_not_use:j2kt_web_enabled": [_JRE_J2KT_TARGET, _KOTLIN_STDLIB_TARGET],
-                "//conditions:default": [],
-            })
+            args["deps"] = args.get("deps", []) + extra_deps
 
     j2cl_library_rule(
         name = name,
@@ -227,7 +150,7 @@ def j2cl_library(
         # By default refer back to allow list for implicit j2wasm target generation.
         generate_j2wasm_library = (
             not native.existing_rule(j2wasm_library_name) and
-            any([p for p in _J2WASM_PACKAGES if native.package_name().startswith(p)])
+            allowlists.is_package_allowed(native.package_name(), J2WASM_ALLOWLIST)
         )
 
     if generate_j2wasm_library:
@@ -242,23 +165,13 @@ def j2cl_library(
             **j2wasm_args
         )
 
-        # TODO(b/36549068): remove this workaround when tree artifacts can be
-        # declared as the rule output.
-        _tree_artifact_proxy(
-            name = j2wasm_library_name + ".modular",
-            j2cl_library = ":" + j2wasm_library_name,
-            visibility = ["//visibility:private"],
-            tags = auto_generated_targets_tags,
-            testonly = args.get("testonly", 0),
-        )
-
     j2kt_native_library_name = j2kt_common.to_j2kt_native_name(name)
 
     if generate_j2kt_native_library == None:
         # By default refer back to allow list for implicit j2kt target generation.
         generate_j2kt_native_library = (
             not native.existing_rule(j2kt_native_library_name) and
-            any([p for p in _J2KT_NATIVE_PACKAGES if native.package_name().startswith(p)])
+            allowlists.is_package_allowed(native.package_name(), J2KT_NATIVE_ALLOWLIST)
         )
 
     if generate_j2kt_native_library:
@@ -279,7 +192,7 @@ def j2cl_library(
         # By default refer back to allow list for implicit j2kt target generation.
         generate_j2kt_jvm_library = (
             not native.existing_rule(j2kt_jvm_library_name) and
-            any([p for p in _J2KT_JVM_PACKAGES if native.package_name().startswith(p)])
+            allowlists.is_package_allowed(native.package_name(), J2KT_JVM_ALLOWLIST)
         )
 
     if generate_j2kt_jvm_library:

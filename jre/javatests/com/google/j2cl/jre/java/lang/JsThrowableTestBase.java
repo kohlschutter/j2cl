@@ -61,7 +61,8 @@ public abstract class JsThrowableTestBase extends TestCase {
 
   protected static Thrower createNativeThrower(final Object e) {
     return new Thrower() {
-      @Override public void throwException() {
+      @Override
+      public void throwException() {
         throwNative(e);
       }
     };
@@ -77,7 +78,7 @@ public abstract class JsThrowableTestBase extends TestCase {
   }
 
   /** A JavaScript object backing a Throwable. */
-  @JsType(isNative = true, name = "*", namespace = JsPackage.GLOBAL)
+  @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
   interface BackingJsObject {
     @JsProperty
     Object getCause();

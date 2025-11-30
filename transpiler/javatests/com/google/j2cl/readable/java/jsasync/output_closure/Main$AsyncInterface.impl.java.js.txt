@@ -13,7 +13,7 @@ let $LambdaAdaptor = goog.forwardDeclare('jsasync.Main.AsyncInterface.$LambdaAda
 class AsyncInterface {
  /** @abstract @override @nodts @return {IThenable<Integer>} */
  m_asyncCall__jsasync_Main_IThenable() {}
- /** @nodts @return {AsyncInterface} */
+ /** @nodts @return {!AsyncInterface} */
  static $adapt(/** ?function():IThenable<Integer> */ fn) {
   AsyncInterface.$clinit();
   return new $LambdaAdaptor(fn);
@@ -39,7 +39,7 @@ class AsyncInterface {
  }
 }
 AsyncInterface.$markImplementor(/**@type {Function}*/ (AsyncInterface));
-$Util.$setClassMetadataForInterface(AsyncInterface, 'jsasync.Main$AsyncInterface');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (AsyncInterface), 'jsasync.Main$AsyncInterface');
 
 exports = AsyncInterface;
 

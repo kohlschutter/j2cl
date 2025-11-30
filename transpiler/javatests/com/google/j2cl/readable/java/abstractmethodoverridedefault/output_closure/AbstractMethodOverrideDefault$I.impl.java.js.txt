@@ -12,7 +12,7 @@ class I {
  m_foo__void() {}
  /** @abstract @nodts */
  m_bar__void() {}
- /** @nodts @return {I} */
+ /** @nodts @return {!I} */
  static $adapt(/** ?function():void */ fn) {
   I.$clinit();
   return new $LambdaAdaptor(fn);
@@ -41,7 +41,7 @@ class I {
  }
 }
 I.$markImplementor(/**@type {Function}*/ (I));
-$Util.$setClassMetadataForInterface(I, 'abstractmethodoverridedefault.AbstractMethodOverrideDefault$I');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (I), 'abstractmethodoverridedefault.AbstractMethodOverrideDefault$I');
 
 exports = I;
 

@@ -1,0 +1,5 @@
+goog.module('exoticidentifiers.RenamedEnumWithValidIdentifier');
+
+
+const exotic__J$enum__name__ = goog.require('exoticidentifiers.RenamedEnumWithValidIdentifier$impl');
+exports = exotic__J$enum__name__;

@@ -22,19 +22,16 @@ import com.google.common.collect.Iterables;
 import com.google.j2cl.common.InternalCompilerError;
 import com.google.j2cl.transpiler.ast.AbstractRewriter;
 import com.google.j2cl.transpiler.ast.AstUtils;
-import com.google.j2cl.transpiler.ast.CastExpression;
 import com.google.j2cl.transpiler.ast.Expression;
 import com.google.j2cl.transpiler.ast.Field;
 import com.google.j2cl.transpiler.ast.FieldAccess;
+import com.google.j2cl.transpiler.ast.FieldDescriptor;
 import com.google.j2cl.transpiler.ast.FieldDescriptor.FieldOrigin;
-import com.google.j2cl.transpiler.ast.JsDocCastExpression;
-import com.google.j2cl.transpiler.ast.MemberReference;
 import com.google.j2cl.transpiler.ast.Method;
 import com.google.j2cl.transpiler.ast.MethodCall;
 import com.google.j2cl.transpiler.ast.MethodDescriptor;
 import com.google.j2cl.transpiler.ast.NewInstance;
 import com.google.j2cl.transpiler.ast.Node;
-import com.google.j2cl.transpiler.ast.NumberLiteral;
 import com.google.j2cl.transpiler.ast.RuntimeMethods;
 import com.google.j2cl.transpiler.ast.Type;
 import com.google.j2cl.transpiler.ast.TypeDescriptor;
@@ -118,14 +115,15 @@ public class NormalizeJsEnums extends NormalizationPass {
     checkState(field.isEnumField());
 
     List<Expression> arguments = ((NewInstance) field.getInitializer()).getArguments();
-    if (field.getDescriptor().getEnclosingTypeDescriptor().getJsEnumInfo().hasCustomValue()) {
+    FieldDescriptor fieldDescriptor = field.getDescriptor();
+    if (fieldDescriptor.getEnclosingTypeDescriptor().getJsEnumInfo().hasCustomValue()) {
       checkState(arguments.size() == 3);
       Expression constantValue = arguments.get(2);
       checkState(constantValue.isCompileTimeConstant());
       return constantValue;
     } else {
       checkState(arguments.size() == 2);
-      return NumberLiteral.fromInt(field.getEnumOrdinal());
+      return fieldDescriptor.getEnumOrdinalValue();
     }
   }
 
@@ -183,7 +181,8 @@ public class NormalizeJsEnums extends NormalizationPass {
             }
 
             if (targetSignature.equals("ordinal()")) {
-              return castJsEnumToValue(methodCall);
+              return AstUtils.castJsEnumToValue(
+                  methodCall.getQualifier(), methodCall.getTypeDescriptor());
             }
 
             return MethodCall.Builder.from(methodCall)
@@ -194,7 +193,8 @@ public class NormalizeJsEnums extends NormalizationPass {
           @Override
           public Expression rewriteFieldAccess(FieldAccess fieldAccess) {
             if (AstUtils.isJsEnumCustomValueField(fieldAccess.getTarget())) {
-              return castJsEnumToValue(fieldAccess);
+              return AstUtils.castJsEnumToValue(
+                  fieldAccess.getQualifier(), fieldAccess.getTypeDescriptor());
             }
 
             return fieldAccess;
@@ -223,31 +223,5 @@ public class NormalizeJsEnums extends NormalizationPass {
     }
 
     throw new InternalCompilerError("Unexpected Enum method: %s.", methodDescriptor);
-  }
-
-  /** Rewrite references like {@code q.value} and {@code q.ordinal()} to {@code q}. */
-  private static Expression castJsEnumToValue(MemberReference memberReference) {
-    // In order to preserve type consistency, expressions like
-    //
-    //     getEnum().ordinal()  // where getEnum() returns MyJsEnum.
-    //
-    // will be rewritten as
-    //
-    //     /** @type {int} */ ((MyJsEnum) getEnum())
-    //
-    // The inner Java cast to MyJsEnum guarantees that any conversion due to getEnum() being the
-    // qualifier of ordinal() is preserved (e.g. erasure casts if getEnum() returned T and was
-    // specialized to MyJsEnum in the calling context).
-    // The outer JsDoc cast guarantees that the expression is treated as of being the type of value
-    // and conversions such as boxing are correctly preserved (e.g. if the expression was assigned
-    // to an Integer variable).
-    return JsDocCastExpression.newBuilder()
-        .setCastType(memberReference.getTypeDescriptor())
-        .setExpression(
-            CastExpression.newBuilder()
-                .setCastTypeDescriptor(memberReference.getQualifier().getTypeDescriptor())
-                .setExpression(memberReference.getQualifier())
-                .build())
-        .build();
   }
 }

@@ -16,14 +16,12 @@
 package com.google.j2cl.transpiler.passes;
 
 import com.google.j2cl.transpiler.ast.ArrayTypeDescriptor;
-import com.google.j2cl.transpiler.ast.AstUtils;
 import com.google.j2cl.transpiler.ast.CastExpression;
 import com.google.j2cl.transpiler.ast.CompilationUnit;
 import com.google.j2cl.transpiler.ast.DeclaredTypeDescriptor;
 import com.google.j2cl.transpiler.ast.Expression;
 import com.google.j2cl.transpiler.ast.JsDocCastExpression;
 import com.google.j2cl.transpiler.ast.MethodCall;
-import com.google.j2cl.transpiler.ast.MethodDescriptor.ParameterDescriptor;
 import com.google.j2cl.transpiler.ast.TypeDescriptor;
 import com.google.j2cl.transpiler.ast.TypeDescriptors;
 
@@ -85,14 +83,14 @@ public class InsertErasureTypeSafetyCasts extends NormalizationPass {
 
       @Override
       public Expression rewriteCastContext(CastExpression castExpression) {
-        // Explicit casts are treated specifically because ContextRewriter does't treat them as
-        // a regular type conversion context however they may hide the ereasure. e.g.
+        // Explicit casts are treated specifically because ContextRewriter doesn't treat them as
+        // a regular type conversion context however they may hide the erasure. e.g.
         //
         //   List<Integer> integerList = ....;
         //   int i = (int) integerList.get(0);
         //
         // In this example an erasure cast to Integer needs to be inserted before the unboxing
-        // implied by the explict cast to int.
+        // implied by the explicit cast to int.
         Expression expression = castExpression.getExpression();
         if (castExpression.getCastTypeDescriptor().isPrimitive()
             && !expression.getTypeDescriptor().isPrimitive()) {
@@ -102,25 +100,6 @@ public class InsertErasureTypeSafetyCasts extends NormalizationPass {
               .build();
         }
         return castExpression;
-      }
-
-      @Override
-      public Expression rewriteMethodInvocationContext(
-          ParameterDescriptor toParameterDescriptor,
-          ParameterDescriptor declaredParameterDescriptor,
-          Expression argument) {
-        TypeDescriptor toTypeDescriptor = toParameterDescriptor.getTypeDescriptor();
-        TypeDescriptor declaredTypeDescriptor = declaredParameterDescriptor.getTypeDescriptor();
-        if (toParameterDescriptor.isVarargs()
-            && AstUtils.isNonNativeJsEnumArray(toTypeDescriptor)) {
-          // TODO(b/118299062): Remove special casing when non native JsEnum arrays are allowed.
-          //
-          // Since the packaging of varargs (see AstUtils.getPackagedVarargs() for the motivation)
-          // creates an array of type DeclaredType[] instead of a JsEnum[] this pass would normally
-          // insert an erasure cast to JsEnum[], which needs to be avoided.
-          return argument;
-        }
-        return rewriteTypeConversionContext(toTypeDescriptor, declaredTypeDescriptor, argument);
       }
 
       @Override
@@ -149,7 +128,7 @@ public class InsertErasureTypeSafetyCasts extends NormalizationPass {
       }
 
       @Override
-      public Expression rewriteSwitchExpressionContext(Expression expression) {
+      public Expression rewriteSwitchSubjectContext(Expression expression) {
         return maybeInsertErasureTypeSafetyCast(expression);
       }
     };
@@ -169,6 +148,7 @@ public class InsertErasureTypeSafetyCasts extends NormalizationPass {
       TypeDescriptor fromTypeDescriptor, TypeDescriptor toTypeDescriptor, Expression expression) {
     if (!fromTypeDescriptor.isTypeVariable()
         && !fromTypeDescriptor.isIntersection()
+        && !fromTypeDescriptor.isUnion()
         && !(fromTypeDescriptor.isArray()
             && ((ArrayTypeDescriptor) fromTypeDescriptor)
                 .getLeafTypeDescriptor()
@@ -190,7 +170,7 @@ public class InsertErasureTypeSafetyCasts extends NormalizationPass {
       return isUncheckedCast(expression)
           ? JsDocCastExpression.newBuilder()
               .setExpression(expression)
-              .setCastType(toTypeDescriptor)
+              .setCastTypeDescriptor(toTypeDescriptor)
               .build()
           : CastExpression.newBuilder()
               .setExpression(expression)
@@ -202,7 +182,7 @@ public class InsertErasureTypeSafetyCasts extends NormalizationPass {
   }
 
   private static boolean isUncheckedCast(Expression expression) {
-    return expression instanceof MethodCall
-        && ((MethodCall) expression).getTarget().isUncheckedCast();
+    return expression instanceof MethodCall methodCall
+        && methodCall.getTarget().hasAnnotation("javaemul.internal.annotations.UncheckedCast");
   }
 }

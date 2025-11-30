@@ -43,9 +43,6 @@ import jsinterop.annotations.JsType;
 /** Intrinsic string class. */
 public final class String implements Comparable<String>, CharSequence, Serializable {
 
-  // TODO(b/272381112): Remove after non-stringref experiment.
-  public static final boolean STRINGREF_ENABLED = true;
-
   /* TODO(jat): consider whether we want to support the following methods;
    *
    * <ul>
@@ -239,6 +236,18 @@ public final class String implements Comparable<String>, CharSequence, Serializa
     this.value = createImpl(bytes, charset);
   }
 
+  public String(char[] x) {
+    this.value = nativeFromCharCodeArray(x, 0, x.length);
+  }
+
+  public String(char[] x, int offset, int count) {
+    this.value = createImpl(x, offset, count);
+  }
+
+  public String(int[] codePoints, int offset, int count) {
+    this.value = createImpl(codePoints, offset, count);
+  }
+
   private static NativeString createImpl(byte[] bytes, Charset charset) {
     return createImpl(bytes, 0, bytes.length, charset);
   }
@@ -248,30 +257,19 @@ public final class String implements Comparable<String>, CharSequence, Serializa
     return String.valueOf(((EmulatedCharset) charset).decodeString(bytes, ofs, len)).value;
   }
 
-  public String(char[] x) {
-    this.value = nativeFromCharCodeArray(x, 0, x.length);
-  }
-
-  public String(char[] x, int offset, int count) {
+  private static NativeString createImpl(char[] x, int offset, int count) {
     int end = offset + count;
     checkStringBounds(offset, end, x.length);
-    this.value = nativeFromCharCodeArray(x, offset, end);
+    return nativeFromCharCodeArray(x, offset, end);
   }
 
-  // TODO(b/272381112): Remove after non-stringref experiment.
-  String(int offset, int count, char[] x) {
-    int end = offset + count;
-    checkStringBounds(offset, end, x.length);
-    this.value = nativeFromCharCodeArray(x, offset, end);
-  }
-
-  public String(int[] codePoints, int offset, int count) {
+  private static NativeString createImpl(int[] codePoints, int offset, int count) {
     char[] chars = new char[count * 2];
     int charIdx = 0;
     while (count-- > 0) {
       charIdx += Character.toChars(codePoints[offset++], chars, charIdx);
     }
-    this.value = String.valueOf(chars, 0, charIdx).value;
+    return String.valueOf(chars, 0, charIdx).value;
   }
 
   public String(String other) {
@@ -337,7 +335,7 @@ public final class String implements Comparable<String>, CharSequence, Serializa
   }
 
   public String concat(String str) {
-    return this + checkNotNull(str);
+    return new String(nativeConcat(value, str.value));
   }
 
   public boolean contains(CharSequence s) {
@@ -371,14 +369,6 @@ public final class String implements Comparable<String>, CharSequence, Serializa
   private boolean equals(String other) {
     if (other == null) {
       return false;
-    }
-    // Check the cached hashCodes (if any) for quick answer.
-    int hash = hashCode;
-    if (hash != 0) {
-      int otherHash = other.hashCode;
-      if (otherHash != 0 && otherHash != hash) {
-        return false;
-      }
     }
     return nativeEq(value, other.value);
   }
@@ -441,8 +431,7 @@ public final class String implements Comparable<String>, CharSequence, Serializa
     getChars0(srcBegin, srcEnd, dst, dstBegin);
   }
 
-  // Visible to provide fast path for internal uses.
-  void getChars0(int srcBegin, int srcEnd, char[] dst, int dstBegin) {
+  private void getChars0(int srcBegin, int srcEnd, char[] dst, int dstBegin) {
     int unused = nativeGetChars(nativeSubstr(asStringView(value), srcBegin, srcEnd), dst, dstBegin);
   }
 
@@ -743,6 +732,19 @@ public final class String implements Comparable<String>, CharSequence, Serializa
     return start > 0 || end < length ? substring(start, end) : this;
   }
 
+  // TODO(b/335375385): Replace with the concat instance method.
+  static String concat(String str1, String str2) {
+    return new String(nativeConcat(str1.value, str2.value));
+  }
+
+  // Needed to be able to pass a native wasm i32 array to a non native method.
+  @Wasm("$char.array")
+  private interface CharArrayRef {}
+
+  static String fromNativeCharArray(CharArrayRef x, int length) {
+    return new String(nativeFromCharCodeArray(x, 0, length));
+  }
+
   static String fromJsString(NativeString o) {
     return o == null ? null : new String(o);
   }
@@ -793,6 +795,9 @@ public final class String implements Comparable<String>, CharSequence, Serializa
   @Wasm("string.new_wtf16_array")
   private static native NativeString nativeFromCharCodeArray(char[] x, int start, int end);
 
+  @Wasm("string.new_wtf16_array")
+  private static native NativeString nativeFromCharCodeArray(CharArrayRef x, int start, int end);
+
   @Wasm("string.encode_wtf16_array")
   private static native int nativeGetChars(NativeString s, char[] x, int start);
 
@@ -816,4 +821,7 @@ public final class String implements Comparable<String>, CharSequence, Serializa
 
   @Wasm("string.eq")
   private static native boolean nativeEq(NativeString a, NativeString b);
+
+  @Wasm("string.concat")
+  private static native NativeString nativeConcat(NativeString a, NativeString b);
 }

@@ -28,6 +28,7 @@ import com.google.j2cl.transpiler.ast.ExpressionStatement;
 import com.google.j2cl.transpiler.ast.FieldDeclarationStatement;
 import com.google.j2cl.transpiler.ast.ForStatement;
 import com.google.j2cl.transpiler.ast.IfStatement;
+import com.google.j2cl.transpiler.ast.JsForInStatement;
 import com.google.j2cl.transpiler.ast.LabeledStatement;
 import com.google.j2cl.transpiler.ast.Node;
 import com.google.j2cl.transpiler.ast.ReturnStatement;
@@ -37,6 +38,7 @@ import com.google.j2cl.transpiler.ast.SwitchStatement;
 import com.google.j2cl.transpiler.ast.SynchronizedStatement;
 import com.google.j2cl.transpiler.ast.ThrowStatement;
 import com.google.j2cl.transpiler.ast.TryStatement;
+import com.google.j2cl.transpiler.ast.VariableDeclarationExpression;
 import com.google.j2cl.transpiler.ast.WhileStatement;
 import com.google.j2cl.transpiler.backend.common.SourceBuilder;
 import java.util.ArrayList;
@@ -73,7 +75,10 @@ public class StatementTranspiler {
             () -> {
               builder.append("break");
               if (breakStatement.getLabelReference() != null) {
-                builder.append(" " + breakStatement.getLabelReference().getTarget().getName());
+                builder.append(
+                    " "
+                        + environment.getUniqueNameForVariable(
+                            breakStatement.getLabelReference().getTarget()));
               }
               builder.append(";");
             });
@@ -93,7 +98,10 @@ public class StatementTranspiler {
             () -> {
               builder.append("continue");
               if (continueStatement.getLabelReference() != null) {
-                builder.append(" " + continueStatement.getLabelReference().getTarget().getName());
+                builder.append(
+                    " "
+                        + environment.getUniqueNameForVariable(
+                            continueStatement.getLabelReference().getTarget()));
               }
               builder.append(";");
             });
@@ -143,6 +151,24 @@ public class StatementTranspiler {
       }
 
       @Override
+      public boolean enterJsForInStatement(JsForInStatement jsForInStatement) {
+        builder.emitWithMapping(
+            jsForInStatement.getSourcePosition(),
+            () -> {
+              builder.append("for(");
+              renderExpression(
+                  VariableDeclarationExpression.newBuilder()
+                      .addVariableDeclarations(jsForInStatement.getLoopVariable())
+                      .build());
+              builder.append(" in ");
+              renderExpression(jsForInStatement.getIterableExpression());
+              builder.append(") ");
+              render(jsForInStatement.getBody());
+            });
+        return false;
+      }
+
+      @Override
       public boolean enterIfStatement(IfStatement ifStatement) {
         builder.emitWithMapping(
             ifStatement.getSourcePosition(),
@@ -174,7 +200,8 @@ public class StatementTranspiler {
           jsDocs.add("@type");
         }
         jsDocs.add("{" + typeJsDoc + "}");
-        if (declaration.isDeprecated()) {
+        if (declaration.getFieldDescriptor().hasAnnotation("java.lang.Deprecated")
+            || declaration.getFieldDescriptor().hasAnnotation("kotlin.Deprecated")) {
           jsDocs.add("@deprecated");
         }
         if (!declaration.getFieldDescriptor().canBeReferencedExternally()) {
@@ -205,17 +232,9 @@ public class StatementTranspiler {
         builder.emitWithMapping(
             labelStatement.getSourcePosition(),
             () -> {
-              builder.append(labelStatement.getLabel().getName() + ": ");
-
-              Statement innerStatement = labelStatement.getStatement();
-              // TODO(b/174246745): Remove block braces once the underlying jscompiler bug is fixed.
-              if (innerStatement instanceof LabeledStatement) {
-                builder.openBrace();
-              }
-              render(innerStatement);
-              if (innerStatement instanceof LabeledStatement) {
-                builder.closeBrace();
-              }
+              builder.append(
+                  environment.getUniqueNameForVariable(labelStatement.getLabel()) + ": ");
+              render(labelStatement.getStatement());
             });
         return false;
       }
@@ -238,12 +257,23 @@ public class StatementTranspiler {
 
       @Override
       public boolean enterSwitchCase(SwitchCase switchCase) {
-        if (switchCase.isDefault()) {
-          builder.append("default: ");
-        } else {
+        // Emit the expressions as a sequence of (fallthrough empty) cases. E.g.
+        //
+        //   case 1, 2, 3:
+        //
+        // will be emitted as:
+        //
+        //   case 1:
+        //   case 2:
+        //   case 3:
+
+        for (Expression expression : switchCase.getCaseExpressions()) {
           builder.append("case ");
-          renderExpression(switchCase.getCaseExpression());
-          builder.append(": ");
+          renderExpression(expression);
+          builder.append(":");
+        }
+        if (switchCase.isDefault()) {
+          builder.append("default:");
         }
         builder.indent();
         renderStatements(switchCase.getStatements());
@@ -257,7 +287,7 @@ public class StatementTranspiler {
             switchStatement.getSourcePosition(),
             () -> {
               builder.append("switch (");
-              renderExpression(switchStatement.getSwitchExpression());
+              renderExpression(switchStatement.getExpression());
               builder.append(") ");
               builder.openBrace();
               for (SwitchCase switchcase : switchStatement.getCases()) {

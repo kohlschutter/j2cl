@@ -1,41 +1,38 @@
- ;;; Code for multipleconstructors.MultipleConstructors [type definition]
- (type $multipleconstructors.MultipleConstructors (sub $java.lang.Object (struct
-  (field $vtable (ref $multipleconstructors.MultipleConstructors.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  (field $f_flag__multipleconstructors_MultipleConstructors_ (mut i8))
-  (field $f_id__multipleconstructors_MultipleConstructors_ (mut i32))
-  ))
- )
- (type $multipleconstructors.MultipleConstructors.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  ))
- )
+;;; Code for multipleconstructors.MultipleConstructors [type definition]
+(type $multipleconstructors.MultipleConstructors (sub $java.lang.Object (struct
+ (field $vtable (ref $multipleconstructors.MultipleConstructors.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ (field $flag@multipleconstructors.MultipleConstructors (mut i8))
+ (field $id@multipleconstructors.MultipleConstructors (mut i32))
+ ))
+)
+(type $multipleconstructors.MultipleConstructors.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ ))
+)
+
+;;; Code for multipleconstructors.MultipleConstructors [imports]
+
+;;; Code for multipleconstructors.MultipleConstructors [static fields]
+(global $$class-initialized@multipleconstructors.MultipleConstructors (mut i32)
+ (i32.const 0)
+)
+(global $$class@multipleconstructors.MultipleConstructors (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
 
 ;;; Code for multipleconstructors.MultipleConstructors [vtable.init]
 (global $multipleconstructors.MultipleConstructors.vtable (ref $multipleconstructors.MultipleConstructors.vtable)
  (struct.new $multipleconstructors.MultipleConstructors.vtable
   (ref.func $$getClassImpl__java_lang_Class@multipleconstructors.MultipleConstructors)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
  )
-)
-
-;;; Code for multipleconstructors.MultipleConstructors [static fields]
-(global $f_$initialized__multipleconstructors_MultipleConstructors (mut i32)
- (i32.const 0)
-)
-(global $f_$class__multipleconstructors_MultipleConstructors (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|multiplecons...|__multipleconstructors_MultipleConstructors (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
 )
 
 ;;; Code for multipleconstructors.MultipleConstructors [methods]
@@ -44,16 +41,16 @@
 (func $$create__int@multipleconstructors.MultipleConstructors
  (param $id i32)
  (result (ref null $multipleconstructors.MultipleConstructors))
- ;;@ multipleconstructors/MultipleConstructors.java:22:9
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:22:9
  (local $$instance (ref null $multipleconstructors.MultipleConstructors))
  (block
-  ;;@ multipleconstructors/MultipleConstructors.java:22:9
-  (call $$clinit__void@multipleconstructors.MultipleConstructors )
-  ;;@ multipleconstructors/MultipleConstructors.java:22:9
-  (local.set $$instance (struct.new $multipleconstructors.MultipleConstructors (ref.as_non_null (global.get $multipleconstructors.MultipleConstructors.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0) (i32.const 0) (i32.const 0)))
-  ;;@ multipleconstructors/MultipleConstructors.java:22:9
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:22:9
+  (call $$clinit__void_<once>_@multipleconstructors.MultipleConstructors )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:22:9
+  (local.set $$instance (struct.new $multipleconstructors.MultipleConstructors (global.get $multipleconstructors.MultipleConstructors.vtable) (global.get $itable.empty) (i32.const 0) (i32.const 0) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:22:9
   (call $$ctor__int__void_$p_multipleconstructors_MultipleConstructors@multipleconstructors.MultipleConstructors (ref.as_non_null (local.get $$instance))(local.get $id))
-  ;;@ multipleconstructors/MultipleConstructors.java:22:9
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:22:9
   (return (local.get $$instance))
  )
 )
@@ -62,14 +59,14 @@
 (func $$ctor__int__void_$p_multipleconstructors_MultipleConstructors@multipleconstructors.MultipleConstructors
  (param $this (ref null $multipleconstructors.MultipleConstructors))
  (param $id i32)
- ;;@ multipleconstructors/MultipleConstructors.java:22:9
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:22:9
  (block
-  ;;@ multipleconstructors/MultipleConstructors.java:22:38
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:22:38
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
-  ;;@ multipleconstructors/MultipleConstructors.java:23:4
-  (struct.set $multipleconstructors.MultipleConstructors $f_id__multipleconstructors_MultipleConstructors_ (local.get $this) (local.get $id))
-  ;;@ multipleconstructors/MultipleConstructors.java:24:4
-  (struct.set $multipleconstructors.MultipleConstructors $f_flag__multipleconstructors_MultipleConstructors_ (local.get $this) (i32.eq (local.get $id) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:23:4
+  (struct.set $multipleconstructors.MultipleConstructors $id@multipleconstructors.MultipleConstructors (local.get $this) (local.get $id))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:24:4
+  (struct.set $multipleconstructors.MultipleConstructors $flag@multipleconstructors.MultipleConstructors (local.get $this) (i32.eq (local.get $id) (i32.const 0)))
  )
 )
 
@@ -77,16 +74,16 @@
 (func $$create__boolean@multipleconstructors.MultipleConstructors
  (param $flag i32)
  (result (ref null $multipleconstructors.MultipleConstructors))
- ;;@ multipleconstructors/MultipleConstructors.java:27:9
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:27:9
  (local $$instance (ref null $multipleconstructors.MultipleConstructors))
  (block
-  ;;@ multipleconstructors/MultipleConstructors.java:27:9
-  (call $$clinit__void@multipleconstructors.MultipleConstructors )
-  ;;@ multipleconstructors/MultipleConstructors.java:27:9
-  (local.set $$instance (struct.new $multipleconstructors.MultipleConstructors (ref.as_non_null (global.get $multipleconstructors.MultipleConstructors.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0) (i32.const 0) (i32.const 0)))
-  ;;@ multipleconstructors/MultipleConstructors.java:27:9
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:27:9
+  (call $$clinit__void_<once>_@multipleconstructors.MultipleConstructors )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:27:9
+  (local.set $$instance (struct.new $multipleconstructors.MultipleConstructors (global.get $multipleconstructors.MultipleConstructors.vtable) (global.get $itable.empty) (i32.const 0) (i32.const 0) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:27:9
   (call $$ctor__boolean__void_$p_multipleconstructors_MultipleConstructors@multipleconstructors.MultipleConstructors (ref.as_non_null (local.get $$instance))(local.get $flag))
-  ;;@ multipleconstructors/MultipleConstructors.java:27:9
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:27:9
   (return (local.get $$instance))
  )
 )
@@ -95,14 +92,14 @@
 (func $$ctor__boolean__void_$p_multipleconstructors_MultipleConstructors@multipleconstructors.MultipleConstructors
  (param $this (ref null $multipleconstructors.MultipleConstructors))
  (param $flag i32)
- ;;@ multipleconstructors/MultipleConstructors.java:27:9
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:27:9
  (block
-  ;;@ multipleconstructors/MultipleConstructors.java:27:44
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:27:44
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
-  ;;@ multipleconstructors/MultipleConstructors.java:28:4
-  (struct.set $multipleconstructors.MultipleConstructors $f_id__multipleconstructors_MultipleConstructors_ (local.get $this) (i32.sub (i32.const 0) (i32.const 1)))
-  ;;@ multipleconstructors/MultipleConstructors.java:29:4
-  (struct.set $multipleconstructors.MultipleConstructors $f_flag__multipleconstructors_MultipleConstructors_ (local.get $this) (local.get $flag))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:28:4
+  (struct.set $multipleconstructors.MultipleConstructors $id@multipleconstructors.MultipleConstructors (local.get $this) (i32.const -1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:29:4
+  (struct.set $multipleconstructors.MultipleConstructors $flag@multipleconstructors.MultipleConstructors (local.get $this) (local.get $flag))
  )
 )
 
@@ -111,16 +108,16 @@
  (param $id i32)
  (param $flag i32)
  (result (ref null $multipleconstructors.MultipleConstructors))
- ;;@ multipleconstructors/MultipleConstructors.java:32:9
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:32:9
  (local $$instance (ref null $multipleconstructors.MultipleConstructors))
  (block
-  ;;@ multipleconstructors/MultipleConstructors.java:32:9
-  (call $$clinit__void@multipleconstructors.MultipleConstructors )
-  ;;@ multipleconstructors/MultipleConstructors.java:32:9
-  (local.set $$instance (struct.new $multipleconstructors.MultipleConstructors (ref.as_non_null (global.get $multipleconstructors.MultipleConstructors.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0) (i32.const 0) (i32.const 0)))
-  ;;@ multipleconstructors/MultipleConstructors.java:32:9
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:32:9
+  (call $$clinit__void_<once>_@multipleconstructors.MultipleConstructors )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:32:9
+  (local.set $$instance (struct.new $multipleconstructors.MultipleConstructors (global.get $multipleconstructors.MultipleConstructors.vtable) (global.get $itable.empty) (i32.const 0) (i32.const 0) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:32:9
   (call $$ctor__int__boolean__void_$p_multipleconstructors_MultipleConstructors@multipleconstructors.MultipleConstructors (ref.as_non_null (local.get $$instance))(local.get $id)(local.get $flag))
-  ;;@ multipleconstructors/MultipleConstructors.java:32:9
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:32:9
   (return (local.get $$instance))
  )
 )
@@ -130,45 +127,46 @@
  (param $this (ref null $multipleconstructors.MultipleConstructors))
  (param $id i32)
  (param $flag i32)
- ;;@ multipleconstructors/MultipleConstructors.java:32:9
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:32:9
  (block
-  ;;@ multipleconstructors/MultipleConstructors.java:32:52
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:32:52
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
-  ;;@ multipleconstructors/MultipleConstructors.java:33:4
-  (struct.set $multipleconstructors.MultipleConstructors $f_id__multipleconstructors_MultipleConstructors_ (local.get $this) (local.get $id))
-  ;;@ multipleconstructors/MultipleConstructors.java:34:4
-  (struct.set $multipleconstructors.MultipleConstructors $f_flag__multipleconstructors_MultipleConstructors_ (local.get $this) (local.get $flag))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:33:4
+  (struct.set $multipleconstructors.MultipleConstructors $id@multipleconstructors.MultipleConstructors (local.get $this) (local.get $id))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:34:4
+  (struct.set $multipleconstructors.MultipleConstructors $flag@multipleconstructors.MultipleConstructors (local.get $this) (local.get $flag))
  )
 )
 
 ;;; void MultipleConstructors.$clinit()
-(func $$clinit__void@multipleconstructors.MultipleConstructors
- ;;@ multipleconstructors/MultipleConstructors.java:18:13
+(func $$clinit__void_<once>_@multipleconstructors.MultipleConstructors
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:18:13
  (block
-  ;;@ multipleconstructors/MultipleConstructors.java:18:13
-  (if (global.get $f_$initialized__multipleconstructors_MultipleConstructors)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:18:13
+  (if (global.get $$class-initialized@multipleconstructors.MultipleConstructors)
    (then
-    ;;@ multipleconstructors/MultipleConstructors.java:18:13
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:18:13
     (return )
    )
   )
-  ;;@ multipleconstructors/MultipleConstructors.java:18:13
-  (global.set $f_$initialized__multipleconstructors_MultipleConstructors (i32.const 1))
-  ;;@ multipleconstructors/MultipleConstructors.java:18:13
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:18:13
+  (global.set $$class-initialized@multipleconstructors.MultipleConstructors (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/multipleconstructors/readable-j2wasm.js/multipleconstructors/MultipleConstructors.java:18:13
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> MultipleConstructors.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@multipleconstructors.MultipleConstructors
+(func $$getClassMetadata__java_lang_Class_<once>_@multipleconstructors.MultipleConstructors
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__multipleconstructors_MultipleConstructors))
+  (if (i32.eqz (ref.is_null (global.get $$class@multipleconstructors.MultipleConstructors)))
    (then
-    (global.set $f_$class__multipleconstructors_MultipleConstructors (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|multiplecons...|__java_lang_String (ref.func $$getString_|multiplecons...|__java_lang_String@multipleconstructors.MultipleConstructors) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@multipleconstructors.MultipleConstructors))
    )
   )
-  (return (global.get $f_$class__multipleconstructors_MultipleConstructors))
+  (global.set $$class@multipleconstructors.MultipleConstructors (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|multiplecons...|__java_lang_String_<once>_@multipleconstructors.MultipleConstructors )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@multipleconstructors.MultipleConstructors))
  )
 )
 
@@ -180,20 +178,7 @@
  (local $this (ref null $multipleconstructors.MultipleConstructors))
  (local.set $this (ref.cast (ref $multipleconstructors.MultipleConstructors) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@multipleconstructors.MultipleConstructors) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@multipleconstructors.MultipleConstructors ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@multipleconstructors.MultipleConstructors)
-
-;;; String MultipleConstructors.$getString_|multiplecons...|()
-(func $$getString_|multiplecons...|__java_lang_String@multipleconstructors.MultipleConstructors
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|multiplecons...|__multipleconstructors_MultipleConstructors))
-   (then
-    (global.set $f_$string_|multiplecons...|__multipleconstructors_MultipleConstructors (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "multipleconstructors.MultipleConstructors")))
-   )
-  )
-  (return (global.get $f_$string_|multiplecons...|__multipleconstructors_MultipleConstructors))
- )
-)

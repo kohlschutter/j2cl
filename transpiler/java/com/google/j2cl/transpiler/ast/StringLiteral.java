@@ -25,7 +25,7 @@ import com.google.j2cl.common.visitor.Visitable;
 
 /** String literal node. */
 @Visitable
-public class StringLiteral extends Literal {
+public final class StringLiteral extends Literal {
   private final String value;
 
   public StringLiteral(String value) {
@@ -38,7 +38,7 @@ public class StringLiteral extends Literal {
 
   @Override
   public String getSourceText() {
-    return "\'" + StringUtils.escapeAsWtf16(value) + "\'";
+    return "'" + StringUtils.escapeAsWtf16(value) + "'";
   }
 
   public ImmutableList<NumberLiteral> toCharLiterals() {
@@ -57,14 +57,7 @@ public class StringLiteral extends Literal {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof StringLiteral)) {
-      return false;
-    }
-    StringLiteral that = (StringLiteral) o;
-    return value.equals(that.value);
+    return this == o || (o instanceof StringLiteral other && value.equals(other.value));
   }
 
   @Override

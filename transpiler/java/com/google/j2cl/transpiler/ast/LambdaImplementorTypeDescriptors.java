@@ -19,104 +19,140 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Streams;
 import com.google.j2cl.transpiler.ast.TypeDeclaration.Kind;
+import com.google.j2cl.transpiler.ast.TypeDeclaration.Origin;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 /** Utility TypeDescriptors methods used to synthesize lambda implementors. */
 // TODO(b/63118697): Simplify this code once TD refactoring makes it easier to implement.
 public final class LambdaImplementorTypeDescriptors {
-  private static final String FUNCTIONAL_INTERFACE_IMPLEMENTOR_CLASS_NAME = "LambdaImplementor";
-
-  /** Returns the TypeDescriptor for lambda instances of the functional interface. */
-  public static DeclaredTypeDescriptor createLambdaImplementorTypeDescriptor(
-      TypeDescriptor typeDescriptor, DeclaredTypeDescriptor enclosingTypeDescriptor, int uniqueId) {
-    return createLambdaImplementorTypeDescriptor(
-        typeDescriptor, enclosingTypeDescriptor, uniqueId, false);
-  }
+  private static final String LAMBDA_IMPLEMENTOR_CLASS_NAME = "LambdaImplementor";
 
   /** Returns the TypeDescriptor for lambda instances of the functional interface. */
   public static DeclaredTypeDescriptor createLambdaImplementorTypeDescriptor(
       TypeDescriptor typeDescriptor,
       DeclaredTypeDescriptor enclosingTypeDescriptor,
       int uniqueId,
-      boolean capturesEnclosingInstance) {
-
-    DeclaredTypeDescriptor functionalInterfaceTypeDescriptor =
-        typeDescriptor.getFunctionalInterface();
+      boolean capturesEnclosingInstance,
+      List<TypeVariable> typeParameters,
+      boolean extendsAbstractAdaptor) {
 
     // Lambdas that implement several types, e.g. from an intersection cast, require that all
     // those types be declared type descriptors.
-    List<DeclaredTypeDescriptor> interfaceTypeDescriptors =
+    Stream<DeclaredTypeDescriptor> interfaceDescriptorsStream =
         typeDescriptor.isIntersection()
             ? ((IntersectionTypeDescriptor) typeDescriptor)
-                .getIntersectionTypeDescriptors().stream()
-                    .map(DeclaredTypeDescriptor.class::cast)
-                    .collect(toImmutableList())
-            : ImmutableList.of((DeclaredTypeDescriptor) typeDescriptor);
+                .getIntersectionTypeDescriptors().stream().map(DeclaredTypeDescriptor.class::cast)
+            : Stream.of((DeclaredTypeDescriptor) typeDescriptor);
 
-    ImmutableList<TypeDescriptor> typeArgumentDescriptors =
-        interfaceTypeDescriptors.stream()
-            .flatMap(i -> i.getTypeArgumentDescriptors().stream())
+    ImmutableList<DeclaredTypeDescriptor> interfaceTypeDescriptors =
+        extendsAbstractAdaptor
+            ? interfaceDescriptorsStream.collect(toImmutableList())
+            : interfaceDescriptorsStream
+                .map(LambdaImplementorTypeDescriptors::sanitizeDescriptor)
+                .collect(toImmutableList());
+
+    TypeDeclaration implementorTypeDeclaration =
+        createLambdaImplementorTypeDeclaration(
+            enclosingTypeDescriptor,
+            interfaceTypeDescriptors,
+            uniqueId,
+            capturesEnclosingInstance,
+            typeParameters,
+            extendsAbstractAdaptor);
+
+    return implementorTypeDeclaration.toDescriptor(typeParameters);
+  }
+
+  /** Sanitize the type arguments of a declared type descriptor. */
+  private static DeclaredTypeDescriptor sanitizeDescriptor(DeclaredTypeDescriptor typeDescriptor) {
+    // TODO(b/321074964): Do a more general recursive sanitizing removing all non-denotable types.
+    var newTypeArguments =
+        typeDescriptor.getTypeArgumentDescriptors().stream()
+            .map(LambdaImplementorTypeDescriptors::toBounds)
             .collect(toImmutableList());
 
-    TypeDeclaration adaptorDeclaration =
-        createLambdaImplementorTypeDeclaration(
-            typeDescriptor.toUnparameterizedTypeDescriptor(),
-            enclosingTypeDescriptor.toUnparameterizedTypeDescriptor(),
-            TypeDescriptors.toUnparameterizedTypeDescriptors(interfaceTypeDescriptors),
-            uniqueId,
-            capturesEnclosingInstance);
+    if (newTypeArguments.equals(typeDescriptor.getTypeArgumentDescriptors())) {
+      return typeDescriptor;
+    }
 
-    return DeclaredTypeDescriptor.newBuilder()
-        .setEnclosingTypeDescriptor(enclosingTypeDescriptor)
-        .setTypeDeclaration(adaptorDeclaration)
-        .setTypeArgumentDescriptors(functionalInterfaceTypeDescriptor.getTypeArgumentDescriptors())
-        .setSuperTypeDescriptorFactory(() -> TypeDescriptors.get().javaLangObject)
-        .setInterfaceTypeDescriptorsFactory(() -> ImmutableList.copyOf(interfaceTypeDescriptors))
-        .setTypeArgumentDescriptors(typeArgumentDescriptors)
-        .setDeclaredMethodDescriptorsFactory(
-            implementorTypeDescriptor ->
-                ImmutableList.of(getLambdaMethod(implementorTypeDescriptor)))
-        .build();
+    typeDescriptor = typeDescriptor.getDeclarationDescriptor();
+
+    return (DeclaredTypeDescriptor)
+        typeDescriptor.specializeTypeVariables(
+            Streams.zip(
+                    typeDescriptor.getTypeDeclaration().getTypeParameterDescriptors().stream(),
+                    newTypeArguments.stream(),
+                    Maps::immutableEntry)
+                .collect(ImmutableMap.toImmutableMap(Entry::getKey, Entry::getValue)));
+  }
+
+  /** Projects wildcards and captures to their bounds. */
+  private static TypeDescriptor toBounds(TypeDescriptor typeDescriptor) {
+    if (!typeDescriptor.isTypeVariable()) {
+      return typeDescriptor;
+    }
+    TypeVariable typeVariable = (TypeVariable) typeDescriptor;
+
+    return typeVariable.isWildcardOrCapture()
+        ? toBounds(
+            typeVariable.getLowerBoundTypeDescriptor() != null
+                ? typeVariable.getLowerBoundTypeDescriptor()
+                : typeVariable.getUpperBoundTypeDescriptor())
+        : typeVariable;
   }
 
   /** Returns the TypeDeclaration for the LambdaAdaptor class. */
   private static TypeDeclaration createLambdaImplementorTypeDeclaration(
-      TypeDescriptor lambdaTypeDescriptor,
       DeclaredTypeDescriptor enclosingTypeDescriptor,
       List<DeclaredTypeDescriptor> interfaceTypeDescriptors,
       int uniqueId,
-      boolean capturesEnclosingInstance) {
+      boolean capturesEnclosingInstance,
+      List<TypeVariable> typeParameters,
+      boolean extendsAbstractAdaptor) {
 
     TypeDeclaration enclosingTypeDeclaration = enclosingTypeDescriptor.getTypeDeclaration();
     ImmutableList<String> classComponents =
         enclosingTypeDeclaration.synthesizeInnerClassComponents(
-            FUNCTIONAL_INTERFACE_IMPLEMENTOR_CLASS_NAME, uniqueId);
-
-    ImmutableList<TypeVariable> typeParameterDescriptors =
-        interfaceTypeDescriptors.stream()
-            .flatMap(i -> i.getTypeDeclaration().getTypeParameterDescriptors().stream())
-            .collect(toImmutableList());
+            LAMBDA_IMPLEMENTOR_CLASS_NAME, uniqueId);
 
     return TypeDeclaration.newBuilder()
         .setEnclosingTypeDeclaration(enclosingTypeDeclaration)
-        .setSuperTypeDescriptorFactory(() -> TypeDescriptors.get().javaLangObject)
+        .setSuperTypeDescriptorFactory(
+            () -> getImplementorSupertype(interfaceTypeDescriptors, extendsAbstractAdaptor))
         .setClassComponents(classComponents)
         .setDeclaredMethodDescriptorsFactory(
             implementorTypeDeclaration ->
-                ImmutableList.of(
-                    getLambdaMethod(implementorTypeDeclaration.toUnparameterizedTypeDescriptor())))
+                ImmutableList.of(getLambdaMethod(implementorTypeDeclaration.toDescriptor())))
         .setInterfaceTypeDescriptorsFactory(() -> ImmutableList.copyOf(interfaceTypeDescriptors))
-        .setTypeParameterDescriptors(typeParameterDescriptors)
-        .setUnparameterizedTypeDescriptorFactory(
-            () ->
-                createLambdaImplementorTypeDescriptor(
-                    lambdaTypeDescriptor, enclosingTypeDescriptor, uniqueId))
+        .setTypeParameterDescriptors(typeParameters)
         .setVisibility(Visibility.PUBLIC)
         .setCapturingEnclosingInstance(capturesEnclosingInstance)
         .setKind(Kind.CLASS)
         .setAnonymous(true)
+        .setOrigin(Origin.LAMBDA_IMPLEMENTOR)
         .build();
+  }
+
+  private static DeclaredTypeDescriptor getImplementorSupertype(
+      List<DeclaredTypeDescriptor> interfaceTypeDescriptors, boolean extendsAbstractAdaptor) {
+    return extendsAbstractAdaptor
+        ? LambdaAdaptorTypeDescriptors.createAbstractLambdaAdaptorTypeDescriptor(
+            // It is ok to choose any of its functional interfaces to create an abstract super type.
+            // this accomplishes the main goal of inheriting class metadata. However the choice of
+            // interface might have optimization implications that should be further explored.
+            // TODO(b/360407114): See the effect of choosing a different one. In particular if
+            // the interfaces are related it will be beneficial to choose the subtype.
+            interfaceTypeDescriptors.stream()
+                .filter(DeclaredTypeDescriptor::isFunctionalInterface)
+                .findFirst()
+                .get())
+        : TypeDescriptors.get().javaLangObject;
   }
 
   /** Returns the MethodDescriptor for the SAM implementation in the LambdaImplementor class. */
@@ -133,8 +169,8 @@ public final class LambdaImplementorTypeDescriptors {
         functionalInterfaceTypeDescriptor.getSingleAbstractMethodDescriptor();
     return MethodDescriptor.Builder.from(functionalInterfaceMethodDescriptor)
         .setNative(false)
+        .makeDeclaration()
         // This is the declaration.
-        .setDeclarationDescriptor(null)
         .setEnclosingTypeDescriptor(implementorTypeDescriptor)
         .setSynthetic(false)
         .setAbstract(false)

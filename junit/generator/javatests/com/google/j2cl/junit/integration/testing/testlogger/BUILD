@@ -1,4 +1,5 @@
 load("//build_defs:rules.bzl", "j2cl_library", "j2kt_jvm_library", "j2kt_native_library", "j2wasm_library")
+load("@rules_java//java:defs.bzl", "java_library")
 
 package(
     default_applicable_licenses = ["//:j2cl_license"],
@@ -27,7 +28,7 @@ j2wasm_library(
     srcs = glob(["super/*.java"]),
     deps = [
         "//third_party:closure_testcase",
-        "//third_party:gwt-jsinterop-annotations-j2wasm",
+        "//third_party:jsinterop-annotations-j2wasm",
     ],
 )
 
@@ -36,6 +37,6 @@ j2cl_library(
     srcs = glob(["super/*.java"]),
     deps = [
         "//third_party:closure_testcase",
-        "//third_party:gwt-jsinterop-annotations-j2cl",
+        "//third_party:jsinterop-annotations-j2cl",
     ],
 )

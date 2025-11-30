@@ -1,4 +1,5 @@
 load("//build_defs:rules.bzl", "j2cl_library")
+load("@rules_java//java:defs.bzl", "java_library", "java_plugin")
 
 package(
     default_applicable_licenses = ["//:j2cl_license"],
@@ -34,7 +35,7 @@ java_library(
         "//third_party:auto_value",
         "//third_party:escapevelocity",
         "//third_party:guava",
-        "//third_party:gwt-jsinterop-annotations",
+        "//third_party:jsinterop-annotations",
         "//third_party:jsr305_annotations",
         "//third_party:junit",
     ],

@@ -32,15 +32,14 @@ import com.google.j2cl.transpiler.ast.AbstractRewriter;
 import com.google.j2cl.transpiler.ast.ArrayLiteral;
 import com.google.j2cl.transpiler.ast.AstUtils;
 import com.google.j2cl.transpiler.ast.BinaryExpression;
-import com.google.j2cl.transpiler.ast.CastExpression;
 import com.google.j2cl.transpiler.ast.DeclaredTypeDescriptor;
 import com.google.j2cl.transpiler.ast.Expression;
+import com.google.j2cl.transpiler.ast.ExpressionStatement;
 import com.google.j2cl.transpiler.ast.Field;
 import com.google.j2cl.transpiler.ast.FieldAccess;
 import com.google.j2cl.transpiler.ast.FieldDescriptor;
-import com.google.j2cl.transpiler.ast.InstanceOfExpression;
-import com.google.j2cl.transpiler.ast.Invocation;
-import com.google.j2cl.transpiler.ast.JavaScriptConstructorReference;
+import com.google.j2cl.transpiler.ast.JsConstructorReference;
+import com.google.j2cl.transpiler.ast.JsDocExpression;
 import com.google.j2cl.transpiler.ast.JsInfo;
 import com.google.j2cl.transpiler.ast.Library;
 import com.google.j2cl.transpiler.ast.Member;
@@ -50,15 +49,12 @@ import com.google.j2cl.transpiler.ast.MethodDescriptor;
 import com.google.j2cl.transpiler.ast.NumberLiteral;
 import com.google.j2cl.transpiler.ast.Statement;
 import com.google.j2cl.transpiler.ast.StringLiteral;
-import com.google.j2cl.transpiler.ast.SuperReference;
-import com.google.j2cl.transpiler.ast.ThisOrSuperReference;
 import com.google.j2cl.transpiler.ast.ThisReference;
 import com.google.j2cl.transpiler.ast.Type;
 import com.google.j2cl.transpiler.ast.TypeDeclaration;
 import com.google.j2cl.transpiler.ast.TypeDescriptor;
 import com.google.j2cl.transpiler.ast.TypeDescriptor.TypeReplacer;
 import com.google.j2cl.transpiler.ast.TypeDescriptors;
-import com.google.j2cl.transpiler.ast.Variable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -81,10 +77,14 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
       return;
     }
 
+    // Remove implicit super constructor calls to guarantee a consistent initial state across the
+    // different frontends.
+    removeImplicitSuperConstructorCalls(library);
+
     Set<TypeDeclaration> inlinableTypes =
         library
             .streamTypes()
-            .filter(t -> canBeInlinedTo(t))
+            .filter(OptimizeAutoValue::canBeInlinedTo)
             .map(Type::getDeclaration)
             .collect(toImmutableSet());
     if (inlinableTypes.isEmpty()) {
@@ -94,6 +94,46 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
 
     inlineImplementationTypes(library, inlinableTypes);
     optimizeAsValueTypes(library);
+  }
+
+  private static void removeImplicitSuperConstructorCalls(Library library) {
+    library
+        .streamTypes()
+        .forEach(
+            type -> {
+              if (!isAutoValueOrBuilderSubclass(type.getDeclaration())) {
+                return;
+              }
+
+              for (Method ctor : type.getConstructors()) {
+                if (!AstUtils.hasSuperCall(ctor)) {
+                  continue;
+                }
+
+                ExpressionStatement constructorInvocationStatement =
+                    AstUtils.getConstructorInvocationStatement(ctor);
+                // The super call for AutoValue should always be the first statement. Captures, for
+                // example, are not possible. AutoValue does not support inner nor local classes.
+                checkState(
+                    ctor.getBody().getStatements().indexOf(constructorInvocationStatement) == 0);
+
+                MethodCall superConstructorCall =
+                    (MethodCall) constructorInvocationStatement.getExpression();
+                if (!superConstructorCall.getArguments().isEmpty()
+                    || superConstructorCall.getQualifier() != null) {
+                  continue;
+                }
+
+                ctor.getBody().getStatements().remove(constructorInvocationStatement);
+              }
+            });
+  }
+
+  private static boolean isAutoValueOrBuilderSubclass(TypeDeclaration type) {
+    return type != null
+        && (AstUtils.isAnnotatedWithAutoValue(type)
+            || AstUtils.isAnnotatedWithAutoValueBuilder(type)
+            || isAutoValueOrBuilderSubclass(type.getSuperTypeDeclaration()));
   }
 
   private static void inlineImplementationTypes(
@@ -128,8 +168,7 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
         new TypeReplacer() {
           @Override
           public <T extends TypeDescriptor> T apply(T t) {
-            if (t instanceof DeclaredTypeDescriptor) {
-              DeclaredTypeDescriptor declaredTypeDescriptor = (DeclaredTypeDescriptor) t;
+            if (t instanceof DeclaredTypeDescriptor declaredTypeDescriptor) {
               TypeDeclaration superType =
                   declaredTypeDescriptor.getTypeDeclaration().getSuperTypeDeclaration();
               if (superTypeToInlinedType.containsKey(superType)) {
@@ -149,7 +188,7 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
   }
 
   private static boolean canBeInlinedTo(Type type) {
-    if (type.getDeclaration().isAnnotatedWithAutoValueBuilder()) {
+    if (AstUtils.isAnnotatedWithAutoValueBuilder(type.getDeclaration())) {
       // Note that AutoValue.Builder will generate default ctor so would be only safe to inline
       // the implementation if user didn't declare non-empty one.
       // Most complete logic for safety here would be cross-checking all generated ctors against
@@ -158,7 +197,7 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
       Method method = type.getDefaultConstructor();
       return method == null || method.isEmpty();
     }
-    return type.getDeclaration().isAnnotatedWithAutoValue();
+    return AstUtils.isAnnotatedWithAutoValue(type.getDeclaration());
   }
 
   private static void inlineMembers(Type from, Type to) {
@@ -168,7 +207,7 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
 
     // Validate our assumption that AutoValue only generates single non-default constructor.
     checkState(
-        !to.getDeclaration().isAnnotatedWithAutoValue()
+        !AstUtils.isAnnotatedWithAutoValue(to.getDeclaration())
             || (from.getConstructors().size() == 1 && from.getDefaultConstructor() == null));
 
     // We need to make sure inlined constructors explicitly call this() otherwise they would
@@ -231,8 +270,7 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
       fromCtor
           .getBody()
           .getStatements()
-          .add(
-              0,
+          .addFirst(
               MethodCall.Builder.from(defaultCtor.getDescriptor())
                   .build()
                   .makeStatement(fromCtor.getBody().getSourcePosition()));
@@ -267,82 +305,17 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
           }
 
           @Override
-          public InstanceOfExpression rewriteInstanceOfExpression(InstanceOfExpression expr) {
-            TypeDescriptor descriptor = expr.getTestTypeDescriptor();
-            TypeDescriptor newDescriptor = replaceTypeDescriptors(descriptor, fn);
-            if (descriptor != newDescriptor) {
-              return InstanceOfExpression.Builder.from(expr)
-                  .setTestTypeDescriptor(newDescriptor)
-                  .build();
-            }
-            return expr;
+          public TypeDescriptor rewriteTypeDescriptor(TypeDescriptor typeDescriptor) {
+            return replaceTypeDescriptors(typeDescriptor, fn);
           }
 
           @Override
-          public CastExpression rewriteCastExpression(CastExpression expr) {
-            TypeDescriptor descriptor = expr.getCastTypeDescriptor();
-            TypeDescriptor newDescriptor = replaceTypeDescriptors(descriptor, fn);
-            if (descriptor != newDescriptor) {
-              return CastExpression.Builder.from(expr).setCastTypeDescriptor(newDescriptor).build();
-            }
-            return expr;
+          public TypeDeclaration rewriteTypeDeclaration(TypeDeclaration typeDeclaration) {
+            return replaceTypeDescriptors(typeDeclaration.toDescriptor(), fn).getTypeDeclaration();
           }
 
           @Override
-          public Field rewriteField(Field field) {
-            FieldDescriptor descriptor = field.getDescriptor();
-            FieldDescriptor newDescriptor = rewriteFieldDescriptor(descriptor);
-            if (descriptor != newDescriptor) {
-              field = Field.Builder.from(field).setDescriptor(newDescriptor).build();
-            }
-            return field;
-          }
-
-          @Override
-          public Method rewriteMethod(Method method) {
-            MethodDescriptor descriptor = method.getDescriptor();
-            MethodDescriptor newDescriptor = rewriteMethodDescriptor(descriptor);
-            if (descriptor != newDescriptor) {
-              method = Method.Builder.from(method).setMethodDescriptor(newDescriptor).build();
-            }
-            return method;
-          }
-
-          @Override
-          public Invocation rewriteInvocation(Invocation expr) {
-            MethodDescriptor descriptor = expr.getTarget();
-            MethodDescriptor newDescriptor = rewriteMethodDescriptor(descriptor);
-            if (descriptor != newDescriptor) {
-              return Invocation.Builder.from(expr).setTarget(newDescriptor).build();
-            }
-            return expr;
-          }
-
-          @Override
-          public Variable rewriteVariable(Variable variable) {
-            TypeDescriptor descriptor = variable.getTypeDescriptor();
-            TypeDescriptor newDescriptor = replaceTypeDescriptors(descriptor, fn);
-            if (descriptor != newDescriptor) {
-              // Don't replace the variable object since the references in the code point to it
-              // that would need to be changed; just set the variable to its new type.
-              variable.setTypeDescriptor(newDescriptor);
-            }
-            return variable;
-          }
-
-          @Override
-          public Expression rewriteThisOrSuperReference(ThisOrSuperReference receiverReference) {
-            DeclaredTypeDescriptor descriptor = receiverReference.getTypeDescriptor();
-            DeclaredTypeDescriptor newDescriptor = replaceTypeDescriptors(descriptor, fn);
-            if (descriptor != newDescriptor) {
-              return receiverReference instanceof ThisReference
-                  ? new ThisReference(newDescriptor)
-                  : new SuperReference(newDescriptor);
-            }
-            return receiverReference;
-          }
-
-          private MethodDescriptor rewriteMethodDescriptor(MethodDescriptor descriptor) {
+          public MethodDescriptor rewriteMethodDescriptor(MethodDescriptor descriptor) {
             return descriptor.transform(
                 builder -> {
                   DeclaredTypeDescriptor newEnclosingTypeDescriptor =
@@ -363,7 +336,8 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
                 });
           }
 
-          private FieldDescriptor rewriteFieldDescriptor(FieldDescriptor descriptor) {
+          @Override
+          public FieldDescriptor rewriteFieldDescriptor(FieldDescriptor descriptor) {
             // Note that we are not re-writing enclosing type to preserve the mangling to avoid
             // potential name collisions.
             // TODO(b/193926520): Add getManglingDescriptor concept similar to MethodDescriptor so
@@ -395,13 +369,13 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
         library
             .streamTypes()
             .map(Type::getDeclaration)
-            .filter(TypeDeclaration::isAnnotatedWithAutoValue)
+            .filter(AstUtils::isAnnotatedWithAutoValue)
             .map(t -> getAutoValueExcludedFields(t, autoValueToSubTypes.get(t)))
             .collect(ArrayListMultimap::create, Multimap::putAll, Multimap::putAll);
 
     library
         .streamTypes()
-        .filter(t -> t.getDeclaration().isAnnotatedWithAutoValue())
+        .filter(t -> AstUtils.isAnnotatedWithAutoValue(t.getDeclaration()))
         .forEach(
             autoValue -> {
               int mask = removeJavaLangObjectMethods(autoValue);
@@ -437,7 +411,7 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
   private static TypeDeclaration getAutoValueParent(TypeDeclaration type) {
     return type == null
         ? null
-        : type.isAnnotatedWithAutoValue()
+        : AstUtils.isAnnotatedWithAutoValue(type)
             ? type
             : getAutoValueParent(type.getSuperTypeDeclaration());
   }
@@ -448,7 +422,7 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
 
     // None of the user declared fields in AutoValue and its parents are included in AutoValue
     // generated equals/hashCode/toString.
-    if (type.isAnnotatedWithAutoValue()) {
+    if (AstUtils.isAnnotatedWithAutoValue(type)) {
       for (TypeDeclaration t = type;
           !TypeDescriptors.isJavaLangObject(t.toRawTypeDescriptor());
           t = t.getSuperTypeDeclaration()) {
@@ -461,7 +435,7 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
     subtypes.stream()
         .map(Type::getDeclaration)
         // Skip the AutoValue impl.
-        .filter(t -> !t.getSuperTypeDeclaration().isAnnotatedWithAutoValue())
+        .filter(t -> !AstUtils.isAnnotatedWithAutoValue(t.getSuperTypeDeclaration()))
         .forEach(t -> excludedFields.putAll(type, getInstanceFields(t)));
 
     return excludedFields;
@@ -488,19 +462,13 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
         continue;
       }
 
-      switch (method.getDescriptor().getName()) {
-        case "equals":
-          mask |= 1;
-          break;
-        case "hashCode":
-          mask |= 2;
-          break;
-        case "toString":
-          mask |= 4;
-          break;
-        default:
-          throw new AssertionError(method.getDescriptor());
-      }
+      mask |=
+          switch (method.getDescriptor().getName()) {
+            case "equals" -> 1;
+            case "hashCode" -> 2;
+            case "toString" -> 4;
+            default -> throw new AssertionError(method.getDescriptor());
+          };
 
       generatedObjectMethods.add(method);
     }
@@ -518,11 +486,11 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
     MethodCall mixinCall =
         MethodCall.Builder.from(mixinMethodDescriptor)
             .setArguments(
-                new JavaScriptConstructorReference(autoValue.getDeclaration()),
-                new JavaScriptConstructorReference(
+                new JsConstructorReference(autoValue.getDeclaration()),
+                new JsConstructorReference(
                     TypeDescriptors.get().javaemulInternalValueType.getTypeDeclaration()),
                 NumberLiteral.fromInt(mask),
-                getProperyNameExpressions(autoValue.getDeclaration(), excludedFields))
+                getPropertyNameExpressions(autoValue.getDeclaration(), excludedFields))
             .build();
     autoValue.addLoadTimeStatement(mixinCall.makeStatement(SourcePosition.NONE));
   }
@@ -565,15 +533,26 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
             .setName("$excluded_fields")
             .build();
     Expression excludedFieldAccess = createPrototypeFieldAccess(autoValue, excludedFieldDescriptor);
+
+    // Property name expression is guarded by @pureOrBreakMyCode to make it movable by JsCompiler's
+    // cross chunk code motion. Note that ValueType.mixin doesn't need this since JsCompiler is
+    // treating class definition helpers separately.
+    // TODO(b/435019132): Remove this annotation once the the JsCompiler handles the pattern.
+    Expression propertyNameExpressions =
+        JsDocExpression.newBuilder()
+            .setAnnotation("pureOrBreakMyCode")
+            .setExpression(getPropertyNameExpressions(autoValue.getDeclaration(), excludedFields))
+            .build();
+
     // Adds load time statement MyFoo.prototype.$excluded_fields = [ ... ]
     autoValue.addLoadTimeStatement(
         BinaryExpression.Builder.asAssignmentTo(excludedFieldAccess)
-            .setRightOperand(getProperyNameExpressions(autoValue.getDeclaration(), excludedFields))
+            .setRightOperand(propertyNameExpressions)
             .build()
             .makeStatement(SourcePosition.NONE));
   }
 
-  private static ArrayLiteral getProperyNameExpressions(
+  private static ArrayLiteral getPropertyNameExpressions(
       TypeDeclaration type, Collection<FieldDescriptor> fields) {
     // Note that ValueType.objectProperty is just a native proxy for goog.reflect.objectProperty.
     MethodCall.Builder objectPropertyCallBuilder =
@@ -587,23 +566,24 @@ public class OptimizeAutoValue extends LibraryNormalizationPass {
     //   ValueType.objectProperty("<property2>", MyType),
     //   ...
     // ]
-    return new ArrayLiteral(
-        TypeDescriptors.get().javaLangObjectArray,
-        fields.stream()
-            .map(FieldDescriptor::getMangledName)
-            .map(StringLiteral::new)
-            .map(
-                name ->
-                    objectPropertyCallBuilder
-                        .setArguments(name, new JavaScriptConstructorReference(type))
-                        .build())
-            .toArray(Expression[]::new));
+    return ArrayLiteral.newBuilder()
+        .setTypeDescriptor(TypeDescriptors.get().javaLangObjectArray)
+        .setValueExpressions(
+            fields.stream()
+                .map(FieldDescriptor::getMangledName)
+                .map(StringLiteral::new)
+                .map(
+                    name ->
+                        objectPropertyCallBuilder
+                            .setArguments(name, new JsConstructorReference(type))
+                            .build())
+                .toArray(Expression[]::new))
+        .build();
   }
 
   private static Expression createPrototypeFieldAccess(Type type, FieldDescriptor field) {
     return FieldAccess.Builder.from(field)
-        .setQualifier(
-            new JavaScriptConstructorReference(type.getDeclaration()).getPrototypeFieldAccess())
+        .setQualifier(new JsConstructorReference(type.getDeclaration()).getPrototypeFieldAccess())
         .build();
   }
 }

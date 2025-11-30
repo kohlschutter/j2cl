@@ -33,14 +33,14 @@ class DeprecatedEnum extends Enum {
  static valueOf(/** string */ name) {
   DeprecatedEnum.$clinit();
   if ($Equality.$same(DeprecatedEnum.f_namesToValuesMap__deprecated_DeprecatedExample_DeprecatedEnum_, null)) {
-   DeprecatedEnum.f_namesToValuesMap__deprecated_DeprecatedExample_DeprecatedEnum_ = /**@type {Map<?string, !DeprecatedEnum>}*/ ($Enums.createMapFromValues(DeprecatedEnum.values()));
+   DeprecatedEnum.f_namesToValuesMap__deprecated_DeprecatedExample_DeprecatedEnum_ = (/**@type {Map<?string, !DeprecatedEnum>}*/ ($Enums.createMapFromValues(DeprecatedEnum.values())));
   }
   return /**@type {DeprecatedEnum}*/ ($Enums.getValueFromNameAndMap(name, DeprecatedEnum.f_namesToValuesMap__deprecated_DeprecatedExample_DeprecatedEnum_));
  }
  /** @return {!Array<!DeprecatedEnum>} */
  static values() {
   DeprecatedEnum.$clinit();
-  return /**@type {!Array<DeprecatedEnum>}*/ ($Arrays.$init([DeprecatedEnum.A_VALUE], DeprecatedEnum));
+  return /**@type {!Array<!DeprecatedEnum>}*/ ($Arrays.$stampType([DeprecatedEnum.A_VALUE], DeprecatedEnum));
  }
  /** @nodts */
  static $clinit() {

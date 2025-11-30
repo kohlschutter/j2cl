@@ -17,25 +17,29 @@ package com.google.j2cl.transpiler.ast;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.ImmutableList.toImmutableList;
-import static java.util.stream.Collectors.joining;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
 import java.util.Collections;
 
 import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.memoized.Memoized;
 import com.google.common.base.Joiner;
+import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.j2cl.common.ThreadLocalInterner;
+import com.google.j2cl.common.visitor.Processor;
+import com.google.j2cl.common.visitor.Visitable;
 import com.google.j2cl.transpiler.ast.TypeDescriptors.BootstrapType;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -52,9 +56,10 @@ import javax.annotation.Nullable;
  * <p>Since these are all declaration-site references, when there are type variables they are always
  * thought of as type parameters.
  */
+@Visitable
 @AutoValue
 public abstract class TypeDeclaration
-    implements HasJsNameInfo, HasReadableDescription, HasUnusableByJsSuppression {
+    implements HasJsNameInfo, HasReadableDescription, HasAnnotations {
 
   /** Kind of type declaration. */
   public enum Kind {
@@ -69,6 +74,13 @@ public abstract class TypeDeclaration
     KOTLIN
   }
 
+  /** The origin of the class. */
+  public enum Origin {
+    SOURCE,
+    LAMBDA_ABSTRACT_ADAPTOR,
+    LAMBDA_IMPLEMENTOR
+  }
+
   private static final String OVERLAY_IMPLEMENTATION_CLASS_SUFFIX = "Overlay";
 
   /**
@@ -81,10 +93,7 @@ public abstract class TypeDeclaration
 
   @Override
   public final boolean equals(Object o) {
-    if (o instanceof TypeDeclaration) {
-      return getUniqueId().equals(((TypeDeclaration) o).getUniqueId());
-    }
-    return false;
+    return o instanceof TypeDeclaration other && getUniqueId().equals(other.getUniqueId());
   }
 
   @Memoized
@@ -94,7 +103,7 @@ public abstract class TypeDeclaration
   }
 
   /**
-   * Returns the unqualified simple source name as written in the souce, {@code null} if the class
+   * Returns the unqualified simple source name as written in the source, {@code null} if the class
    * does not have a name, i.e. it is an anonymous class or a synthetic class.
    */
   @Nullable
@@ -192,12 +201,15 @@ public abstract class TypeDeclaration
     return isNative() && !isGenerateNativeStub() ? getModuleName() : getModuleName() + "$impl";
   }
 
+  public abstract PackageDeclaration getPackage();
+
   /** Returns the fully package qualified name like "com.google.common". */
-  @Nullable
-  public abstract String getPackageName();
+  public String getPackageName() {
+    return getPackage().getName();
+  }
 
   public boolean isInSamePackage(TypeDeclaration other) {
-    return getPackageName().equals(other.getPackageName());
+    return getPackage() == other.getPackage();
   }
 
   /**
@@ -233,6 +245,8 @@ public abstract class TypeDeclaration
     return getEnclosingMethodDescriptorFactory().get();
   }
 
+  public abstract Origin getOrigin();
+
   abstract Supplier<MethodDescriptor> getEnclosingMethodDescriptorFactory();
 
   public abstract ImmutableList<TypeVariable> getTypeParameterDescriptors();
@@ -266,20 +280,44 @@ public abstract class TypeDeclaration
 
   public abstract boolean isFinal();
 
+  // TODO(b/322906767): Remove when the bug is fixed.
+  private static final boolean PRESERVE_EQUALS_FOR_JSTYPE_INTERFACE =
+      "true"
+          .equals(
+              System.getProperty(
+                  "com.google.j2cl.transpiler.backend.kotlin.preserveEqualsForJsTypeInterface"));
+
+  public boolean isKtFunctionalInterface() {
+    if (!isFunctionalInterface()) {
+      return false;
+    }
+
+    if (getAllSuperTypesIncludingSelf().stream()
+        .filter(TypeDeclaration::isInterface)
+        // TODO(b/317299672): Remove JsType special casing since should preserve all of them for
+        // migration purposes.
+        .filter(t -> PRESERVE_EQUALS_FOR_JSTYPE_INTERFACE && t.isJsType())
+        .flatMap(t -> t.getDeclaredMethodDescriptors().stream())
+        .anyMatch(MethodDescriptor::isOrOverridesJavaLangObjectMethod)) {
+      // If the interface has an explicit {@code java.lang.Object} method, it is not considered to
+      // be functional in Kotlin.
+      return false;
+    }
+
+    MethodDescriptor methodDescriptor = getSingleAbstractMethodDescriptor();
+    return !methodDescriptor.isKtProperty()
+        && methodDescriptor.getTypeParameterTypeDescriptors().isEmpty();
+  }
+
   /** Returns whether the described type is a functional interface (JLS 9.8). */
   public abstract boolean isFunctionalInterface();
 
-  /** Returns whether the described type has the @FunctionalInterface annotation. */
-  public abstract boolean isAnnotatedWithFunctionalInterface();
-
-  /** Returns whether the described type has the @AutoValue annotation. */
-  public abstract boolean isAnnotatedWithAutoValue();
-
-  /** Returns whether the described type has the @AutoValue.Builder annotation. */
-  public abstract boolean isAnnotatedWithAutoValueBuilder();
-
-  /** Returns whether the described type has the JUnit @RunWith annotation. */
-  public abstract boolean isAnnotatedWithJUnitRunWith();
+  /** Gets a list of annotations present on the declaration. */
+  @Override
+  @Memoized
+  public ImmutableList<Annotation> getAnnotations() {
+    return getAnnotationsFactory().get();
+  }
 
   /** Returns whether the described type has the "JsExport" annotation. */
   public abstract boolean isAnnotatedWithJsExport();
@@ -333,9 +371,6 @@ public abstract class TypeDeclaration
   @Nullable
   public abstract JsEnumInfo getJsEnumInfo();
 
-  @Nullable
-  public abstract String getWasmInfo();
-
   public boolean isKtNative() {
     return getKtTypeInfo() != null;
   }
@@ -343,10 +378,11 @@ public abstract class TypeDeclaration
   @Nullable
   abstract KtTypeInfo getKtTypeInfo();
 
-  @Nullable
-  abstract KtObjcInfo getKtObjcInfo();
-
-  public abstract boolean isDeprecated();
+  public boolean isProtobuf() {
+    return getAllSuperTypesIncludingSelf().stream()
+        .map(TypeDeclaration::getPackageName)
+        .anyMatch("com.google.protobuf"::equals);
+  }
 
   public boolean isJsEnum() {
     return getJsEnumInfo() != null;
@@ -377,9 +413,8 @@ public abstract class TypeDeclaration
     return !getTypeParameterDescriptors().isEmpty();
   }
 
-  @Memoized
   public boolean implementsInterfaces() {
-    return getAllSuperTypesIncludingSelf().stream().anyMatch(TypeDeclaration::isInterface);
+    return !getAllSuperInterfaces().isEmpty();
   }
 
   @Memoized
@@ -390,15 +425,6 @@ public abstract class TypeDeclaration
     }
 
     return superType.isNative() || superType.extendsNativeClass();
-  }
-
-  /** Returns the depths of this type in the class hierarchy tree. */
-  @Memoized
-  public int getClassHierarchyDepth() {
-    if (getSuperTypeDeclaration() == null) {
-      return 1;
-    }
-    return getSuperTypeDeclaration().getClassHierarchyDepth() + 1;
   }
 
   public boolean hasJsConstructor() {
@@ -467,7 +493,7 @@ public abstract class TypeDeclaration
     }
 
     if (getEnclosingTypeDeclaration() == null) {
-      return getPackageName();
+      return getPackage().getJsNamespace();
     }
 
     if (isNative()) {
@@ -505,7 +531,7 @@ public abstract class TypeDeclaration
 
   @Memoized
   public TypeDeclaration getMetadataTypeDeclaration() {
-    if (isNative() || isJsEnum()) {
+    if (isNative() || (isJsEnum() && AstUtils.isJsEnumBoxingSupported())) {
       return getOverlayImplementationTypeDeclaration();
     }
 
@@ -533,7 +559,7 @@ public abstract class TypeDeclaration
   @Memoized
   public boolean hasOverlayImplementationType() {
     // TODO(b/116825224): this should just be
-    //           isJsEnum() || isNative() || isJsFunctionInteface() && declaresJsOverlayMembers.
+    //           isJsEnum() || isNative() || isJsFunctionInterface() && declaresJsOverlayMembers.
     // but there are some synthetic type descriptors created by
     // TypeDescriptors.createNativeGlobalTypeDescriptor that do are marked native and confuse the
     // rewriting of overlay references.
@@ -556,55 +582,22 @@ public abstract class TypeDeclaration
     return getInterfaceTypeDescriptorsFactory().get(this);
   }
 
-  /** Returns the height of the largest inheritance chain of any interface implemented here. */
+  /**
+   * Returns the depth of this type in the type hierarchy tree, including classes and interfaces.
+   */
   @Memoized
-  public int getMaxInterfaceDepth() {
+  public int getTypeHierarchyDepth() {
     return 1
-        + getInterfaceTypeDescriptors().stream()
-            .mapToInt(i -> i.getTypeDeclaration().getMaxInterfaceDepth())
+        + Stream.concat(Stream.of(getSuperTypeDescriptor()), getInterfaceTypeDescriptors().stream())
+            .filter(Predicates.notNull())
+            .mapToInt(i -> i.getTypeDeclaration().getTypeHierarchyDepth())
             .max()
             .orElse(0);
   }
 
   /**
-   * Returns the erasure type (see definition of erasure type at
-   * http://help.eclipse.org/luna/index.jsp) with an empty type arguments list.
-   */
-  @Memoized
-  public DeclaredTypeDescriptor toRawTypeDescriptor() {
-    return DeclaredTypeDescriptor.newBuilder()
-        .setTypeDeclaration(this)
-        .setEnclosingTypeDescriptor(
-            applyOrNull(getEnclosingTypeDeclaration(), t -> t.toRawTypeDescriptor()))
-        .setSuperTypeDescriptorFactory(
-            () -> applyOrNull(getSuperTypeDescriptor(), t -> t.toRawTypeDescriptor()))
-        .setInterfaceTypeDescriptorsFactory(
-            () ->
-                getInterfaceTypeDescriptors().stream()
-                    .map(DeclaredTypeDescriptor::toRawTypeDescriptor)
-                    .collect(toImmutableList()))
-        .setTypeArgumentDescriptors(ImmutableList.of())
-        .setDeclaredFieldDescriptorsFactory(
-            () ->
-                getDeclaredFieldDescriptors().stream()
-                    .map(FieldDescriptor::toRawMemberDescriptor)
-                    .collect(toImmutableList()))
-        .setDeclaredMethodDescriptorsFactory(
-            () ->
-                getDeclaredMethodDescriptors().stream()
-                    .map(MethodDescriptor::toRawMemberDescriptor)
-                    .collect(toImmutableList()))
-        .setSingleAbstractMethodDescriptorFactory(
-            () ->
-                applyOrNull(
-                    toUnparameterizedTypeDescriptor().getSingleAbstractMethodDescriptor(),
-                    t -> t.toRawMemberDescriptor()))
-        .build();
-  }
-
-  /**
    * Returns the fully package qualified source name like "com.google.common.Outer.Inner". Used in
-   * places where original name is useful (like aliasing, identifying the corressponding java type,
+   * places where original name is useful (like aliasing, identifying the corresponding java type,
    * Debug/Error output, etc.
    */
   @Memoized
@@ -637,8 +630,7 @@ public abstract class TypeDeclaration
   @Nullable
   @Memoized
   public String getObjectiveCName() {
-    KtObjcInfo ktObjcInfo = getKtObjcInfo();
-    return ktObjcInfo != null ? ktObjcInfo.getObjectiveCName() : null;
+    return J2ktAstUtils.getObjectiveCName(this);
   }
 
   @Memoized
@@ -657,33 +649,37 @@ public abstract class TypeDeclaration
   }
 
   /**
-   * Returns the usage site TypeDescriptor corresponding to this declaration site TypeDeclaration.
-   *
-   * <p>A completely correct solution would specialize type parameters into type arguments and
-   * cascade those changes into declared methods and modifications to the method declaration site of
-   * declared methods. But our AST is not in a position to do all of that. Instead we trust that a
-   * real JDT usage site TypeBinding has already been processed somewhere and we attempt to retrieve
-   * the matching TypeDescriptor.
+   * Returns the erasure type (see definition of erasure type at
+   * http://help.eclipse.org/luna/index.jsp) with an empty type arguments list.
    */
   @Memoized
-  public DeclaredTypeDescriptor toUnparameterizedTypeDescriptor() {
-    return getUnparameterizedTypeDescriptorFactory().get(this);
+  public DeclaredTypeDescriptor toRawTypeDescriptor() {
+    return toDescriptor(ImmutableList.of());
   }
 
-  /** A unique string for a give type. Used for interning. */
+  /**
+   * Returns the usage site type descriptor corresponding to this declaration with the trivial
+   * parameterization.
+   */
+  @Memoized
+  public DeclaredTypeDescriptor toDescriptor() {
+    return toDescriptor(getTypeParameterDescriptors());
+  }
+
+  /** Returns the usage site type descriptor with parameterization. */
+  public DeclaredTypeDescriptor toDescriptor(
+      Iterable<? extends TypeDescriptor> typeArgumentDescriptors) {
+    return DeclaredTypeDescriptor.newBuilder()
+        .setTypeDeclaration(this)
+        .setTypeArgumentDescriptors(typeArgumentDescriptors)
+        .setNullable(true)
+        .build();
+  }
+
+  /** A unique string for a given type. Used for interning. */
   @Memoized
   public String getUniqueId() {
-    String uniqueKey = getQualifiedBinaryName();
-    return uniqueKey + TypeDeclaration.createTypeParametersUniqueId(getTypeParameterDescriptors());
-  }
-
-  private static String createTypeParametersUniqueId(List<TypeVariable> typeParameterDescriptors) {
-    if (typeParameterDescriptors == null || typeParameterDescriptors.isEmpty()) {
-      return "";
-    }
-    return typeParameterDescriptors.stream()
-        .map(TypeVariable::getUniqueId)
-        .collect(joining(", ", "<", ">"));
+    return getQualifiedBinaryName();
   }
 
   @Override
@@ -697,21 +693,23 @@ public abstract class TypeDeclaration
     // TODO(b/70951075): distinguish between Java isSubtypeOf and our target interpretation of
     // isSubtypeOf for optimization purposes in the context of jsinterop. Note that this method is
     // used assuming it provides Java semantics.
-    return TypeDescriptors.isJavaLangObject(that.toUnparameterizedTypeDescriptor())
+    return TypeDescriptors.isJavaLangObject(that.toDescriptor())
         || getAllSuperTypesIncludingSelf().contains(that);
   }
 
   @Memoized
   public Set<TypeDeclaration> getAllSuperTypesIncludingSelf() {
-    Set<TypeDeclaration> allSupertypesIncludingSelf = new LinkedHashSet<>();
-    allSupertypesIncludingSelf.add(this);
-    toUnparameterizedTypeDescriptor()
-        .getSuperTypesStream()
-        .forEach(
-            t ->
-                allSupertypesIncludingSelf.addAll(
-                    t.getTypeDeclaration().getAllSuperTypesIncludingSelf()));
-    return allSupertypesIncludingSelf;
+    return toDescriptor().getAllSuperTypesIncludingSelf().stream()
+        .map(DeclaredTypeDescriptor::getTypeDeclaration)
+        .collect(toImmutableSet());
+  }
+
+  @Memoized
+  public Set<TypeDeclaration> getAllSuperInterfaces() {
+    return getAllSuperTypesIncludingSelf().stream()
+        .filter(Predicate.not(Predicate.isEqual(this)))
+        .filter(TypeDeclaration::isInterface)
+        .collect(toImmutableSet());
   }
 
   /**
@@ -731,6 +729,13 @@ public abstract class TypeDeclaration
         .filter(MethodDescriptor::isJsConstructor)
         .collect(toImmutableList());
   }
+
+  @Memoized
+  @Nullable
+  public MethodDescriptor getSingleAbstractMethodDescriptor() {
+    return getSingleAbstractMethodDescriptorFactory().get(this);
+  }
+
   /**
    * The list of fields declared in the type. Note: this does not include methods synthetic fields
    * (like captures) nor supertype fields.
@@ -738,6 +743,28 @@ public abstract class TypeDeclaration
   @Memoized
   public ImmutableList<FieldDescriptor> getDeclaredFieldDescriptors() {
     return getDeclaredFieldDescriptorsFactory().get(this);
+  }
+
+  @Memoized
+  ImmutableMap<String, Literal> getOrdinalValueByEnumFieldName() {
+    ImmutableMap.Builder<String, Literal> immutableMapBuilder = ImmutableMap.builder();
+    int ordinal = 0;
+    for (FieldDescriptor fieldDescriptor : getDeclaredFieldDescriptors()) {
+      if (!fieldDescriptor.isEnumConstant()) {
+        continue;
+      }
+      immutableMapBuilder.put(fieldDescriptor.getName(), NumberLiteral.fromInt(ordinal++));
+    }
+    return immutableMapBuilder.buildOrThrow();
+  }
+
+  /**
+   * The list of fields declared in the type. Note: this does not include methods synthetic fields
+   * (like captures) nor supertype fields.
+   */
+  @Memoized
+  public ImmutableList<TypeDeclaration> getMemberTypeDeclarations() {
+    return getMemberTypeDeclarationsFactory().get();
   }
 
   @Override
@@ -754,7 +781,7 @@ public abstract class TypeDeclaration
         return "<anonymous> extends " + getSuperTypeDescriptor().getReadableDescription();
       } else {
         return "<anonymous> implements "
-            + getInterfaceTypeDescriptors().get(0).getReadableDescription();
+            + getInterfaceTypeDescriptors().getFirst().getReadableDescription();
       }
     } else if (isLocal()) {
       return getSimpleSourceName().replaceFirst("\\$\\d+", "");
@@ -770,8 +797,6 @@ public abstract class TypeDeclaration
   abstract DescriptorFactory<ImmutableList<DeclaredTypeDescriptor>>
       getInterfaceTypeDescriptorsFactory();
 
-  abstract DescriptorFactory<DeclaredTypeDescriptor> getUnparameterizedTypeDescriptorFactory();
-
   @Nullable
   abstract DescriptorFactory<DeclaredTypeDescriptor> getSuperTypeDescriptorFactory();
 
@@ -779,31 +804,24 @@ public abstract class TypeDeclaration
   abstract DescriptorFactory<ImmutableList<MethodDescriptor>> getDeclaredMethodDescriptorsFactory();
 
   @Nullable
+  abstract DescriptorFactory<MethodDescriptor> getSingleAbstractMethodDescriptorFactory();
+
+  @Nullable
   abstract DescriptorFactory<ImmutableList<FieldDescriptor>> getDeclaredFieldDescriptorsFactory();
+
+  @Nullable
+  abstract Supplier<ImmutableList<TypeDeclaration>> getMemberTypeDeclarationsFactory();
+
+  abstract Supplier<ImmutableList<Annotation>> getAnnotationsFactory();
 
   abstract Builder toBuilder();
 
   public static Builder newBuilder() {
-    DescriptorFactory<DeclaredTypeDescriptor> unparameterizedFactory =
-        // TODO(b/117105240): Remove once the type declaration is properly decoupled from the
-        // type descriptor. For now we need to set all the fields that might be parameterized to
-        // provide a reasonable default for the unparameterized type descriptor factory.
-        self ->
-            DeclaredTypeDescriptor.newBuilder()
-                .setTypeDeclaration(self)
-                .setEnclosingTypeDescriptor(
-                    applyOrNull(
-                        self.getEnclosingTypeDeclaration(),
-                        t -> t.toUnparameterizedTypeDescriptor()))
-                .setSuperTypeDescriptorFactory(self::getSuperTypeDescriptor)
-                .setInterfaceTypeDescriptorsFactory(self::getInterfaceTypeDescriptors)
-                .setTypeArgumentDescriptors(self.getTypeParameterDescriptors())
-                .build();
-
     return new AutoValue_TypeDeclaration.Builder()
         // Default values.
         .setVisibility(Visibility.PUBLIC)
         .setSourceLanguage(SourceLanguage.JAVA)
+        .setOrigin(Origin.SOURCE)
         .setHasAbstractModifier(false)
         .setAnonymous(false)
         .setNative(false)
@@ -816,55 +834,55 @@ public abstract class TypeDeclaration
         .setCapturingEnclosingInstance(false)
         .setFinal(false)
         .setFunctionalInterface(false)
-        .setAnnotatedWithFunctionalInterface(false)
-        .setAnnotatedWithAutoValue(false)
-        .setAnnotatedWithAutoValueBuilder(false)
-        .setAnnotatedWithJUnitRunWith(false)
         .setAnnotatedWithJsExport(false)
         .setAnnotatedWithDumboService(null)
         .setSuppressWarnings(ImmutableSet.of())
+        .setAnnotationsFactory(ImmutableList::of)
         .setJsFunctionInterface(false)
         .setJsType(false)
         .setLocal(false)
-        .setUnusableByJsSuppressed(false)
-        .setDeprecated(false)
         .setNullMarked(false)
         .setTypeParameterDescriptors(ImmutableList.of())
         .setDeclaredMethodDescriptorsFactory(() -> ImmutableList.of())
+        .setSingleAbstractMethodDescriptorFactory(() -> null)
         .setDeclaredFieldDescriptorsFactory(() -> ImmutableList.of())
+        .setMemberTypeDeclarationsFactory(() -> ImmutableList.of())
         .setInterfaceTypeDescriptorsFactory(() -> ImmutableList.of())
         .setEnclosingMethodDescriptorFactory(() -> null)
-        .setUnparameterizedTypeDescriptorFactory(unparameterizedFactory)
         .setSuperTypeDescriptorFactory(() -> null);
   }
 
-  private static <T, U> U applyOrNull(T descriptor, Function<T, U> function) {
-    return descriptor == null ? null : function.apply(descriptor);
+  // TODO(b/340930928): This is a temporary hack since JsFunction is not supported in Wasm.
+  private static final ThreadLocal<Boolean> ignoreJsFunctionAnnotations =
+      ThreadLocal.withInitial(() -> false);
+
+  public static void setIgnoreJsFunctionAnnotations() {
+    ignoreJsFunctionAnnotations.set(true);
   }
 
-  // TODO(b/181615162): This is a temporary hack to be able to reuse bridging logic in Closure
-  // and Wasm.
-  private static final ThreadLocal<IgnoreJsEnumsType> ignoreJsEnumAnnotations =
-      ThreadLocal.withInitial(() -> IgnoreJsEnumsType.NONE);
+  // TODO(b/181615162): This is a temporary hack which allows Wasm to treat JsEnums differently from
+  // Closure.
+  // In Wasm:
+  // - TODO(b/288145698): Native JsEnums are ignored (the annotation is removed on creation of
+  // TypeDeclaration)
+  // - The supertype of JsEnums is not modified (it is still Enum, not changed to Object).
+  private static final ThreadLocal<Boolean> implementWasmJsEnumSemantics =
+      ThreadLocal.withInitial(() -> false);
 
-  public static void setIgnoreJsEnumAnnotations() {
-    ignoreJsEnumAnnotations.set(IgnoreJsEnumsType.ALL);
+  public static void setImplementWasmJsEnumSemantics() {
+    implementWasmJsEnumSemantics.set(true);
   }
 
-  public static void setIgnoreNativeJsEnumAnnotations() {
-    ignoreJsEnumAnnotations.set(IgnoreJsEnumsType.NATIVE_ONLY);
-  }
-
-  private enum IgnoreJsEnumsType {
-    NONE,
-    NATIVE_ONLY,
-    ALL
+  TypeDeclaration acceptInternal(Processor processor) {
+    return Visitor_TypeDeclaration.visit(processor, this);
   }
 
   /** Builder for a TypeDeclaration. */
   @AutoValue.Builder
   public abstract static class Builder {
     public abstract Builder setAnonymous(boolean isAnonymous);
+
+    public abstract Builder setClassComponents(String... classComponents);
 
     public abstract Builder setClassComponents(List<String> classComponents);
 
@@ -889,13 +907,10 @@ public abstract class TypeDeclaration
 
     public abstract Builder setFunctionalInterface(boolean isFunctionalInterface);
 
-    public abstract Builder setAnnotatedWithFunctionalInterface(boolean isAnnotated);
+    public abstract Builder setOrigin(Origin origin);
 
-    public abstract Builder setAnnotatedWithAutoValue(boolean annotatedWithAutoValue);
-
-    public abstract Builder setAnnotatedWithAutoValueBuilder(boolean annotatedWithAutoValueBuilder);
-
-    public abstract Builder setAnnotatedWithJUnitRunWith(boolean annotatedWithJUnitRunWith);
+    public abstract Builder setAnnotationsFactory(
+        Supplier<ImmutableList<Annotation>> annotationsFactory);
 
     public abstract Builder setAnnotatedWithJsExport(boolean annotatedWithJsExport);
 
@@ -908,12 +923,6 @@ public abstract class TypeDeclaration
     public abstract Builder setJsType(boolean isJsType);
 
     public abstract Builder setJsEnumInfo(JsEnumInfo jsEnumInfo);
-
-    public abstract Builder setWasmInfo(String wasmInfo);
-
-    public abstract Builder setUnusableByJsSuppressed(boolean isUnusableByJsSuppressed);
-
-    public abstract Builder setDeprecated(boolean isDeprecated);
 
     public abstract Builder setLocal(boolean local);
 
@@ -931,8 +940,6 @@ public abstract class TypeDeclaration
 
     public abstract Builder setKtTypeInfo(KtTypeInfo ktTypeInfo);
 
-    public abstract Builder setKtObjcInfo(KtObjcInfo ktObjcInfo);
-
     public abstract Builder setTypeParameterDescriptors(
         Iterable<TypeVariable> typeParameterDescriptors);
 
@@ -940,13 +947,21 @@ public abstract class TypeDeclaration
 
     public abstract Builder setOriginalSimpleSourceName(String originalSimpleSourceName);
 
-    public abstract Builder setPackageName(String packageName);
+    public abstract Builder setPackage(PackageDeclaration packageDeclaration);
+
+    private String qualifiedSourceName;
+
+    @CanIgnoreReturnValue
+    public Builder setQualifiedSourceName(String qualifiedSourceName) {
+      this.qualifiedSourceName = qualifiedSourceName;
+      return this;
+    }
 
     public abstract Builder setSimpleJsName(String simpleJsName);
 
     public abstract Builder setCustomizedJsNamespace(String jsNamespace);
 
-    public abstract Builder setObjectiveCNamePrefix(String objectiveCNamePreifx);
+    public abstract Builder setObjectiveCNamePrefix(String objectiveCNamePrefix);
 
     public abstract Builder setNullMarked(boolean isNullMarked);
 
@@ -967,15 +982,6 @@ public abstract class TypeDeclaration
       return setSuperTypeDescriptorFactory(typeDescriptor -> superTypeDescriptorFactory.get());
     }
 
-    public abstract Builder setUnparameterizedTypeDescriptorFactory(
-        DescriptorFactory<DeclaredTypeDescriptor> unparameterizedTypeDescriptorFactory);
-
-    public Builder setUnparameterizedTypeDescriptorFactory(
-        Supplier<DeclaredTypeDescriptor> unparameterizedTypeDescriptorFactory) {
-      return setUnparameterizedTypeDescriptorFactory(
-          typeDescriptor -> unparameterizedTypeDescriptorFactory.get());
-    }
-
     public abstract Builder setDeclaredMethodDescriptorsFactory(
         DescriptorFactory<ImmutableList<MethodDescriptor>> declaredMethodDescriptorsFactory);
 
@@ -983,6 +989,15 @@ public abstract class TypeDeclaration
         Supplier<ImmutableList<MethodDescriptor>> declaredMethodDescriptorsFactory) {
       return setDeclaredMethodDescriptorsFactory(
           typeDescriptor -> declaredMethodDescriptorsFactory.get());
+    }
+
+    public abstract Builder setSingleAbstractMethodDescriptorFactory(
+        DescriptorFactory<MethodDescriptor> singleDeclaredAbstractMethodDescriptorFactory);
+
+    public Builder setSingleAbstractMethodDescriptorFactory(
+        Supplier<MethodDescriptor> singleDeclaredAbstractMethodDescriptorFactory) {
+      return setSingleAbstractMethodDescriptorFactory(
+          typeDescriptor -> singleDeclaredAbstractMethodDescriptorFactory.get());
     }
 
     public abstract Builder setDeclaredFieldDescriptorsFactory(
@@ -994,16 +1009,19 @@ public abstract class TypeDeclaration
           typeDescriptor -> declaredFieldDescriptorsFactory.get());
     }
 
-    // Builder accessors to aid construction.
-    abstract Optional<String> getPackageName();
+    public abstract Builder setMemberTypeDeclarationsFactory(
+        Supplier<ImmutableList<TypeDeclaration>> memberTypeDeclarationsFactory);
 
-    abstract ImmutableList<String> getClassComponents();
+    // Builder accessors to aid construction.
+    abstract Optional<ImmutableList<String>> getClassComponents();
 
     abstract Optional<String> getSimpleJsName();
 
+    abstract Optional<PackageDeclaration> getPackage();
+
     abstract Optional<TypeDeclaration> getEnclosingTypeDeclaration();
 
-    abstract Optional<JsEnumInfo> getJsEnumInfo();
+    abstract boolean isJsFunctionInterface();
 
     abstract boolean isNative();
 
@@ -1017,54 +1035,43 @@ public abstract class TypeDeclaration
     abstract TypeDeclaration autoBuild();
 
     public TypeDeclaration build() {
-      if (getKind() == Kind.ENUM && getJsEnumInfo().isPresent()) {
-        // Users can write code that marks a class or an interface as JsEnum that will be rejected
-        // by JsInteropRestrictionsChecker; skip JsEnum processing here in that case.
-        switch (ignoreJsEnumAnnotations.get()) {
-          case ALL:
-            setJsEnumInfo(null);
-            break;
-          case NATIVE_ONLY:
-            // TODO(b/288145698): Support native JsEnum.
-            if (isNative()) {
-              setJsEnumInfo(null);
-              setNative(false);
-              break;
-            }
-            // fall through
-          default:
-            // The actual supertype for JsEnums is Object. JsEnum don't really extend Enum
-            // and modeling that fact in the type model allows passes that query assignability (e.g.
-            // to implement casts, instance ofs and JsEnum boxing etc.) to get the right answer.
-            if (getKind() == Kind.ENUM) {
-              // Users can write code that marks an interface as JsEnum that will be rejected
-              // by JsInteropRestrictionsChecker, but we need to preserve our invariants that
-              // interfaces don't have supertype.
-              setSuperTypeDescriptorFactory(() -> TypeDescriptors.get().javaLangObject);
-            }
-            break;
-        }
+      if (isJsFunctionInterface() && ignoreJsFunctionAnnotations.get()) {
+        setJsFunctionInterface(false);
       }
 
-      if (!getPackageName().isPresent() && getEnclosingTypeDeclaration().isPresent()) {
-        setPackageName(getEnclosingTypeDeclaration().get().getPackageName());
+      // TODO(b/181615162): Find a better way to expose different flavors of type models by backend.
+      if (getKind() == Kind.ENUM && isNative() && implementWasmJsEnumSemantics.get()) {
+        setJsEnumInfo(null);
+        setNative(false);
       }
 
-      if (!getSimpleJsName().isPresent()) {
-        setSimpleJsName(AstUtils.getSimpleSourceName(getClassComponents()));
+      if (qualifiedSourceName != null) {
+        // Setting qualifiedSourceName is only allowed for top-level types and shouldn't be mixed
+        // with other construction styles (like providing packages, class components, etc.).
+        checkState(getEnclosingTypeDeclaration().isEmpty());
+        checkState(getPackage().isEmpty());
+        checkState(getClassComponents().isEmpty());
+
+        int lastDot = qualifiedSourceName.lastIndexOf('.');
+        setPackage(
+            PackageDeclaration.newBuilder()
+                .setName(lastDot == -1 ? "" : qualifiedSourceName.substring(0, lastDot))
+                .build());
+        setClassComponents(qualifiedSourceName.substring(lastDot + 1));
+      }
+
+      if (getPackage().isEmpty()) {
+        // If no package is set, enclosing type is mandatory where we can get the package from.
+        setPackage(getEnclosingTypeDeclaration().get().getPackage());
+      }
+
+      if (getSimpleJsName().isEmpty()) {
+        setSimpleJsName(AstUtils.getSimpleSourceName(getClassComponents().get()));
       }
 
       checkState(!isAnnotation() || getKind() == Kind.INTERFACE);
 
       TypeDeclaration typeDeclaration = autoBuild();
-
-      // If this is an inner class, make sure the package is consistent.
-      checkState(
-          typeDeclaration.getEnclosingTypeDeclaration() == null
-              || typeDeclaration
-                  .getEnclosingTypeDeclaration()
-                  .getPackageName()
-                  .equals(typeDeclaration.getPackageName()));
 
       // Has to be an interface to be a functional interface.
       checkState(typeDeclaration.isInterface() || !typeDeclaration.isFunctionalInterface());
@@ -1075,7 +1082,8 @@ public abstract class TypeDeclaration
 
       checkState(
           typeDeclaration.getTypeParameterDescriptors().stream()
-              .noneMatch(TypeVariable::isNullable));
+              .map(TypeVariable::getNullabilityAnnotation)
+              .allMatch(Predicate.isEqual(NullabilityAnnotation.NONE)));
 
       return interner.intern(typeDeclaration);
     }

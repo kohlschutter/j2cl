@@ -44,6 +44,13 @@ public class LabeledStatement extends Statement {
   }
 
   @Override
+  public boolean isNoop() {
+    return statement.isNoop()
+        || (statement instanceof BreakStatement breakStatement
+            && breakStatement.targetsLabel(label));
+  }
+
+  @Override
   public LabeledStatement clone() {
     Label newLabel = label.clone();
     return new LabeledStatement(

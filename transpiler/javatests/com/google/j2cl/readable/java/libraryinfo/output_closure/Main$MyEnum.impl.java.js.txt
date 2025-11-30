@@ -32,14 +32,14 @@ class MyEnum extends Enum {
  static m_valueOf__java_lang_String__libraryinfo_Main_MyEnum(/** string */ name) {
   MyEnum.$clinit();
   if ($Equality.$same(MyEnum.f_namesToValuesMap__libraryinfo_Main_MyEnum_, null)) {
-   MyEnum.f_namesToValuesMap__libraryinfo_Main_MyEnum_ = /**@type {Map<?string, !MyEnum>}*/ ($Enums.createMapFromValues(MyEnum.m_values__arrayOf_libraryinfo_Main_MyEnum()));
+   MyEnum.f_namesToValuesMap__libraryinfo_Main_MyEnum_ = (/**@type {Map<?string, !MyEnum>}*/ ($Enums.createMapFromValues(MyEnum.m_values__arrayOf_libraryinfo_Main_MyEnum())));
   }
   return /**@type {MyEnum}*/ ($Enums.getValueFromNameAndMap(name, MyEnum.f_namesToValuesMap__libraryinfo_Main_MyEnum_));
  }
  /** @nodts @return {!Array<!MyEnum>} */
  static m_values__arrayOf_libraryinfo_Main_MyEnum() {
   MyEnum.$clinit();
-  return /**@type {!Array<MyEnum>}*/ ($Arrays.$init([MyEnum.f_FOO__libraryinfo_Main_MyEnum, MyEnum.f_BAR__libraryinfo_Main_MyEnum], MyEnum));
+  return /**@type {!Array<!MyEnum>}*/ ($Arrays.$stampType([MyEnum.f_FOO__libraryinfo_Main_MyEnum, MyEnum.f_BAR__libraryinfo_Main_MyEnum], MyEnum));
  }
  /** @nodts */
  static $clinit() {

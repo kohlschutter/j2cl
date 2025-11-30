@@ -33,7 +33,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /** Small fill in for io.ZipFiles since it's not open source yet. */
-final class ZipFiles {
+public class ZipFiles {
 
   private static final class ZipEntryByteSource extends ByteSource {
 
@@ -56,8 +56,8 @@ final class ZipFiles {
     }
   }
 
-  public static ImmutableList<FileInfo> unzipFile(File zipFile, File targetDirectory)
-      throws IOException {
+  public static ImmutableList<FileInfo> unzipFile(
+      File zipFile, File targetDirectory, Problems problems) throws IOException {
     checkNotNull(zipFile);
     checkNotNull(targetDirectory);
     checkArgument(
@@ -68,6 +68,7 @@ final class ZipFiles {
     final ZipFile zipFileObj = new ZipFile(zipFile);
     try {
       for (ZipEntry entry : entries(zipFileObj)) {
+        problems.abortIfCancelled();
         checkName(entry.getName());
         File targetFile = new File(targetDirectory, entry.getName());
         if (entry.isDirectory()) {

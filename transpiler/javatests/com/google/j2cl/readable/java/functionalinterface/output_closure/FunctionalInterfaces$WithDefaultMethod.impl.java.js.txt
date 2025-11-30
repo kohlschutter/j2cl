@@ -12,7 +12,7 @@ class WithDefaultMethod {
  m_apply__java_lang_String__java_lang_String(/** ?string */ string_1) {}
  /** @abstract @nodts @return {?string} */
  m_defaultApply__java_lang_String__java_lang_String(/** ?string */ string_1) {}
- /** @nodts @return {WithDefaultMethod} */
+ /** @nodts @return {!WithDefaultMethod} */
  static $adapt(/** ?function(?string):?string */ fn) {
   WithDefaultMethod.$clinit();
   return new $LambdaAdaptor(fn);
@@ -42,7 +42,7 @@ class WithDefaultMethod {
  }
 }
 WithDefaultMethod.$markImplementor(/**@type {Function}*/ (WithDefaultMethod));
-$Util.$setClassMetadataForInterface(WithDefaultMethod, 'functionalinterface.FunctionalInterfaces$WithDefaultMethod');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (WithDefaultMethod), 'functionalinterface.FunctionalInterfaces$WithDefaultMethod');
 
 exports = WithDefaultMethod;
 

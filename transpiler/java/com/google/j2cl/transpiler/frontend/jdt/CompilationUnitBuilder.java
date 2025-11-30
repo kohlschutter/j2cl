@@ -19,13 +19,14 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.MoreCollectors.onlyElement;
+import static com.google.j2cl.transpiler.frontend.jdt.JdtEnvironment.asTypedList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toCollection;
-import static java.util.stream.Collectors.toList;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import com.google.j2cl.common.FilePosition;
+import com.google.j2cl.common.Problems;
 import com.google.j2cl.common.SourcePosition;
 import com.google.j2cl.transpiler.ast.ArrayAccess;
 import com.google.j2cl.transpiler.ast.ArrayCreationReference;
@@ -35,6 +36,7 @@ import com.google.j2cl.transpiler.ast.AssertStatement;
 import com.google.j2cl.transpiler.ast.AstUtils;
 import com.google.j2cl.transpiler.ast.BinaryExpression;
 import com.google.j2cl.transpiler.ast.BinaryOperator;
+import com.google.j2cl.transpiler.ast.BindingPattern;
 import com.google.j2cl.transpiler.ast.Block;
 import com.google.j2cl.transpiler.ast.BooleanLiteral;
 import com.google.j2cl.transpiler.ast.BreakStatement;
@@ -68,6 +70,7 @@ import com.google.j2cl.transpiler.ast.MethodReference;
 import com.google.j2cl.transpiler.ast.NewArray;
 import com.google.j2cl.transpiler.ast.NewInstance;
 import com.google.j2cl.transpiler.ast.NumberLiteral;
+import com.google.j2cl.transpiler.ast.Pattern;
 import com.google.j2cl.transpiler.ast.PostfixExpression;
 import com.google.j2cl.transpiler.ast.PrefixExpression;
 import com.google.j2cl.transpiler.ast.PrimitiveTypeDescriptor;
@@ -76,6 +79,7 @@ import com.google.j2cl.transpiler.ast.Statement;
 import com.google.j2cl.transpiler.ast.StringLiteral;
 import com.google.j2cl.transpiler.ast.SuperReference;
 import com.google.j2cl.transpiler.ast.SwitchCase;
+import com.google.j2cl.transpiler.ast.SwitchExpression;
 import com.google.j2cl.transpiler.ast.SwitchStatement;
 import com.google.j2cl.transpiler.ast.SynchronizedStatement;
 import com.google.j2cl.transpiler.ast.ThisReference;
@@ -92,12 +96,14 @@ import com.google.j2cl.transpiler.ast.Variable;
 import com.google.j2cl.transpiler.ast.VariableDeclarationExpression;
 import com.google.j2cl.transpiler.ast.VariableDeclarationFragment;
 import com.google.j2cl.transpiler.ast.WhileStatement;
+import com.google.j2cl.transpiler.ast.YieldStatement;
 import com.google.j2cl.transpiler.frontend.common.AbstractCompilationUnitBuilder;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
@@ -125,17 +131,25 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodReference;
 import org.eclipse.jdt.core.dom.TypeMethodReference;
+import org.eclipse.jdt.core.dom.UnionType;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 /** Creates a J2CL Java AST from the AST provided by JDT. */
+@SuppressWarnings("UnnecessarilyFullyQualified")
 public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
 
   private final JdtEnvironment environment;
+  private final Problems problems;
 
   private class ASTConverter {
     private org.eclipse.jdt.core.dom.CompilationUnit jdtCompilationUnit;
     private final Map<IVariableBinding, Variable> variableByJdtBinding = new HashMap<>();
-    private final Map<String, Label> labelsInScope = new HashMap<>();
+
+    // Keeps track of labels that are currently in scope. Even though labels cannot have the
+    // same name if they are nested in the same method body, labels with the same name could
+    // be lexically nested by being in different methods bodies, e.g. from local or anonymous
+    // classes or lambdas.
+    private final Map<String, Deque<Label>> labelsInScope = new HashMap<>();
 
     private CompilationUnit convert(
         String sourceFilePath, org.eclipse.jdt.core.dom.CompilationUnit jdtCompilationUnit) {
@@ -155,17 +169,15 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       return getCurrentCompilationUnit();
     }
     private Type convert(AbstractTypeDeclaration typeDeclaration) {
-      switch (typeDeclaration.getNodeType()) {
-        case ASTNode.ANNOTATION_TYPE_DECLARATION:
-        case ASTNode.TYPE_DECLARATION:
-          return convertType(typeDeclaration);
-        case ASTNode.ENUM_DECLARATION:
-          return convert((EnumDeclaration) typeDeclaration);
-        default:
-          throw internalCompilerError(
-              "Unexpected node type for AbstractTypeDeclaration: %s  type name: %s ",
-              typeDeclaration.getClass().getName(), typeDeclaration.getName().toString());
-      }
+      return switch (typeDeclaration.getNodeType()) {
+        case ASTNode.ANNOTATION_TYPE_DECLARATION, ASTNode.TYPE_DECLARATION ->
+            convertType(typeDeclaration);
+        case ASTNode.ENUM_DECLARATION -> convert((EnumDeclaration) typeDeclaration);
+        default ->
+            throw internalCompilerError(
+                "Unexpected node type for AbstractTypeDeclaration: %s  type name: %s ",
+                typeDeclaration.getClass().getName(), typeDeclaration.getName().toString());
+      };
     }
 
     private Type convert(EnumDeclaration enumDeclaration) {
@@ -190,7 +202,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     private Type convertType(AbstractTypeDeclaration typeDeclaration) {
       return convertType(
           typeDeclaration.resolveBinding(),
-          JdtEnvironment.asTypedList(typeDeclaration.bodyDeclarations()),
+          asTypedList(typeDeclaration.bodyDeclarations()),
           typeDeclaration.getName());
     }
 
@@ -215,34 +227,36 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     }
 
     private void convertTypeBody(Type type, List<BodyDeclaration> bodyDeclarations) {
+      problems.abortIfCancelled();
       for (BodyDeclaration bodyDeclaration : bodyDeclarations) {
-        if (bodyDeclaration instanceof FieldDeclaration) {
-          FieldDeclaration fieldDeclaration = (FieldDeclaration) bodyDeclaration;
-          type.addMembers(convert(fieldDeclaration));
-        } else if (bodyDeclaration instanceof MethodDeclaration) {
-          MethodDeclaration methodDeclaration = (MethodDeclaration) bodyDeclaration;
-          type.addMember(convert(methodDeclaration));
-        } else if (bodyDeclaration instanceof AnnotationTypeMemberDeclaration) {
-          AnnotationTypeMemberDeclaration memberDeclaration =
-              (AnnotationTypeMemberDeclaration) bodyDeclaration;
-          type.addMember(convert(memberDeclaration));
-        } else if (bodyDeclaration instanceof Initializer) {
-          Initializer initializer = (Initializer) bodyDeclaration;
-          Block block = convert(initializer.getBody());
-          if (JdtEnvironment.isStatic(initializer)) {
-            type.addStaticInitializerBlock(block);
-          } else {
-            type.addInstanceInitializerBlock(block);
+        switch (bodyDeclaration) {
+          case FieldDeclaration fieldDeclaration -> type.addMembers(convert(fieldDeclaration));
+
+          case MethodDeclaration methodDeclaration -> type.addMember(convert(methodDeclaration));
+
+          case AnnotationTypeMemberDeclaration memberDeclaration ->
+              type.addMember(convert(memberDeclaration));
+
+          case Initializer initializer -> {
+            Block block = convert(initializer.getBody());
+            if (JdtEnvironment.isStatic(initializer)) {
+              type.addStaticInitializerBlock(block);
+            } else {
+              type.addInstanceInitializerBlock(block);
+            }
           }
-        } else if (bodyDeclaration instanceof AbstractTypeDeclaration) {
-          // Nested class
-          AbstractTypeDeclaration nestedTypeDeclaration = (AbstractTypeDeclaration) bodyDeclaration;
-          type.addType(convert(nestedTypeDeclaration));
-        } else {
-          throw internalCompilerError(
-              "Unexpected type for BodyDeclaration: %s, in type: %s",
-              bodyDeclaration.getClass().getName(), type.getDeclaration().getQualifiedSourceName());
+
+          case AbstractTypeDeclaration nestedTypeDeclaration ->
+              // Nested class
+              type.addType(convert(nestedTypeDeclaration));
+
+          default ->
+              throw internalCompilerError(
+                  "Unexpected type for BodyDeclaration: %s, in type: %s",
+                  bodyDeclaration.getClass().getName(),
+                  type.getDeclaration().getQualifiedSourceName());
         }
+        problems.abortIfCancelled();
       }
     }
 
@@ -259,20 +273,13 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       FieldDescriptor fieldDescriptor =
           environment.createFieldDescriptor(enumConstantDeclaration.resolveVariable());
 
-      // Since initializing custom values for JsEnum requires literals, we fold constant expressions
-      // to give more options to the user. E.g. -1 is a unary expression but the expression is a
-      // constant that can be evaluated at compile time, hence it makes sense to allow it.
-      boolean foldConstantArguments = fieldDescriptor.getEnclosingTypeDescriptor().isJsEnum();
-
       MethodDescriptor methodDescriptor =
           environment.createMethodDescriptor(enumConstructorBinding);
       Expression initializer =
           NewInstance.Builder.from(methodDescriptor)
               .setArguments(
                   convertArguments(
-                      enumConstructorBinding,
-                      JdtEnvironment.asTypedList(enumConstantDeclaration.arguments()),
-                      foldConstantArguments))
+                      enumConstructorBinding, asTypedList(enumConstantDeclaration.arguments())))
               .setAnonymousInnerClass(anonymousInnerClass)
               .build();
 
@@ -311,7 +318,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     }
 
     private Method convert(MethodDeclaration methodDeclaration) {
-      boolean inNullMarkedScope = getCurrentType().getDeclaration().isNullMarked();
+      boolean inNullMarkedScope = inNullMarkedScope();
       List<Variable> parameters = new ArrayList<>();
       for (SingleVariableDeclaration parameter :
           JdtEnvironment.<SingleVariableDeclaration>asTypedList(methodDeclaration.parameters())) {
@@ -359,7 +366,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       ArrayType arrayType = expression.getType();
 
       List<Expression> dimensionExpressions =
-          convertExpressions(JdtEnvironment.asTypedList(expression.dimensions()));
+          convertExpressions(asTypedList(expression.dimensions()));
       // Pad the dimension expressions with null values to denote omitted dimensions.
       AstUtils.addNullPadding(dimensionExpressions, arrayType.getDimensions());
 
@@ -369,8 +376,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       ArrayTypeDescriptor typeDescriptor =
           (ArrayTypeDescriptor)
               environment.createTypeDescriptor(
-                  expression.resolveTypeBinding(),
-                  getCurrentType().getDeclaration().isNullMarked());
+                  expression.resolveTypeBinding(), inNullMarkedScope());
       return NewArray.newBuilder()
           .setTypeDescriptor(typeDescriptor)
           .setDimensionExpressions(dimensionExpressions)
@@ -379,12 +385,13 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     }
 
     private ArrayLiteral convert(org.eclipse.jdt.core.dom.ArrayInitializer expression) {
-      return new ArrayLiteral(
-          (ArrayTypeDescriptor)
-              environment.createTypeDescriptor(
-                  expression.resolveTypeBinding(),
-                  getCurrentType().getDeclaration().isNullMarked()),
-          convertExpressions(JdtEnvironment.asTypedList(expression.expressions())));
+      return ArrayLiteral.newBuilder()
+          .setTypeDescriptor(
+              (ArrayTypeDescriptor)
+                  environment.createTypeDescriptor(
+                      expression.resolveTypeBinding(), inNullMarkedScope()))
+          .setValueExpressions(convertExpressions(asTypedList(expression.expressions())))
+          .build();
     }
 
     private BooleanLiteral convert(org.eclipse.jdt.core.dom.BooleanLiteral literal) {
@@ -397,16 +404,19 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       // inferred from the expression.
       TypeDescriptor castTypeDescriptor =
           environment.createTypeDescriptor(
-              expression.getType().resolveBinding(),
-              getCurrentType().getDeclaration().isNullMarked());
+              expression.getType().resolveBinding(), inNullMarkedScope());
 
       Expression castExpression = convert(expression.getExpression());
+
+      if (!castExpression.canBeNull()) {
+        castTypeDescriptor = castTypeDescriptor.toNonNullable();
+      } else if (castExpression.getTypeDescriptor().isNullable()) {
+        castTypeDescriptor = castTypeDescriptor.toNullable();
+      }
+
       return CastExpression.newBuilder()
           .setExpression(castExpression)
-          .setCastTypeDescriptor(
-              // TODO(b/236987392): review the inference when the modeling of type variables
-              // includes the third state.
-              castTypeDescriptor.toNullable(castExpression.getTypeDescriptor().isNullable()))
+          .setCastTypeDescriptor(castTypeDescriptor)
           .build();
     }
 
@@ -419,7 +429,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
 
       Expression qualifier = convertOrNull(expression.getExpression());
       List<Expression> arguments =
-          convertArguments(constructorBinding, JdtEnvironment.asTypedList(expression.arguments()));
+          convertArguments(constructorBinding, asTypedList(expression.arguments()));
 
       MethodDescriptor constructorDescriptor =
           environment.createMethodDescriptor(constructorBinding);
@@ -437,6 +447,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       return NewInstance.Builder.from(constructorDescriptor)
           .setQualifier(qualifier)
           .setArguments(arguments)
+          .setTypeArguments(convertTypeArguments(asTypedList(expression.typeArguments())))
           .setAnonymousInnerClass(anonymousInnerClass)
           .build();
     }
@@ -449,7 +460,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       Type type =
           convertType(
               typeDeclaration.resolveBinding(),
-              JdtEnvironment.asTypedList(typeDeclaration.bodyDeclarations()),
+              asTypedList(typeDeclaration.bodyDeclarations()),
               typeDeclaration);
       // The initial constructor descriptor does not include the super call qualifier.
       MethodDescriptor constructorDescriptor =
@@ -483,79 +494,72 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     }
 
     private Expression convert(org.eclipse.jdt.core.dom.Expression expression) {
-      switch (expression.getNodeType()) {
-        case ASTNode.ARRAY_ACCESS:
-          return convert((org.eclipse.jdt.core.dom.ArrayAccess) expression);
-        case ASTNode.ARRAY_CREATION:
-          return convert((org.eclipse.jdt.core.dom.ArrayCreation) expression);
-        case ASTNode.ARRAY_INITIALIZER:
-          return convert((org.eclipse.jdt.core.dom.ArrayInitializer) expression);
-        case ASTNode.ASSIGNMENT:
-          return convert((org.eclipse.jdt.core.dom.Assignment) expression);
-        case ASTNode.BOOLEAN_LITERAL:
-          return convert((org.eclipse.jdt.core.dom.BooleanLiteral) expression);
-        case ASTNode.CAST_EXPRESSION:
-          return convert((org.eclipse.jdt.core.dom.CastExpression) expression);
-        case ASTNode.CHARACTER_LITERAL:
-          return convert((org.eclipse.jdt.core.dom.CharacterLiteral) expression);
-        case ASTNode.CLASS_INSTANCE_CREATION:
-          return convert((org.eclipse.jdt.core.dom.ClassInstanceCreation) expression);
-        case ASTNode.CONDITIONAL_EXPRESSION:
-          return convert((org.eclipse.jdt.core.dom.ConditionalExpression) expression);
-        case ASTNode.EXPRESSION_METHOD_REFERENCE:
-          return convert((org.eclipse.jdt.core.dom.ExpressionMethodReference) expression);
-        case ASTNode.CREATION_REFERENCE:
-          return convert((org.eclipse.jdt.core.dom.CreationReference) expression);
-        case ASTNode.TYPE_METHOD_REFERENCE:
-          return convert((org.eclipse.jdt.core.dom.TypeMethodReference) expression);
-        case ASTNode.SUPER_METHOD_REFERENCE:
-          return convert((org.eclipse.jdt.core.dom.SuperMethodReference) expression);
-        case ASTNode.FIELD_ACCESS:
-          return convert((org.eclipse.jdt.core.dom.FieldAccess) expression);
-        case ASTNode.INFIX_EXPRESSION:
-          return convert((org.eclipse.jdt.core.dom.InfixExpression) expression);
-        case ASTNode.INSTANCEOF_EXPRESSION:
-          return convert((org.eclipse.jdt.core.dom.InstanceofExpression) expression);
-        case ASTNode.LAMBDA_EXPRESSION:
-          return convert((org.eclipse.jdt.core.dom.LambdaExpression) expression);
-        case ASTNode.METHOD_INVOCATION:
-          return convert((org.eclipse.jdt.core.dom.MethodInvocation) expression);
-        case ASTNode.NULL_LITERAL:
-          return environment.createTypeDescriptor(expression.resolveTypeBinding()).getNullValue();
-        case ASTNode.NUMBER_LITERAL:
-          return convert((org.eclipse.jdt.core.dom.NumberLiteral) expression);
-        case ASTNode.PARENTHESIZED_EXPRESSION:
-          return convert((org.eclipse.jdt.core.dom.ParenthesizedExpression) expression);
-        case ASTNode.POSTFIX_EXPRESSION:
-          return convert((org.eclipse.jdt.core.dom.PostfixExpression) expression);
-        case ASTNode.PREFIX_EXPRESSION:
-          return convert((org.eclipse.jdt.core.dom.PrefixExpression) expression);
-        case ASTNode.QUALIFIED_NAME:
-          return convert((org.eclipse.jdt.core.dom.QualifiedName) expression);
-        case ASTNode.SIMPLE_NAME:
-          return convert((org.eclipse.jdt.core.dom.SimpleName) expression);
-        case ASTNode.STRING_LITERAL:
-          return convert((org.eclipse.jdt.core.dom.StringLiteral) expression);
-        case ASTNode.SUPER_FIELD_ACCESS:
-          return convert((org.eclipse.jdt.core.dom.SuperFieldAccess) expression);
-        case ASTNode.SUPER_METHOD_INVOCATION:
-          return convert((org.eclipse.jdt.core.dom.SuperMethodInvocation) expression);
-        case ASTNode.THIS_EXPRESSION:
-          return convert((org.eclipse.jdt.core.dom.ThisExpression) expression);
-        case ASTNode.TYPE_LITERAL:
-          return convert((org.eclipse.jdt.core.dom.TypeLiteral) expression);
-        case ASTNode.VARIABLE_DECLARATION_EXPRESSION:
-          return convert((org.eclipse.jdt.core.dom.VariableDeclarationExpression) expression);
-        default:
-          throw internalCompilerError(
-              "Unexpected type for Expression: %s", expression.getClass().getName());
-      }
+      return switch (expression.getNodeType()) {
+        case ASTNode.ARRAY_ACCESS -> convert((org.eclipse.jdt.core.dom.ArrayAccess) expression);
+        case ASTNode.ARRAY_CREATION -> convert((org.eclipse.jdt.core.dom.ArrayCreation) expression);
+        case ASTNode.ARRAY_INITIALIZER ->
+            convert((org.eclipse.jdt.core.dom.ArrayInitializer) expression);
+        case ASTNode.ASSIGNMENT -> convert((org.eclipse.jdt.core.dom.Assignment) expression);
+        case ASTNode.BOOLEAN_LITERAL ->
+            convert((org.eclipse.jdt.core.dom.BooleanLiteral) expression);
+        case ASTNode.CAST_EXPRESSION ->
+            convert((org.eclipse.jdt.core.dom.CastExpression) expression);
+        case ASTNode.CHARACTER_LITERAL ->
+            convert((org.eclipse.jdt.core.dom.CharacterLiteral) expression);
+        case ASTNode.CLASS_INSTANCE_CREATION ->
+            convert((org.eclipse.jdt.core.dom.ClassInstanceCreation) expression);
+        case ASTNode.CONDITIONAL_EXPRESSION ->
+            convert((org.eclipse.jdt.core.dom.ConditionalExpression) expression);
+        case ASTNode.EXPRESSION_METHOD_REFERENCE ->
+            convert((org.eclipse.jdt.core.dom.ExpressionMethodReference) expression);
+        case ASTNode.CREATION_REFERENCE ->
+            convert((org.eclipse.jdt.core.dom.CreationReference) expression);
+        case ASTNode.TYPE_METHOD_REFERENCE ->
+            convert((org.eclipse.jdt.core.dom.TypeMethodReference) expression);
+        case ASTNode.SUPER_METHOD_REFERENCE ->
+            convert((org.eclipse.jdt.core.dom.SuperMethodReference) expression);
+        case ASTNode.FIELD_ACCESS -> convert((org.eclipse.jdt.core.dom.FieldAccess) expression);
+        case ASTNode.INFIX_EXPRESSION ->
+            convert((org.eclipse.jdt.core.dom.InfixExpression) expression);
+        case ASTNode.INSTANCEOF_EXPRESSION ->
+            convert((org.eclipse.jdt.core.dom.InstanceofExpression) expression);
+        case ASTNode.LAMBDA_EXPRESSION ->
+            convert((org.eclipse.jdt.core.dom.LambdaExpression) expression);
+        case ASTNode.METHOD_INVOCATION ->
+            convert((org.eclipse.jdt.core.dom.MethodInvocation) expression);
+        case ASTNode.NULL_LITERAL ->
+            environment.createTypeDescriptor(expression.resolveTypeBinding()).getNullValue();
+        case ASTNode.NUMBER_LITERAL -> convert((org.eclipse.jdt.core.dom.NumberLiteral) expression);
+        case ASTNode.PARENTHESIZED_EXPRESSION ->
+            convert((org.eclipse.jdt.core.dom.ParenthesizedExpression) expression);
+        case ASTNode.POSTFIX_EXPRESSION ->
+            convert((org.eclipse.jdt.core.dom.PostfixExpression) expression);
+        case ASTNode.PREFIX_EXPRESSION ->
+            convert((org.eclipse.jdt.core.dom.PrefixExpression) expression);
+        case ASTNode.QUALIFIED_NAME -> convert((org.eclipse.jdt.core.dom.QualifiedName) expression);
+        case ASTNode.SIMPLE_NAME -> convert((org.eclipse.jdt.core.dom.SimpleName) expression);
+        case ASTNode.STRING_LITERAL -> convert((org.eclipse.jdt.core.dom.StringLiteral) expression);
+        case ASTNode.SUPER_FIELD_ACCESS ->
+            convert((org.eclipse.jdt.core.dom.SuperFieldAccess) expression);
+        case ASTNode.SUPER_METHOD_INVOCATION ->
+            convert((org.eclipse.jdt.core.dom.SuperMethodInvocation) expression);
+        case ASTNode.SWITCH_EXPRESSION ->
+            convert((org.eclipse.jdt.core.dom.SwitchExpression) expression);
+        case ASTNode.THIS_EXPRESSION ->
+            convert((org.eclipse.jdt.core.dom.ThisExpression) expression);
+        case ASTNode.TYPE_LITERAL -> convert((org.eclipse.jdt.core.dom.TypeLiteral) expression);
+        case ASTNode.VARIABLE_DECLARATION_EXPRESSION ->
+            convert((org.eclipse.jdt.core.dom.VariableDeclarationExpression) expression);
+        default ->
+            throw internalCompilerError(
+                "Unexpected type for Expression: %s", expression.getClass().getName());
+      };
     }
 
     private VariableDeclarationExpression convert(
         org.eclipse.jdt.core.dom.VariableDeclarationExpression expression) {
       List<org.eclipse.jdt.core.dom.VariableDeclarationFragment> fragments =
-          JdtEnvironment.asTypedList(expression.fragments());
+          asTypedList(expression.fragments());
 
       return VariableDeclarationExpression.newBuilder()
           .setVariableDeclarationFragments(
@@ -572,15 +576,14 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
         org.eclipse.jdt.core.dom.ConditionalExpression conditionalExpression) {
       TypeDescriptor conditionalTypeDescriptor =
           environment.createTypeDescriptor(
-              conditionalExpression.resolveTypeBinding(),
-              getCurrentType().getDeclaration().isNullMarked());
+              conditionalExpression.resolveTypeBinding(), inNullMarkedScope());
       Expression condition = convert(conditionalExpression.getExpression());
       Expression trueExpression = convert(conditionalExpression.getThenExpression());
       Expression falseExpression = convert(conditionalExpression.getElseExpression());
       return ConditionalExpression.newBuilder()
           .setTypeDescriptor(
-              trueExpression.getTypeDescriptor().isNullable()
-                      || falseExpression.getTypeDescriptor().isNullable()
+              trueExpression.getTypeDescriptor().canBeNull()
+                      || falseExpression.getTypeDescriptor().canBeNull()
                   ? conditionalTypeDescriptor.toNullable()
                   : conditionalTypeDescriptor)
           .setConditionExpression(condition)
@@ -590,53 +593,48 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     }
 
     private Statement convertStatement(org.eclipse.jdt.core.dom.Statement statement) {
-      switch (statement.getNodeType()) {
-        case ASTNode.ASSERT_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.AssertStatement) statement);
-        case ASTNode.BLOCK:
-          return convert((org.eclipse.jdt.core.dom.Block) statement);
-        case ASTNode.BREAK_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.BreakStatement) statement);
-        case ASTNode.CONSTRUCTOR_INVOCATION:
-          return convert((org.eclipse.jdt.core.dom.ConstructorInvocation) statement);
-        case ASTNode.CONTINUE_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.ContinueStatement) statement);
-        case ASTNode.DO_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.DoStatement) statement);
-        case ASTNode.EMPTY_STATEMENT:
-          return Statement.createNoopStatement();
-        case ASTNode.EXPRESSION_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.ExpressionStatement) statement);
-        case ASTNode.FOR_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.ForStatement) statement);
-        case ASTNode.ENHANCED_FOR_STATEMENT:
-          return convert((EnhancedForStatement) statement);
-        case ASTNode.IF_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.IfStatement) statement);
-        case ASTNode.LABELED_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.LabeledStatement) statement);
-        case ASTNode.RETURN_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.ReturnStatement) statement);
-        case ASTNode.SUPER_CONSTRUCTOR_INVOCATION:
-          return convert((org.eclipse.jdt.core.dom.SuperConstructorInvocation) statement);
-        case ASTNode.SWITCH_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.SwitchStatement) statement);
-        case ASTNode.SYNCHRONIZED_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.SynchronizedStatement) statement);
-        case ASTNode.THROW_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.ThrowStatement) statement);
-        case ASTNode.TRY_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.TryStatement) statement);
-        case ASTNode.TYPE_DECLARATION_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.TypeDeclarationStatement) statement);
-        case ASTNode.VARIABLE_DECLARATION_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.VariableDeclarationStatement) statement);
-        case ASTNode.WHILE_STATEMENT:
-          return convert((org.eclipse.jdt.core.dom.WhileStatement) statement);
-        default:
-          throw internalCompilerError(
-              "Unexpected type for Statement: %s", statement.getClass().getName());
-      }
+      return switch (statement.getNodeType()) {
+        case ASTNode.ASSERT_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.AssertStatement) statement);
+        case ASTNode.BLOCK -> convert((org.eclipse.jdt.core.dom.Block) statement);
+        case ASTNode.BREAK_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.BreakStatement) statement);
+        case ASTNode.CONSTRUCTOR_INVOCATION ->
+            convert((org.eclipse.jdt.core.dom.ConstructorInvocation) statement);
+        case ASTNode.CONTINUE_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.ContinueStatement) statement);
+        case ASTNode.DO_STATEMENT -> convert((org.eclipse.jdt.core.dom.DoStatement) statement);
+        case ASTNode.EMPTY_STATEMENT -> Statement.createNoopStatement();
+        case ASTNode.EXPRESSION_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.ExpressionStatement) statement);
+        case ASTNode.FOR_STATEMENT -> convert((org.eclipse.jdt.core.dom.ForStatement) statement);
+        case ASTNode.ENHANCED_FOR_STATEMENT -> convert((EnhancedForStatement) statement);
+        case ASTNode.IF_STATEMENT -> convert((org.eclipse.jdt.core.dom.IfStatement) statement);
+        case ASTNode.LABELED_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.LabeledStatement) statement);
+        case ASTNode.RETURN_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.ReturnStatement) statement);
+        case ASTNode.SUPER_CONSTRUCTOR_INVOCATION ->
+            convert((org.eclipse.jdt.core.dom.SuperConstructorInvocation) statement);
+        case ASTNode.SWITCH_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.SwitchStatement) statement);
+        case ASTNode.SYNCHRONIZED_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.SynchronizedStatement) statement);
+        case ASTNode.THROW_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.ThrowStatement) statement);
+        case ASTNode.TRY_STATEMENT -> convert((org.eclipse.jdt.core.dom.TryStatement) statement);
+        case ASTNode.TYPE_DECLARATION_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.TypeDeclarationStatement) statement);
+        case ASTNode.VARIABLE_DECLARATION_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.VariableDeclarationStatement) statement);
+        case ASTNode.WHILE_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.WhileStatement) statement);
+        case ASTNode.YIELD_STATEMENT ->
+            convert((org.eclipse.jdt.core.dom.YieldStatement) statement);
+        default ->
+            throw internalCompilerError(
+                "Unexpected type for Statement: %s", statement.getClass().getName());
+      };
     }
 
     public SourcePosition getSourcePosition(ASTNode node) {
@@ -681,14 +679,14 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
 
     private LabeledStatement convert(org.eclipse.jdt.core.dom.LabeledStatement statement) {
       Label label = Label.newBuilder().setName(statement.getLabel().getIdentifier()).build();
-      checkState(labelsInScope.put(label.getName(), label) == null);
+      labelsInScope.computeIfAbsent(label.getName(), n -> new ArrayDeque<>()).push(label);
       LabeledStatement labeledStatement =
           LabeledStatement.newBuilder()
               .setSourcePosition(getSourcePosition(statement))
               .setLabel(label)
               .setStatement(convert(statement.getBody()))
               .build();
-      labelsInScope.remove(label.getName());
+      labelsInScope.get(label.getName()).pop();
       return labeledStatement;
     }
 
@@ -708,7 +706,9 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
 
     @Nullable
     private LabelReference getLabelReferenceOrNull(SimpleName label) {
-      return label == null ? null : labelsInScope.get(label.getIdentifier()).createReference();
+      return label == null
+          ? null
+          : labelsInScope.get(label.getIdentifier()).peek().createReference();
     }
 
     private ForStatement convert(org.eclipse.jdt.core.dom.ForStatement statement) {
@@ -716,13 +716,13 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
           // The order here is important since initializers can define new variables
           // These can be used in the expression, updaters or the body
           // This is why we need to process initializers first
-          .setInitializers(convertExpressions(JdtEnvironment.asTypedList(statement.initializers())))
+          .setInitializers(convertExpressions(asTypedList(statement.initializers())))
           .setConditionExpression(
               statement.getExpression() == null
                   ? BooleanLiteral.get(true)
                   : convert(statement.getExpression()))
           .setBody(convert(statement.getBody()))
-          .setUpdates(convertExpressions(JdtEnvironment.asTypedList(statement.updaters())))
+          .setUpdates(convertExpressions(asTypedList(statement.updaters())))
           .setSourcePosition(getSourcePosition(statement))
           .build();
     }
@@ -769,12 +769,19 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
           .build();
     }
 
-    private InstanceOfExpression convert(org.eclipse.jdt.core.dom.InstanceofExpression expression) {
+    private Expression convert(org.eclipse.jdt.core.dom.InstanceofExpression expression) {
+      Expression e = convert(expression.getLeftOperand());
+      TypeDescriptor typeDescriptor =
+          environment.createTypeDescriptor(expression.getRightOperand().resolveBinding());
+      Pattern pattern =
+          expression.getPatternVariable() == null
+              ? null
+              : new BindingPattern(convert(expression.getPatternVariable()));
       return InstanceOfExpression.newBuilder()
           .setSourcePosition(getSourcePosition(expression))
-          .setExpression(convert(expression.getLeftOperand()))
-          .setTestTypeDescriptor(
-              environment.createTypeDescriptor(expression.getRightOperand().resolveBinding()))
+          .setExpression(e)
+          .setTestTypeDescriptor(typeDescriptor)
+          .setPattern(pattern)
           .build();
     }
 
@@ -785,8 +792,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       return FunctionExpression.newBuilder()
           .setTypeDescriptor(
               environment.createTypeDescriptor(
-                  expression.resolveTypeBinding(),
-                  getCurrentType().getDeclaration().isNullMarked()))
+                  expression.resolveTypeBinding(), inNullMarkedScope()))
           .setJsAsync(functionalMethodDescriptor.isJsAsync())
           .setParameters(
               JdtEnvironment.<VariableDeclaration>asTypedList(expression.parameters()).stream()
@@ -837,8 +843,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
 
       SourcePosition sourcePosition = getSourcePosition(expression);
       TypeDescriptor expressionTypeDescriptor =
-          environment.createTypeDescriptor(
-              expression.resolveTypeBinding(), getCurrentType().getDeclaration().isNullMarked());
+          environment.createTypeDescriptor(expression.resolveTypeBinding(), inNullMarkedScope());
 
       // MethodDescriptor target of the method reference.
       MethodDescriptor referencedMethodDescriptor = resolveMethodReferenceTarget(expression);
@@ -855,6 +860,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
           .setReferencedMethodDescriptor(referencedMethodDescriptor)
           .setInterfaceMethodDescriptor(functionalMethodDescriptor)
           .setQualifier(qualifier)
+          .setTypeArguments(convertTypeArguments(asTypedList(expression.typeArguments())))
           .setSourcePosition(sourcePosition)
           .build();
     }
@@ -890,10 +896,6 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
      * </pre>
      */
     private Expression convert(CreationReference expression) {
-      ITypeBinding expressionTypeBinding = expression.getType().resolveBinding();
-      TypeDescriptor expressionTypeDescriptor =
-          environment.createTypeDescriptor(
-              expressionTypeBinding, getCurrentType().getDeclaration().isNullMarked());
       MethodDescriptor functionalMethodDescriptor =
           environment.createMethodDescriptor(
               expression.resolveTypeBinding().getFunctionalInterfaceMethod());
@@ -906,7 +908,8 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       if (expression.resolveMethodBinding() == null) {
         return ArrayCreationReference.newBuilder()
             .setTargetTypeDescriptor(
-                (ArrayTypeDescriptor) environment.createTypeDescriptor(expressionTypeBinding))
+                (ArrayTypeDescriptor)
+                    environment.createTypeDescriptor(expression.getType().resolveBinding()))
             .setInterfaceMethodDescriptor(functionalMethodDescriptor)
             .setSourcePosition(sourcePosition)
             .build();
@@ -916,7 +919,9 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
           environment.createMethodDescriptor(expression.resolveMethodBinding());
 
       return MethodReference.newBuilder()
-          .setTypeDescriptor(expressionTypeDescriptor)
+          .setTypeDescriptor(
+              environment.createTypeDescriptor(
+                  expression.resolveTypeBinding(), inNullMarkedScope()))
           .setReferencedMethodDescriptor(targetConstructorMethodDescriptor)
           .setInterfaceMethodDescriptor(functionalMethodDescriptor)
           .setSourcePosition(sourcePosition)
@@ -936,8 +941,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       ITypeBinding expressionTypeBinding = expression.resolveTypeBinding();
       return MethodReference.newBuilder()
           .setTypeDescriptor(
-              environment.createDeclaredTypeDescriptor(
-                  expressionTypeBinding, getCurrentType().getDeclaration().isNullMarked()))
+              environment.createDeclaredTypeDescriptor(expressionTypeBinding, inNullMarkedScope()))
           .setReferencedMethodDescriptor(
               environment.createMethodDescriptor(expression.resolveMethodBinding()))
           .setInterfaceMethodDescriptor(
@@ -1010,8 +1014,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     }
 
     private Block convert(org.eclipse.jdt.core.dom.Block block) {
-      List<org.eclipse.jdt.core.dom.Statement> statements =
-          JdtEnvironment.asTypedList(block.statements());
+      List<org.eclipse.jdt.core.dom.Statement> statements = asTypedList(block.statements());
 
       return Block.newBuilder()
           .setSourcePosition(getSourcePosition(block))
@@ -1035,9 +1038,8 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       IMethodBinding constructorBinding = statement.resolveConstructorBinding();
       MethodDescriptor methodDescriptor = environment.createMethodDescriptor(constructorBinding);
       return MethodCall.Builder.from(methodDescriptor)
-          .setArguments(
-              convertArguments(
-                  constructorBinding, JdtEnvironment.asTypedList(statement.arguments())))
+          .setArguments(convertArguments(constructorBinding, asTypedList(statement.arguments())))
+          .setTypeArguments(convertTypeArguments(asTypedList(statement.typeArguments())))
           .setSourcePosition(getSourcePosition(statement))
           .build()
           .makeStatement(getSourcePosition(statement));
@@ -1099,7 +1101,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       IMethodBinding methodBinding = methodInvocation.resolveMethodBinding();
       MethodDescriptor methodDescriptor = environment.createMethodDescriptor(methodBinding);
       List<Expression> arguments =
-          convertArguments(methodBinding, JdtEnvironment.asTypedList(methodInvocation.arguments()));
+          convertArguments(methodBinding, asTypedList(methodInvocation.arguments()));
 
       // This will always evaluate to true in JavaScript -- simplifying it here will enable some
       // more optimizations
@@ -1111,6 +1113,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       return MethodCall.Builder.from(methodDescriptor)
           .setQualifier(qualifier)
           .setArguments(arguments)
+          .setTypeArguments(convertTypeArguments(asTypedList(methodInvocation.typeArguments())))
           .setSourcePosition(getSourcePosition(methodInvocation))
           .build();
     }
@@ -1122,8 +1125,8 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
 
       return MethodCall.Builder.from(methodDescriptor)
           .setQualifier(createSuperReference(expression.getQualifier()))
-          .setArguments(
-              convertArguments(methodBinding, JdtEnvironment.asTypedList(expression.arguments())))
+          .setArguments(convertArguments(methodBinding, asTypedList(expression.arguments())))
+          .setTypeArguments(convertTypeArguments(asTypedList(expression.typeArguments())))
           .setSourcePosition(getSourcePosition(expression))
           .build();
     }
@@ -1131,21 +1134,17 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     private List<Expression> convertArguments(
         IMethodBinding methodBinding,
         List<org.eclipse.jdt.core.dom.Expression> argumentExpressions) {
-      return convertArguments(methodBinding, argumentExpressions, false);
-    }
-
-    private List<Expression> convertArguments(
-        IMethodBinding methodBinding,
-        List<org.eclipse.jdt.core.dom.Expression> argumentExpressions,
-        boolean foldConstants) {
       MethodDescriptor methodDescriptor = environment.createMethodDescriptor(methodBinding);
       List<Expression> arguments =
-          argumentExpressions.stream()
-              .map(
-                  expression ->
-                      foldConstants ? convertAndFoldExpression(expression) : convert(expression))
-              .collect(toList());
+          argumentExpressions.stream().map(this::convert).collect(toCollection(ArrayList::new));
       return AstUtils.maybePackageVarargs(methodDescriptor, arguments);
+    }
+
+    private List<TypeDescriptor> convertTypeArguments(
+        List<org.eclipse.jdt.core.dom.Type> typeArguments) {
+      return typeArguments.stream()
+          .map(type -> environment.createTypeDescriptor(type.resolveBinding(), inNullMarkedScope()))
+          .collect(toCollection(ArrayList::new));
     }
 
     private NumberLiteral convert(org.eclipse.jdt.core.dom.NumberLiteral literal) {
@@ -1176,8 +1175,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     @Nullable
     private Expression convert(org.eclipse.jdt.core.dom.QualifiedName expression) {
       IBinding binding = expression.resolveBinding();
-      if (binding instanceof IVariableBinding) {
-        IVariableBinding variableBinding = (IVariableBinding) binding;
+      if (binding instanceof IVariableBinding variableBinding) {
         checkArgument(
             variableBinding.isField(),
             internalCompilerErrorMessage("Unexpected QualifiedName that is not a field"));
@@ -1195,19 +1193,37 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     }
 
     private ReturnStatement convert(org.eclipse.jdt.core.dom.ReturnStatement statement) {
-      // Grab the type of the return statement from the method declaration, not from the expression.
-
       return ReturnStatement.newBuilder()
           .setExpression(convertOrNull(statement.getExpression()))
           .setSourcePosition(getSourcePosition(statement))
           .build();
     }
 
+    private Statement convert(org.eclipse.jdt.core.dom.YieldStatement statement) {
+      Expression expression = convert(statement.getExpression());
+      SourcePosition sourcePosition = getSourcePosition(statement);
+      if (statement.isImplicit()
+          && statement.getParent() instanceof org.eclipse.jdt.core.dom.SwitchStatement) {
+        // In switch statements, a case rule with a single expression is desugared to
+        // as a yield.
+        return Block.newBuilder()
+            .setStatements(
+                expression.makeStatement(sourcePosition),
+                BreakStatement.newBuilder().setSourcePosition(sourcePosition).build())
+            .setSourcePosition(sourcePosition)
+            .build();
+      }
+
+      return YieldStatement.newBuilder()
+          .setSourcePosition(sourcePosition)
+          .setExpression(expression)
+          .build();
+    }
+
     @Nullable
     private Expression convert(org.eclipse.jdt.core.dom.SimpleName expression) {
       IBinding binding = expression.resolveBinding();
-      if (binding instanceof IVariableBinding) {
-        IVariableBinding variableBinding = (IVariableBinding) binding;
+      if (binding instanceof IVariableBinding variableBinding) {
         if (variableBinding.isField()) {
           // It refers to a field.
           FieldDescriptor fieldDescriptor = environment.createFieldDescriptor(variableBinding);
@@ -1223,18 +1239,17 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       }
 
       throw internalCompilerError(
-          "Unexpected binding class for SimpleName: %s", expression.getClass().getName());
+          "Unexpected binding class for SimpleName: %s", binding.getClass().getName());
     }
 
     private Variable convert(
         org.eclipse.jdt.core.dom.SingleVariableDeclaration variableDeclaration) {
-      boolean inNullMarkedScope = getCurrentType().getDeclaration().isNullMarked();
+      boolean inNullMarkedScope = inNullMarkedScope();
       Variable variable = createVariable(variableDeclaration, inNullMarkedScope);
-      if (variableDeclaration.getType() instanceof org.eclipse.jdt.core.dom.UnionType) {
+      if (variableDeclaration.getType() instanceof UnionType unionType) {
         // Union types are only relevant in multi catch variable declarations, which appear in the
         // AST as a SingleVariableDeclaration.
-        variable.setTypeDescriptor(
-            convert((org.eclipse.jdt.core.dom.UnionType) variableDeclaration.getType()));
+        variable.setTypeDescriptor(convert(unionType));
       }
       return variable;
     }
@@ -1255,36 +1270,46 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       return new StringLiteral(literal.getLiteralValue());
     }
 
-    private SwitchStatement convert(org.eclipse.jdt.core.dom.SwitchStatement switchStatement) {
-      Expression switchExpression = convert(switchStatement.getExpression());
+    private Expression convert(org.eclipse.jdt.core.dom.SwitchExpression expression) {
+      return SwitchExpression.newBuilder()
+          .setTypeDescriptor(environment.createTypeDescriptor(expression.resolveTypeBinding()))
+          .setExpression(convert(expression.getExpression()))
+          .setCases(createSwitchCases(asTypedList(expression.statements())))
+          .setSourcePosition(getSourcePosition(expression))
+          .build();
+    }
 
+    private SwitchStatement convert(org.eclipse.jdt.core.dom.SwitchStatement switchStatement) {
+      return SwitchStatement.newBuilder()
+          .setSourcePosition(getSourcePosition(switchStatement))
+          .setExpression(convert(switchStatement.getExpression()))
+          .setCases(createSwitchCases(asTypedList(switchStatement.statements())))
+          .build();
+    }
+
+    private List<SwitchCase> createSwitchCases(
+        List<org.eclipse.jdt.core.dom.Statement> statements) {
       List<SwitchCase.Builder> caseBuilders = new ArrayList<>();
-      for (org.eclipse.jdt.core.dom.Statement statement :
-          JdtEnvironment.<org.eclipse.jdt.core.dom.Statement>asTypedList(
-              switchStatement.statements())) {
-        if (statement instanceof org.eclipse.jdt.core.dom.SwitchCase) {
-          caseBuilders.add(convert((org.eclipse.jdt.core.dom.SwitchCase) statement));
+      for (org.eclipse.jdt.core.dom.Statement statement : statements) {
+        if (statement instanceof org.eclipse.jdt.core.dom.SwitchCase switchCase) {
+          caseBuilders.add(convert(switchCase));
         } else {
           Iterables.getLast(caseBuilders).addStatement(convertStatement(statement));
         }
       }
-
-      return SwitchStatement.newBuilder()
-          .setSourcePosition(getSourcePosition(switchStatement))
-          .setSwitchExpression(switchExpression)
-          .setCases(caseBuilders.stream().map(SwitchCase.Builder::build).collect(toImmutableList()))
-          .build();
+      return caseBuilders.stream().map(SwitchCase.Builder::build).collect(toImmutableList());
     }
 
-    private SwitchCase.Builder convert(org.eclipse.jdt.core.dom.SwitchCase statement) {
-      return statement.isDefault()
-          ? SwitchCase.newBuilder()
-          : SwitchCase.newBuilder()
-              // Fold the constant in the switch case to avoid complex expressions. Otherwise JDT
-              // would represent negative values as unary expressions, e.g - <constant>. The Wasm
-              // backend relies on switch case constant for switch on integral values to be
-              // literals.
-              .setCaseExpression(convertAndFoldExpression(statement.getExpression()));
+    private SwitchCase.Builder convert(org.eclipse.jdt.core.dom.SwitchCase switchCase) {
+      return SwitchCase.newBuilder()
+          .setCaseExpressions(
+              JdtEnvironment.<org.eclipse.jdt.core.dom.Expression>asTypedList(
+                      switchCase.expressions())
+                  .stream()
+                  .map(this::convert)
+                  .collect(toImmutableList()))
+          .setDefault(switchCase.isDefault())
+          .setCanFallthrough(!switchCase.isSwitchLabeledRule());
     }
 
     private SynchronizedStatement convert(
@@ -1305,8 +1330,8 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
       return MethodCall.Builder.from(methodDescriptor)
           .setQualifier(convertOrNull(expression.getExpression()))
           .setArguments(
-              convertArguments(
-                  superConstructorBinding, JdtEnvironment.asTypedList(expression.arguments())))
+              convertArguments(superConstructorBinding, asTypedList(expression.arguments())))
+          .setTypeArguments(convertTypeArguments(asTypedList(expression.typeArguments())))
           .setSourcePosition(getSourcePosition(expression))
           .build()
           .makeStatement(getSourcePosition(expression));
@@ -1337,10 +1362,9 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     }
 
     private TryStatement convert(org.eclipse.jdt.core.dom.TryStatement statement) {
-      List<org.eclipse.jdt.core.dom.Expression> resources =
-          JdtEnvironment.asTypedList(statement.resources());
+      List<org.eclipse.jdt.core.dom.Expression> resources = asTypedList(statement.resources());
       List<org.eclipse.jdt.core.dom.CatchClause> catchClauses =
-          JdtEnvironment.asTypedList(statement.catchClauses());
+          asTypedList(statement.catchClauses());
 
       return TryStatement.newBuilder()
           .setSourcePosition(getSourcePosition(statement))
@@ -1367,7 +1391,7 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
 
     private VariableDeclarationFragment convert(
         org.eclipse.jdt.core.dom.VariableDeclarationFragment variableDeclarationFragment) {
-      boolean inNullMarkedScope = getCurrentType().getDeclaration().isNullMarked();
+      boolean inNullMarkedScope = inNullMarkedScope();
       Variable variable = createVariable(variableDeclarationFragment, inNullMarkedScope);
       return VariableDeclarationFragment.newBuilder()
           .setVariable(variable)
@@ -1376,8 +1400,8 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     }
 
     private Variable convert(org.eclipse.jdt.core.dom.VariableDeclaration variableDeclaration) {
-      if (variableDeclaration instanceof org.eclipse.jdt.core.dom.SingleVariableDeclaration) {
-        return convert((org.eclipse.jdt.core.dom.SingleVariableDeclaration) variableDeclaration);
+      if (variableDeclaration instanceof SingleVariableDeclaration singleVariableDeclaration) {
+        return convert(singleVariableDeclaration);
       } else {
         return convert((org.eclipse.jdt.core.dom.VariableDeclarationFragment) variableDeclaration)
             .getVariable();
@@ -1387,20 +1411,12 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
     private ExpressionStatement convert(
         org.eclipse.jdt.core.dom.VariableDeclarationStatement statement) {
       List<org.eclipse.jdt.core.dom.VariableDeclarationFragment> fragments =
-          JdtEnvironment.asTypedList(statement.fragments());
+          asTypedList(statement.fragments());
       return VariableDeclarationExpression.newBuilder()
           .setVariableDeclarationFragments(
               fragments.stream().map(this::convert).collect(toImmutableList()))
           .build()
           .makeStatement(getSourcePosition(statement));
-    }
-
-    private Expression convertAndFoldExpression(org.eclipse.jdt.core.dom.Expression expression) {
-      Object constantValue = expression.resolveConstantExpressionValue();
-      return constantValue != null
-          ? Literal.fromValue(
-              constantValue, environment.createTypeDescriptor(expression.resolveTypeBinding()))
-          : convert(expression);
     }
 
     @Nullable
@@ -1412,38 +1428,24 @@ public class CompilationUnitBuilder extends AbstractCompilationUnitBuilder {
 
       return new Type(getSourcePosition(sourcePositionNode), typeDeclaration);
     }
+
+    // TODO(b/394094907): Support for annotating methods as @NullMarked.
+    private boolean inNullMarkedScope() {
+      return getCurrentType().getDeclaration().isNullMarked();
+    }
   }
 
-  private CompilationUnit buildCompilationUnit(
+  CompilationUnit buildCompilationUnit(
       String sourceFilePath, org.eclipse.jdt.core.dom.CompilationUnit compilationUnit) {
     ASTConverter converter = new ASTConverter();
     return converter.convert(sourceFilePath, compilationUnit);
   }
 
-  public static List<CompilationUnit> build(
-      CompilationUnitsAndTypeBindings compilationUnitsAndTypeBindings, JdtParser jdtParser) {
-    JdtEnvironment environment =
-        new JdtEnvironment(
-            PackageAnnotationsResolver.create(
-                compilationUnitsAndTypeBindings.getCompilationUnitsByFilePath().entrySet().stream()
-                    .filter(e -> e.getKey().endsWith("package-info.java"))
-                    .map(Entry::getValue),
-                jdtParser));
-
-    Map<String, org.eclipse.jdt.core.dom.CompilationUnit> jdtUnitsByFilePath =
-        compilationUnitsAndTypeBindings.getCompilationUnitsByFilePath();
-    List<ITypeBinding> wellKnownTypeBindings = compilationUnitsAndTypeBindings.getTypeBindings();
-    CompilationUnitBuilder compilationUnitBuilder =
-        new CompilationUnitBuilder(wellKnownTypeBindings, environment);
-
-    return jdtUnitsByFilePath.entrySet().stream()
-        .map(entry -> compilationUnitBuilder.buildCompilationUnit(entry.getKey(), entry.getValue()))
-        .collect(toImmutableList());
-  }
-
-  private CompilationUnitBuilder(
-      List<ITypeBinding> wellKnownTypeBindings, JdtEnvironment environment) {
+  CompilationUnitBuilder(
+      List<ITypeBinding> wellKnownTypeBindings, JdtEnvironment environment, Problems problems) {
     this.environment = environment;
+    this.problems = problems;
     environment.initWellKnownTypes(wellKnownTypeBindings);
+    this.problems.abortIfCancelled();
   }
 }

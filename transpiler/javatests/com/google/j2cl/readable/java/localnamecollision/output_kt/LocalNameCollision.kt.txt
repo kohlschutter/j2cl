@@ -1,19 +1,21 @@
 // Generated from "localnamecollision/LocalNameCollision.java"
-@file:OptIn(ExperimentalObjCName::class)
 @file:Suppress(
  "ALWAYS_NULL",
  "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
- "REPEATED_BOUND",
  "SENSELESS_COMPARISON",
  "UNCHECKED_CAST",
  "UNNECESSARY_LATEINIT",
  "UNNECESSARY_NOT_NULL_ASSERTION",
  "UNREACHABLE_CODE",
+ "UNUSED_ANONYMOUS_PARAMETER",
  "UNUSED_PARAMETER",
  "UNUSED_VARIABLE",
  "USELESS_CAST",
  "VARIABLE_IN_SINGLETON_WITHOUT_THREAD_LOCAL",
- "VARIABLE_WITH_REDUNDANT_INITIALIZER")
+ "VARIABLE_WITH_REDUNDANT_INITIALIZER",
+ "INCOMPATIBLE_OBJC_NAME_OVERRIDE",
+ "REDUNDANT_ELSE_IN_WHEN",
+ "ACCIDENTAL_OVERRIDE")
 
 package localnamecollision
 
@@ -21,18 +23,13 @@ import javaemul.lang.*
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
-import kotlin.OptIn
 import kotlin.Suppress
 import kotlin.assert
-import kotlin.experimental.ExperimentalObjCName
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
-import kotlin.native.ObjCName
 import localnamecollision.Class
 
-@ObjCName("J2ktLocalnamecollisionLocalNameCollision", exact = true)
 open class LocalNameCollision {
- @ObjCName("testClassLocalVarCollision")
  open fun testClassLocalVarCollision() {
   var LocalNameCollision: Boolean = false
   val RuntimeException: Any? = null
@@ -47,24 +44,11 @@ open class LocalNameCollision {
   assert(localnamecollision.Asserts().n_pp_localnamecollision() == 5)
  }
 
- @ObjCName("testClassParameterCollision")
- open fun testClassParameterCollision(
-  @ObjCName("withBoolean") LocalNameCollision: Boolean,
-  @ObjCName("withId") Asserts: Any?,
-  @ObjCName("withId") ___Asserts: Any?,
-  @ObjCName("withInt") l_Asserts: Int,
-  @ObjCName("withInt") A: Int
- ): Boolean {
+ open fun testClassParameterCollision(LocalNameCollision: Boolean, Asserts: Any?, ___Asserts: Any?, l_Asserts: Int, A: Int): Boolean {
   return LocalNameCollision && Asserts is localnamecollision.LocalNameCollision && ___Asserts is localnamecollision.Asserts && l_Asserts == A
  }
 
- constructor(
-  @ObjCName("Boolean") LocalNameCollision: Boolean,
-  @ObjCName("withId") Asserts: Any?,
-  @ObjCName("withId") ___Asserts: Any?,
-  @ObjCName("withInt") l_Asserts: Int,
-  @ObjCName("withInt") A: Int
- ) {
+ constructor(LocalNameCollision: Boolean, Asserts: Any?, ___Asserts: Any?, l_Asserts: Int, A: Int) {
   val result: Boolean = LocalNameCollision && Asserts is localnamecollision.LocalNameCollision && ___Asserts is localnamecollision.Asserts && l_Asserts == A
  }
 }
@@ -86,5 +70,5 @@ open class A internal constructor() {
   }
  }
 
- open class B internal constructor() {}
+ open class B internal constructor()
 }

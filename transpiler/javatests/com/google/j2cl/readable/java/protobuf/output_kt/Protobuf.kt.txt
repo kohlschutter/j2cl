@@ -1,39 +1,100 @@
 // Generated from "protobuf/Protobuf.java"
-@file:OptIn(ExperimentalObjCName::class)
 @file:Suppress(
  "ALWAYS_NULL",
  "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
- "REPEATED_BOUND",
  "SENSELESS_COMPARISON",
  "UNCHECKED_CAST",
  "UNNECESSARY_LATEINIT",
  "UNNECESSARY_NOT_NULL_ASSERTION",
  "UNREACHABLE_CODE",
+ "UNUSED_ANONYMOUS_PARAMETER",
  "UNUSED_PARAMETER",
  "UNUSED_VARIABLE",
  "USELESS_CAST",
  "VARIABLE_IN_SINGLETON_WITHOUT_THREAD_LOCAL",
- "VARIABLE_WITH_REDUNDANT_INITIALIZER")
+ "VARIABLE_WITH_REDUNDANT_INITIALIZER",
+ "INCOMPATIBLE_OBJC_NAME_OVERRIDE",
+ "REDUNDANT_ELSE_IN_WHEN",
+ "ACCIDENTAL_OVERRIDE")
 
 package protobuf
 
 import javaemul.lang.*
-import kotlin.OptIn
+import com.google.j2objc.annotations.ObjectiveCName
+import com.google.protobuf.ExtensionLite
+import com.google.protobuf.GeneratedMessage
+import com.google.protobuf.Parser
+import java.lang.RuntimeException
+import kotlin.Any
+import kotlin.Int
 import kotlin.Suppress
-import kotlin.experimental.ExperimentalObjCName
-import kotlin.native.ObjCName
+import kotlin.jvm.JvmStatic
+import protobuf.MyEnum
 import protobuf.MyMessage
+import protobuf.MyMessage.Builder
 
-@ObjCName("J2ktProtobufProtobuf", exact = true)
 open class Protobuf {
- @ObjCName("test")
  open fun test() {
-  val builder: MyMessage.Builder? = MyMessage.newBuilder()
-  builder!!.setTestField(42)
-  builder!!.testField
-  val message: MyMessage? = builder!!.build()
-  message!!.testField
-  val defaultMessage: MyMessage? = MyMessage.getDefaultInstance()
-  defaultMessage!!.testField
+  val builder: Builder = MyMessage.newBuilder()
+  builder.foo
+  builder.setFoo(1)
+  builder.fooBar
+  builder.setFooBar(2)
+  builder.x
+  builder.setX(3)
+  builder.xValue
+  builder.setXValue(4)
+  builder.xyz
+  builder.setXYZ(5)
+  builder.xyzValues
+  builder.setXYZValues(6)
+  val message: MyMessage = builder.build()
+  message.foo
+  message.fooBar
+  message.x
+  message.xValue
+  message.xyz
+  message.xyzValues
+  val chainedMessage: MyMessage = MyMessage.newBuilder().setFoo(1).setFooBar(2).setX(3).setXValue(4).setXYZ(5).setXYZValues(6).build()
+  val defaultMessage: MyMessage = MyMessage.getDefaultInstance()
+  defaultMessage.foo
+  val parser: Parser<*> = message.parserForType
+  val generatedMessageParser: Parser<out GeneratedMessage> = (message as GeneratedMessage?)!!.parserForType
+  val enumOne: MyEnum = MyEnum.ONE
+  val enumOneNumber: Int = MyEnum.ONE.number
+ }
+
+ open fun <T: Any> testExtension(extension: ExtensionLite<T>) {
+  val i: Int = extension.number
+ }
+
+ open class Test {
+  constructor(myMessage: MyMessage)
+
+  open fun accept(myMessage: MyMessage) {}
+
+  open fun get(): MyMessage {
+   throw RuntimeException()
+  }
+
+  companion object {
+   @JvmStatic
+   fun acceptStatic(myMessage: MyMessage) {}
+
+   @JvmStatic
+   @ObjectiveCName("acceptStaticWithMyMessage:")
+   fun acceptStaticWithObjectiveCName(myMessage: MyMessage) {}
+
+   @JvmStatic
+   fun getStatic(myMessage: MyMessage): MyMessage {
+    throw RuntimeException()
+   }
+
+   @JvmStatic
+   @ObjectiveCName("getStaticWithMyMessage:")
+   fun getStaticWithObjectiveCName(myMessage: MyMessage): MyMessage {
+    throw RuntimeException()
+   }
+  }
  }
 }

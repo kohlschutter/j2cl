@@ -10,7 +10,7 @@ let $LambdaAdaptor = goog.forwardDeclare('libraryinfo.Main.JsAccessibleFunctionn
 class JsAccessibleFunctionnalInterface {
  /** @abstract */
  accessibleFunctionalInterfaceMethod() {}
- /** @nodts @return {JsAccessibleFunctionnalInterface} */
+ /** @nodts @return {!JsAccessibleFunctionnalInterface} */
  static $adapt(/** ?function():void */ fn) {
   JsAccessibleFunctionnalInterface.$clinit();
   return new $LambdaAdaptor(fn);
@@ -35,7 +35,7 @@ class JsAccessibleFunctionnalInterface {
  }
 }
 JsAccessibleFunctionnalInterface.$markImplementor(/**@type {Function}*/ (JsAccessibleFunctionnalInterface));
-$Util.$setClassMetadataForInterface(JsAccessibleFunctionnalInterface, 'libraryinfo.Main$JsAccessibleFunctionnalInterface');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (JsAccessibleFunctionnalInterface), 'libraryinfo.Main$JsAccessibleFunctionnalInterface');
 
 exports = JsAccessibleFunctionnalInterface;
 

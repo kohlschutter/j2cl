@@ -15,28 +15,31 @@ package com.google.j2cl.tools.minifier;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Iterables.getLast;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
+import com.google.common.annotations.GwtIncompatible;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multiset;
+import com.google.j2cl.tools.minifier.Platform.CharBuffer;
+import com.google.j2cl.tools.minifier.Platform.Pattern;
 import com.google.j2cl.tools.rta.CodeRemovalInfo;
 import com.google.j2cl.tools.rta.LineRange;
 import com.google.j2cl.tools.rta.UnusedLines;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsNonNull;
+import jsinterop.annotations.JsOptional;
+import jsinterop.annotations.JsType;
 
 /**
  * A thread-safe, fast and pretty minifier/comment stripper for J2CL generated code.
@@ -56,6 +59,7 @@ import javax.annotation.Nullable;
  * So if some caller wants to optimize their minifier usage they might consider invoking it only on
  * .java.js files.
  */
+@JsType
 public class J2clMinifier {
 
   private interface TransitionFunction {
@@ -63,95 +67,107 @@ public class J2clMinifier {
   }
 
   private static class Buffer {
-    private final StringBuilder contentBuffer = new StringBuilder();
+    /**
+     * Committed content that will no longer modified.
+     *
+     * <p>An ArrayList is cheaper to manage (vs. StringBuilder/CharBuffer) while still very fast to
+     * merge to produce the final string.
+     */
+    private final ArrayList<String> committedContent = new ArrayList<>();
+
+    /**
+     * Buffer to keep contents of the current statement that is not committed yet.
+     *
+     * <p>Note the statement tracking is only intended for removal of "goog.require" and
+     * "goog.forwardDeclare" and identifier replacement, which will only appear at individual lines
+     * so we can automatically flush this with new lines.
+     */
+    private final CharBuffer currentStatementBuffer = new CharBuffer();
+
     private int identifierStartIndex = -1;
-    private int whitespaceStartIndex = 0;
-    // We essentially want the ability to see if the last meaningful character we saw is something
-    // that is clearly a statement start semicolon so we know that is not inside an expression.
-    // We could easily achieve that by tracing back the characters but that is inefficient vs. our
-    // tracking here via append.
-    // Also note the the statement tracking code is meant for removal of "goog.require" and
-    // "goog.forwardDeclare", which only appear at the top level, but is not correct for general use
-    // due to constructs like "for(;;)" where the condition might be mistaken for a statement.
-    private int statementStartIndex = 0;
-    private boolean nextIsStatementStart = true;
 
     void append(char c) {
-      int nextIndex = contentBuffer.length();
-      if (nextIsStatementStart) {
-        statementStartIndex = nextIndex;
-        nextIsStatementStart = false;
-      }
-
-      if (c == ' ') {
-        contentBuffer.append(c);
-        return; // Exit early since we don't want to increment the whiteSpaceStartIndex.
-      }
-
       if (c == '\n') {
-        // Trim the trailing whitespace since it doesn't break sourcemaps.
-        nextIndex = trimTrailingWhitespace(nextIndex);
-
-        // Also move the statementStartIndex to point new line if it was looking at the
-        // whitespace. This also simplifies the statement matches.
-        if (statementStartIndex == nextIndex) {
-          statementStartIndex = nextIndex + 1;
-        }
-      } else if (c == ';' || c == '{' || c == '}') {
-        // There are other ways to start statements but this is enough in the context of minifier.
-        nextIsStatementStart = true;
+        flush();
+        committedContent.add("\n");
+      } else {
+        currentStatementBuffer.append(c);
       }
-
-      contentBuffer.append(c);
-      // The character that is placed in the buffer is not a whitespace, update whitespace index.
-      whitespaceStartIndex = nextIndex + 1;
     }
 
-    private int trimTrailingWhitespace(int nextIndex) {
-      if (whitespaceStartIndex != nextIndex) {
-        // There are trailing whitespace characters, trim them.
-        nextIndex = whitespaceStartIndex;
-        contentBuffer.setLength(nextIndex);
+    private void flush() {
+      int end = trimTrailingWhitespace();
+      if (end > 0) {
+        addContent(popLastStatement());
       }
-      return nextIndex;
+    }
+
+    private int trimTrailingWhitespace() {
+      int end = currentStatementBuffer.length();
+      while (end > 0 && currentStatementBuffer.charAt(end - 1) == ' ') {
+        end--;
+      }
+      currentStatementBuffer.setLength(end);
+      return end;
+    }
+
+    void addContent(String str) {
+      checkState(currentStatementBuffer.length() == 0);
+      committedContent.add(str);
     }
 
     void recordStartOfNewIdentifier() {
-      identifierStartIndex = contentBuffer.length();
+      identifierStartIndex = currentStatementBuffer.length();
     }
 
-    String getIdentifier() {
-      return contentBuffer.substring(identifierStartIndex);
+    View getIdentifier() {
+      return new View(currentStatementBuffer, identifierStartIndex);
+    }
+
+    private static class View {
+      private final CharBuffer delegate;
+      private final int offset;
+
+      View(CharBuffer delegate, int offset) {
+        this.delegate = delegate;
+        this.offset = offset;
+      }
+
+      int length() {
+        return delegate.length() - offset;
+      }
+
+      char charAt(int index) {
+        return delegate.charAt(index + offset);
+      }
+
+      @Override
+      public String toString() {
+        return delegate.substring(offset);
+      }
     }
 
     void replaceIdentifier(String newIdentifier) {
-      contentBuffer.replace(identifierStartIndex, contentBuffer.length(), newIdentifier);
+      currentStatementBuffer.replaceTail(identifierStartIndex, newIdentifier);
       identifierStartIndex = -1;
-      whitespaceStartIndex = contentBuffer.length();
     }
 
-    boolean endOfStatement() {
-      return nextIsStatementStart;
+    boolean isEndOfStatement() {
+      int length = currentStatementBuffer.length();
+      return length > 0 && currentStatementBuffer.charAt(length - 1) == ';';
     }
 
-    int lastStatementIndexOf(String name) {
-      int index = contentBuffer.indexOf(name, statementStartIndex);
-      return index == -1 ? -1 : index - statementStartIndex;
+    String popLastStatement() {
+      String lastStatement = currentStatementBuffer.toString();
+      currentStatementBuffer.setLength(0);
+      return lastStatement;
     }
 
-    Matcher matchLastStatement(Pattern pattern) {
-      return pattern.matcher(contentBuffer).region(statementStartIndex, contentBuffer.length());
-    }
-
-    void replaceStatement(String replacement) {
-      contentBuffer.replace(statementStartIndex, contentBuffer.length(), replacement);
-      statementStartIndex = contentBuffer.length();
-      whitespaceStartIndex = statementStartIndex;
-    }
 
     @Override
     public String toString() {
-      return contentBuffer.toString();
+      flush();
+      return String.join("", committedContent);
     }
   }
 
@@ -162,7 +178,9 @@ public class J2clMinifier {
 
   private static final int[][] nextState;
 
+  @SuppressWarnings("NonFinalStaticField")
   private static int numberOfStates = 0;
+
   private static final int S_BLOCK_COMMENT = numberOfStates++;
   private static final int S_DOUBLE_QUOTED_STRING = numberOfStates++;
   private static final int S_DOUBLE_QUOTED_STRING_ESCAPE = numberOfStates++;
@@ -249,14 +267,14 @@ public class J2clMinifier {
   // identifier forms described in #startsLikeJavaMangledName).
   private static final int MIN_JAVA_IDENTIFIER_SIZE = "f_x__".length();
 
-  private static boolean isMinifiableIdentifier(String identifier) {
+  private static boolean isMinifiableIdentifier(Buffer.View identifier) {
     if (identifier.length() < MIN_JAVA_IDENTIFIER_SIZE) {
       return false;
     }
-    return startsLikeJavaMangledName(identifier) && identifier.contains("__");
+    return startsLikeJavaMangledName(identifier) && containsDoubleUnderscore(identifier);
   }
 
-  private static boolean startsLikeJavaMangledName(String identifier) {
+  private static boolean startsLikeJavaMangledName(Buffer.View identifier) {
     char firstChar = identifier.charAt(0);
     char secondChar = identifier.charAt(1);
 
@@ -270,6 +288,16 @@ public class J2clMinifier {
       return true;
     }
 
+    return false;
+  }
+
+  private static boolean containsDoubleUnderscore(Buffer.View identifier) {
+    // Looks cryptic but it is essentially searching from end for two consecutive underscores.
+    for (int end = identifier.length() - 1; end > 2; end--) {
+      if (identifier.charAt(end) == '_' && identifier.charAt(--end) == '_') {
+        return true;
+      }
+    }
     return false;
   }
 
@@ -315,8 +343,11 @@ public class J2clMinifier {
     if (c != 0) {
       writeChar(buffer, c);
     }
-    if (buffer.endOfStatement()) {
-      maybeReplaceStatement(buffer);
+    if (buffer.isEndOfStatement()) {
+      String statement = maybeReplaceStatement(buffer.popLastStatement());
+      if (!statement.isEmpty()) {
+        buffer.addContent(statement);
+      }
     }
   }
 
@@ -326,25 +357,22 @@ public class J2clMinifier {
   private static final Pattern GOOG_REQUIRE =
       Pattern.compile("goog.require\\(" + MODULE_NAME + "\\);");
 
-  private static void maybeReplaceStatement(Buffer buffer) {
-    int index = buffer.lastStatementIndexOf("goog.");
-    if (index == -1) {
-      return;
-    }
-
+  private static String maybeReplaceStatement(String statement) {
+    int index = statement.indexOf("goog.");
     if (index == 0) {
       // Unassigned goog.require is only useful for compiler and bundling.
-      Matcher m = buffer.matchLastStatement(GOOG_REQUIRE);
-      if (m.matches()) {
-        buffer.replaceStatement("");
+      String match = GOOG_REQUIRE.match(statement);
+      if (match != null) {
+        return "";
       }
-    } else {
+    } else if (index > 0) {
       // goog.forwardDeclare is only useful for compiler except the variable declaration.
-      Matcher m = buffer.matchLastStatement(GOOG_FORWARD_DECLARE);
-      if (m.matches()) {
-        buffer.replaceStatement(m.group(1) + ";");
+      String match = GOOG_FORWARD_DECLARE.match(statement);
+      if (match != null) {
+        return match + ";";
       }
     }
+    return statement;
   }
 
   private static void writeChar(Buffer buffer, char c) {
@@ -403,10 +431,11 @@ public class J2clMinifier {
    */
   private final Multiset<String> countsByIdentifier = HashMultiset.create();
 
-  private final boolean minifierDisabled = Boolean.getBoolean("j2cl_minifier_disabled");
+  private final boolean minifierDisabled =
+      Boolean.parseBoolean(System.getProperty("j2cl_minifier_disabled"));
 
   /** Set of file paths that are not used by the application. */
-  private ImmutableSet<String> unusedFiles;
+  private ImmutableSet<String> unusedFiles = ImmutableSet.of();
 
   /**
    * Gives per file key the array of line indexes that can be stripped. If the index of the line
@@ -416,27 +445,34 @@ public class J2clMinifier {
   // We choose to use a boolean[] instead of the usual recommended Map<> or Set<> data structure for
   // performance purpose. Please do not change that instead you measure your change doesn't impact
   // the performance.
-  private Map<String, boolean[]> unusedLinesPerFile;
+  private Map<String, boolean[]> unusedLinesPerFile = ImmutableMap.of();
 
   /**
    * This is a cache of previously minified content (presumably whole files). This makes reloads in
    * fast concatenating uncompiled JS servers extra-extra fast.
    */
-  private final Map<String, String> minifiedContentByContent = new Hashtable<>();
+  private Map<String, String> minifiedContentByContent = new ConcurrentHashMap<>();
 
   private final TransitionFunction[][] transFn;
 
   @VisibleForTesting Map<String, String> minifiedIdentifiersByIdentifier = new HashMap<>();
 
+  @JsIgnore
   public J2clMinifier() {
     this(null);
   }
 
-  public J2clMinifier(String codeRemovalFilePath) {
+  public J2clMinifier(@JsOptional String codeRemovalFilePath) {
     // TODO(goktug): Rename to j2cl_rta_pruning_manifest
     codeRemovalFilePath =
         System.getProperty("j2cl_rta_removal_code_info_file", codeRemovalFilePath);
-    setupRtaCodeRemoval(readCodeRemovalInfoFile(codeRemovalFilePath));
+    if (codeRemovalFilePath != null) {
+      try {
+        setupRtaCodeRemoval(Platform.readCodeRemovalInfoFile(codeRemovalFilePath));
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
 
     transFn = new TransitionFunction[numberOfStates][numberOfStates];
 
@@ -503,10 +539,15 @@ public class J2clMinifier {
     transFn[S_DOUBLE_QUOTED_STRING_ESCAPE][S_END_STATE] = J2clMinifier::skipChar;
   }
 
+  public void disableContentCache() {
+    minifiedContentByContent = null;
+  }
+
   /**
    * Process the content of a file for converting mangled J2CL names to minified (but still pretty
    * and unique) versions and strips block comments.
    */
+  @JsIgnore
   public String minify(String content) {
     return minify(/* filePath= */ null, content);
   }
@@ -515,7 +556,7 @@ public class J2clMinifier {
    * Process the content of a file for converting mangled J2CL names to minified (but still pretty
    * and unique) versions and strips block comments.
    */
-  public String minify(String filePath, String content) {
+  public @JsNonNull String minify(String filePath, @JsNonNull String content) {
     if (minifierDisabled) {
       return content;
     }
@@ -529,12 +570,16 @@ public class J2clMinifier {
       return "";
     }
 
-    // Return a previously cached version of minified output, if possible.
-    String minifiedContent = minifiedContentByContent.get(content);
-    if (minifiedContent != null) {
-      return minifiedContent;
+    // Caching is disabled.
+    if (minifiedContentByContent == null) {
+      return minifyContent(fileKey, content);
     }
 
+    // Return a previously cached version of minified output, if possible.
+    return minifiedContentByContent.computeIfAbsent(content, t -> minifyContent(fileKey, t));
+  }
+
+  private String minifyContent(String fileKey, String content) {
     boolean[] unusedLines = unusedLinesPerFile.get(fileKey);
 
     Buffer buffer = new Buffer();
@@ -542,7 +587,7 @@ public class J2clMinifier {
     int lineNumber = 0;
     boolean skippingLine = unusedLines != null && unusedLines[lineNumber];
 
-    /**
+    /*
      * Loop over the chars in the content, keeping track of in/not-in identifier state, copying
      * non-identifier chars immediately and accumulating identifiers chars for minifying and copying
      * when the identifier ends.
@@ -572,12 +617,7 @@ public class J2clMinifier {
 
     // Transition to the end state
     transFn[lastParseState][S_END_STATE].transition(buffer, (char) 0);
-
-    minifiedContent = buffer.toString();
-    // Update the minified content cache for next time.
-    minifiedContentByContent.put(content, minifiedContent);
-
-    return minifiedContent;
+    return buffer.toString();
   }
 
   /**
@@ -586,22 +626,19 @@ public class J2clMinifier {
    * mutates class state) is synchronized.
    */
   private synchronized String getMinifiedIdentifier(String identifier) {
-    if (minifiedIdentifiersByIdentifier.containsKey(identifier)) {
-      return minifiedIdentifiersByIdentifier.get(identifier);
+    String minifiedIdentifier = minifiedIdentifiersByIdentifier.get(identifier);
+    if (minifiedIdentifier == null) {
+      String prettyIdentifier = computePrettyIdentifier(identifier);
+      if (prettyIdentifier.isEmpty()) {
+        // The identifier must contain something strange like triple _'s. Leave the whole thing
+        // alone just to be safe.
+        minifiedIdentifier = identifier;
+      } else {
+        minifiedIdentifier = makeUnique(prettyIdentifier);
+      }
+      minifiedIdentifiersByIdentifier.put(identifier, minifiedIdentifier);
     }
-
-    String prettyIdentifier = computePrettyIdentifier(identifier);
-    if (prettyIdentifier.isEmpty()) {
-      // The identifier must contain something strange like triple _'s. Leave the whole thing alone
-      // just to be safe.
-      minifiedIdentifiersByIdentifier.put(identifier, identifier);
-      return identifier;
-    }
-
-    String uniquePrettyIdentifier = makeUnique(prettyIdentifier);
-    minifiedIdentifiersByIdentifier.put(identifier, uniquePrettyIdentifier);
-
-    return uniquePrettyIdentifier;
+    return minifiedIdentifier;
   }
 
   private String makeUnique(String identifier) {
@@ -610,9 +647,9 @@ public class J2clMinifier {
   }
 
   private void maybeReplaceIdentifier(Buffer buffer, @SuppressWarnings("unused") char c) {
-    String identifier = buffer.getIdentifier();
+    var identifier = buffer.getIdentifier();
     if (isMinifiableIdentifier(identifier)) {
-      buffer.replaceIdentifier(getMinifiedIdentifier(identifier));
+      buffer.replaceIdentifier(getMinifiedIdentifier(identifier.toString()));
     }
   }
 
@@ -626,28 +663,10 @@ public class J2clMinifier {
     writeNonIdentifierCharOrReplace(buffer, c);
   }
 
-  @Nullable
-  private static CodeRemovalInfo readCodeRemovalInfoFile(String codeRemovalInfoFilePath) {
-    if (codeRemovalInfoFilePath == null) {
-      return null;
-    }
-
-    try (InputStream inputStream = new FileInputStream(codeRemovalInfoFilePath)) {
-      return CodeRemovalInfo.parseFrom(inputStream);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   @VisibleForTesting
   void setupRtaCodeRemoval(CodeRemovalInfo codeRemovalInfo) {
-    if (codeRemovalInfo != null) {
-      unusedFiles = ImmutableSet.copyOf(codeRemovalInfo.getUnusedFilesList());
-      unusedLinesPerFile = createUnusedLinesPerFileMap(codeRemovalInfo);
-    } else {
-      unusedFiles = ImmutableSet.of();
-      unusedLinesPerFile = ImmutableMap.of();
-    }
+    unusedFiles = ImmutableSet.copyOf(codeRemovalInfo.getUnusedFilesList());
+    unusedLinesPerFile = createUnusedLinesPerFileMap(codeRemovalInfo);
   }
 
   private static Map<String, boolean[]> createUnusedLinesPerFileMap(
@@ -679,10 +698,11 @@ public class J2clMinifier {
    *
    * <p>Outputs results to stdout.
    */
+  @GwtIncompatible
   public static void main(String... args) throws IOException {
     checkState(args.length == 1, "Provide a input file to minify");
     String file = args[0];
-    String contents = new String(Files.readAllBytes(Paths.get(file)), UTF_8);
+    String contents = Files.readString(Paths.get(file));
     System.out.println(new J2clMinifier().minify(file, contents));
   }
 }

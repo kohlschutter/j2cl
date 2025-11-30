@@ -27,20 +27,33 @@ SIZE_REPORT = INTEGRATION_ROOT + "size_report.txt"
 TEST_LIST = INTEGRATION_ROOT + "optimized_js_list.bzl"
 BENCH_ROOT = "benchmarking/java/com/google/j2cl/benchmarks/"
 JVM_BENCH_PATTERN = BENCH_ROOT + "%s"
-J2CL_BENCH_PATTERN = BENCH_ROOT + "%s-j2cl"
-J2WASM_BENCH_PATTERN = BENCH_ROOT + "%s-j2wasm"
+J2CL_BENCH_PATTERN = BENCH_ROOT + "%s-j2cl-%s"
+J2WASM_BENCH_PATTERN = BENCH_ROOT + "%s-j2wasm-%s"
+BLAZE_CMD = "bazel"
+BIN_DIR = BLAZE_CMD + "-bin/"
 
 
-def get_benchmarks(bench_name, platforms):
+def get_benchmarks(bench_name, argv):
   """Returns the targets for given benchmark name."""
   benchmarks = {}
+  platforms = argv.platforms
+  js_vm = argv.js_vm
   if "JVM" in platforms:
     benchmarks["JVM"] = JVM_BENCH_PATTERN % bench_name
   if "CLOSURE" in platforms:
-    benchmarks["J2CL"] = J2CL_BENCH_PATTERN % bench_name
+    _add_web_benchs(benchmarks, "JS", J2CL_BENCH_PATTERN, bench_name, js_vm)
   if "WASM" in platforms:
-    benchmarks["J2WASM"] = J2WASM_BENCH_PATTERN % bench_name
+    _add_web_benchs(benchmarks, "WASM", J2WASM_BENCH_PATTERN, bench_name, js_vm)
   return benchmarks
+
+
+def _add_web_benchs(benchmarks, platform_key, bench_pattern, bench_name, js_vm):
+  """Adds benchmarks for platforms that use VM suffixes."""
+  if js_vm:
+    benchmarks[f"{platform_key}_{js_vm}"] = bench_pattern % (bench_name, js_vm)
+  else:
+    benchmarks[f"{platform_key}_v8"] = bench_pattern % (bench_name, "v8")
+    benchmarks[f"{platform_key}_sm"] = bench_pattern % (bench_name, "sm")
 
 
 def build_original_and_modified(original_targets, modified_targets):
@@ -85,7 +98,7 @@ def build_targets_with_workspace(
 
 def build(test_targets, blaze_flags=None, cwd=None):
   """Blaze builds provided integration tests in parallel."""
-  run_cmd(["blaze", "build"] + (blaze_flags or []) + test_targets, cwd=cwd)
+  run_cmd([BLAZE_CMD, "build"] + (blaze_flags or []) + test_targets, cwd=cwd)
 
 
 def get_optimized_target(test_name):
@@ -123,7 +136,7 @@ def parse_name(test_name):
 
 def get_rule_kind(target, cwd=None):
   """Returns the rule kind of the target if it exists, otherwise return None."""
-  command = ["blaze", "query", '"%s"' % target, "--output=label_kind"]
+  command = [BLAZE_CMD, "query", '"%s"' % target, "--output=label_kind"]
 
   try:
     result = run_cmd(command, cwd=cwd).split()
@@ -145,7 +158,7 @@ def get_all_size_tests(cwd=None):
 
 def _get_tests_with_tag(tag, cwd=None):
   command = [
-      "blaze", "query",
+      BLAZE_CMD, "query",
       "attr(\"tags\",\"%s\",%s...)" % (tag, INTEGRATION_ROOT)
   ]
 
@@ -164,7 +177,9 @@ def get_files_by_test_name(test_targets):
 def _get_test_name(target):
   """Returns the test name for a target."""
 
-  pattern = re.compile(INTEGRATION_ROOT + r"((?:java|kotlin))/(\w+):[\w-]+((.\w+)?)")
+  pattern = re.compile(
+      INTEGRATION_ROOT + r"((?:java|kotlin))/(\w+):[\w-]+((.[\w-]+)?)"
+  )
   search_results = pattern.search(target)
   return search_results.group(2) + "/" + search_results.group(1) + search_results.group(3)
 
@@ -201,7 +216,7 @@ def get_file_from_target(target):
 
 def sync_j2size_repo():
   g4_sync_cmds = [
-      "synced_to_cl=@$(srcfs get_readonly) && " +
+      "synced_to_cl=@$(srcfs get_readonly) && "
       "cd $(p4 g4d -f j2cl-size) && g4 sync $synced_to_cl"
   ]
   run_cmd(g4_sync_cmds, shell=True)
@@ -212,7 +227,7 @@ def get_j2size_repo_path():
 
 
 def get_repo_path(workspace):
-  return "/google/src/cloud/%s/%s/google3" % (getpass.getuser(), workspace)
+  return f"/google/src/cloud/{getpass.getuser()}/{workspace}/google3"
 
 
 def run_cmd(cmd_args, cwd=None, include_stderr=False, shell=False):
@@ -231,7 +246,10 @@ def run_cmd(cmd_args, cwd=None, include_stderr=False, shell=False):
     print("\nOUTPUT:\n============")
     print(output[1].decode("utf-8"))
     print("============\n")
-    raise Exception("cmd invocation FAILED: " + " ".join(cmd_args))
+    raise Exception(
+        "cmd invocation FAILED: "
+        + (cmd_args if isinstance(cmd_args, str) else " ".join(cmd_args))
+    )
 
   rv = output[0].decode("utf-8")
   if include_stderr:

@@ -10,7 +10,7 @@ let $LambdaAdaptor = goog.forwardDeclare('typewildcards.TypeWildCards.HasKey.$La
 class HasKey {
  /** @abstract @nodts @return {?string} */
  m_getKey__java_lang_String() {}
- /** @nodts @return {HasKey} */
+ /** @nodts @return {!HasKey} */
  static $adapt(/** ?function():?string */ fn) {
   HasKey.$clinit();
   return new $LambdaAdaptor(fn);
@@ -35,7 +35,7 @@ class HasKey {
  }
 }
 HasKey.$markImplementor(/**@type {Function}*/ (HasKey));
-$Util.$setClassMetadataForInterface(HasKey, 'typewildcards.TypeWildCards$HasKey');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (HasKey), 'typewildcards.TypeWildCards$HasKey');
 
 exports = HasKey;
 

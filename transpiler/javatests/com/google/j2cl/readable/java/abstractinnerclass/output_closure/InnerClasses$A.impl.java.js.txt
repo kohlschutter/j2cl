@@ -10,7 +10,7 @@ let $LambdaAdaptor = goog.forwardDeclare('abstractinnerclass.InnerClasses.A.$Lam
 class A {
  /** @abstract @nodts */
  m_foo__void() {}
- /** @nodts @return {A} */
+ /** @nodts @return {!A} */
  static $adapt(/** ?function():void */ fn) {
   A.$clinit();
   return new $LambdaAdaptor(fn);
@@ -35,7 +35,7 @@ class A {
  }
 }
 A.$markImplementor(/**@type {Function}*/ (A));
-$Util.$setClassMetadataForInterface(A, 'abstractinnerclass.InnerClasses$A');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (A), 'abstractinnerclass.InnerClasses$A');
 
 exports = A;
 

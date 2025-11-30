@@ -16,33 +16,68 @@
 package com.google.j2cl.transpiler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableMap.toImmutableMap;
+import static com.google.j2cl.common.StringUtils.unescapeWtf16;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Streams;
 import com.google.common.io.Files;
 import com.google.j2cl.common.Problems;
 import com.google.j2cl.common.Problems.FatalError;
+import com.google.j2cl.common.SourcePosition;
 import com.google.j2cl.common.bazel.BazelWorker;
 import com.google.j2cl.common.bazel.FileCache;
+import com.google.j2cl.transpiler.ast.AstUtils;
+import com.google.j2cl.transpiler.ast.CompilationUnit;
+import com.google.j2cl.transpiler.ast.Library;
+import com.google.j2cl.transpiler.ast.Method;
+import com.google.j2cl.transpiler.ast.MethodDescriptor;
+import com.google.j2cl.transpiler.ast.MethodDescriptor.MethodOrigin;
+import com.google.j2cl.transpiler.ast.ReturnStatement;
+import com.google.j2cl.transpiler.ast.StringLiteral;
+import com.google.j2cl.transpiler.ast.StringLiteralGettersCreator;
+import com.google.j2cl.transpiler.ast.TypeDeclaration;
+import com.google.j2cl.transpiler.ast.TypeDeclaration.Kind;
+import com.google.j2cl.transpiler.ast.TypeDescriptors;
+import com.google.j2cl.transpiler.backend.common.SourceBuilder;
+import com.google.j2cl.transpiler.backend.wasm.ItableAllocator;
+import com.google.j2cl.transpiler.backend.wasm.JsImportsGenerator;
+import com.google.j2cl.transpiler.backend.wasm.SharedSnippet;
 import com.google.j2cl.transpiler.backend.wasm.Summary;
-import com.google.j2cl.transpiler.backend.wasm.TypeHierarchyInfo;
+import com.google.j2cl.transpiler.backend.wasm.SystemPropertyInfo;
+import com.google.j2cl.transpiler.backend.wasm.TypeInfo;
+import com.google.j2cl.transpiler.backend.wasm.WasmConstructsGenerator;
+import com.google.j2cl.transpiler.backend.wasm.WasmGenerationEnvironment;
+import com.google.j2cl.transpiler.backend.wasm.WasmGeneratorStage;
+import com.google.j2cl.transpiler.frontend.jdt.JdtEnvironment;
+import com.google.j2cl.transpiler.frontend.jdt.JdtParser;
+import com.google.j2cl.transpiler.passes.RewriteReferenceEqualityOperations;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.MapOptionHandler;
 
 /** Runs The J2wasmBundler as a worker. */
 final class BazelJ2wasmBundler extends BazelWorker {
@@ -66,29 +101,237 @@ final class BazelJ2wasmBundler extends BazelWorker {
       usage = "Directory or zip into which to place the bundled output.")
   Path output;
 
+  @Option(
+      name = "-jsimports",
+      required = true,
+      metaVar = "<path>",
+      usage = "Directory or zip into which to place the JavaScript imports output.")
+  Path jsimportPath;
+
+  @Option(
+      name = "-classpath",
+      required = true,
+      metaVar = "<path>",
+      usage = "Specifies where to find all the class files for the application.")
+  String classPath;
+
+  @Option(name = "-define", handler = MapOptionHandler.class, hidden = true)
+  Map<String, String> defines = new HashMap<>();
+
   @Override
-  protected void run(Problems problems) {
-    createBundle(problems);
+  protected void run() {
+    emitModuleFile();
+    emitJsImportsFile();
   }
 
-  private void createBundle(Problems problems) {
-    var typeGraph = new TypeGraph();
-    var classes = typeGraph.build(getSummaries());
+  private void emitModuleFile() {
+    var typeGraph = new TypeGraph(getSummaries());
+
+    // Create an environment to initialize the well known type descriptors to be able to synthesize
+    // code.
+    // TODO(b/294284380): consider removing JDT and manually synthesizing required types.
+    var classPathEntries =
+        Splitter.on(File.pathSeparatorChar)
+            .splitToStream(this.classPath)
+            .map(Path::of)
+            .collect(toImmutableList());
+    new JdtEnvironment(
+        new JdtParser(problems), classPathEntries, TypeDescriptors.getWellKnownTypeNames());
+
+    var referencedSystemProperties =
+        getSummaries()
+            .flatMap(s -> s.getSystemPropertiesList().stream())
+            .collect(
+                toImmutableMap(
+                    SystemPropertyInfo::getPropertyKey,
+                    Function.identity(),
+                    // Properties might be referenced in many times, only some requiring a value;
+                    // keep properties that are required.
+                    (p1, p2) -> p1.getIsRequired() ? p1 : p2))
+            .values();
+
+    // Synthesize globals and methods for string literals.
+    synthesizeStringLiteralGetters(referencedSystemProperties);
+
+    var generatorStage = new WasmGeneratorStage(library, problems);
+
+    Stream<String> literalGetterMethods =
+        compilationUnit.getTypes().stream()
+            .flatMap(t -> t.getMethods().stream())
+            .map(m -> generatorStage.emitToString(g -> g.renderMethod(m)));
+
+    String literalGlobals = generatorStage.emitToString(g -> g.emitGlobals(library));
 
     ImmutableList<String> moduleContents =
         Streams.concat(
+                Stream.of("(module "),
+                streamDedupedValues(Summary::getNativeArrayTypeSnippetsList),
                 Stream.of("(rec"),
                 getModuleParts("types"),
+                streamDedupedValues(Summary::getTypeSnippetsList),
                 Stream.of(typeGraph.getTopLevelItableStructDeclaration()),
-                classes.stream().map(TypeGraph.Type::getItableStructDeclaration),
+                typeGraph.getClasses().stream().map(TypeGraph.Type::getItableStructDeclaration),
                 Stream.of(")"),
-                getModuleParts("data"),
-                getModuleParts("globals"),
-                classes.stream().map(TypeGraph.Type::getItableInitialization),
-                getModuleParts("functions"))
+                streamDedupedValues(Summary::getWasmImportSnippetsList),
+                getModuleParts("imports"),
+                Stream.of(generatorStage.emitToString(WasmConstructsGenerator::emitExceptionTag)),
+                getModuleParts("contents"),
+                streamDedupedValues(Summary::getGlobalSnippetsList),
+                Stream.of(typeGraph.getEmptyItableDeclaration()),
+                typeGraph.getClasses().stream().map(TypeGraph.Type::getItableInitialization),
+                Stream.of(literalGlobals),
+                literalGetterMethods,
+                Stream.of(typeGraph.getItableInterfaceGetters(generatorStage.getEnvironment())),
+                Stream.of(")"))
             .collect(toImmutableList());
 
     writeToFile(output.toString(), moduleContents, problems);
+  }
+
+  private Stream<String> streamDedupedValues(
+      Function<Summary, Collection<SharedSnippet>> snippetGetter) {
+    return getDedupedSnippets(snippetGetter).values().stream();
+  }
+
+  private ImmutableMap<String, String> getDedupedSnippets(
+      Function<Summary, Collection<SharedSnippet>> snippetGetter) {
+    return getSummaries()
+        .flatMap(s -> snippetGetter.apply(s).stream())
+        .collect(toImmutableMap(SharedSnippet::getKey, SharedSnippet::getSnippet, (i1, i2) -> i1));
+  }
+
+  private void synthesizeStringLiteralGetters(
+      Collection<SystemPropertyInfo> referencedSystemProperties) {
+
+    var stringLiteralHolder =
+        new com.google.j2cl.transpiler.ast.Type(
+            SourcePosition.NONE,
+            TypeDeclaration.newBuilder()
+                .setQualifiedSourceName("wasm.stringLiteral.StringLiteralHolder")
+                .setKind(Kind.CLASS)
+                .build());
+
+    compilationUnit.addType(stringLiteralHolder);
+
+    var stringLiteralGetterCreator = new StringLiteralGettersCreator();
+
+    // Synthesize the getters and forwarding methods for the string literals in the code.
+    getSummaries()
+        .flatMap(s -> s.getStringLiteralsList().stream())
+        .forEach(
+            s ->
+                // Get descriptor for the getter and synthesize the method logic if it is the
+                // first time it was found.
+                synthesizeStringLiteralGetter(
+                    stringLiteralHolder,
+                    stringLiteralGetterCreator,
+                    s.getEnclosingTypeName(),
+                    s.getMethodName(),
+                    unescapeWtf16(s.getContent())));
+
+    // Synthesize the getters and forwarding methods for the string literals that are values of
+    // system properties.
+    referencedSystemProperties.forEach(
+        p -> {
+          var propertyKey = p.getPropertyKey();
+          var value = defines.get(propertyKey);
+          boolean isRequired = p.getIsRequired();
+          MethodDescriptor systemGetPropertyGetter =
+              AstUtils.getSystemGetPropertyGetter(propertyKey, isRequired);
+          if (value == null) {
+            if (isRequired) {
+              problems.error("No value found for required property %s", propertyKey);
+            }
+            // Synthesize a getter that returns null.
+            synthesizeAbsentPropertyMethod(systemGetPropertyGetter);
+          } else {
+            synthesizeStringLiteralGetter(
+                stringLiteralHolder,
+                stringLiteralGetterCreator,
+                systemGetPropertyGetter.getEnclosingTypeDescriptor().getQualifiedSourceName(),
+                systemGetPropertyGetter.getOrigin().getPrefix() + systemGetPropertyGetter.getName(),
+                value);
+          }
+        });
+
+    // Perform the rewriting on the newly synthesized string literal getters.
+    new RewriteReferenceEqualityOperations().applyTo(compilationUnit);
+  }
+
+  private void synthesizeStringLiteralGetter(
+      com.google.j2cl.transpiler.ast.Type stringLiteralHolder,
+      StringLiteralGettersCreator stringLiteralGetterCreator,
+      String enclosingTypeQualifiedSourceName,
+      String methodName,
+      String stringValue) {
+    MethodDescriptor m =
+        stringLiteralGetterCreator.getOrCreateLiteralMethod(
+            stringLiteralHolder, new StringLiteral(stringValue), /* synthesizeMethod= */ true);
+
+    // Synthesize the forwarding logic.
+    TypeDeclaration typeDeclaration =
+        TypeDeclaration.newBuilder()
+            .setQualifiedSourceName(enclosingTypeQualifiedSourceName)
+            .setKind(Kind.CLASS)
+            .build();
+    com.google.j2cl.transpiler.ast.Type type = getType(typeDeclaration);
+
+    Method forwarderMethod = synthesizeForwardingMethod(m, typeDeclaration, methodName);
+    type.addMember(forwarderMethod);
+  }
+
+  private static Method synthesizeForwardingMethod(
+      MethodDescriptor literalGetter, TypeDeclaration fromType, String forwardingMethodName) {
+    MethodDescriptor forwarderDescriptor =
+        MethodDescriptor.newBuilder()
+            .setEnclosingTypeDescriptor(fromType.toDescriptor())
+            .setName(forwardingMethodName)
+            .setOrigin(MethodOrigin.SYNTHETIC_STRING_LITERAL_GETTER)
+            .setStatic(true)
+            .setReturnTypeDescriptor(TypeDescriptors.get().javaLangString)
+            .build();
+    return AstUtils.createForwardingMethod(
+        SourcePosition.NONE,
+        null,
+        forwarderDescriptor,
+        literalGetter,
+        /* jsDocDescription= */ null);
+  }
+
+  /** Synthesizes a method that returns null to implement absent properties. */
+  private void synthesizeAbsentPropertyMethod(MethodDescriptor propertyGetter) {
+    var typeDeclaration = propertyGetter.getEnclosingTypeDescriptor().getTypeDeclaration();
+    com.google.j2cl.transpiler.ast.Type type = getType(typeDeclaration);
+    type.addMember(
+        Method.newBuilder()
+            .setMethodDescriptor(propertyGetter)
+            .setSourcePosition(SourcePosition.NONE)
+            .setStatements(
+                ReturnStatement.newBuilder()
+                    .setExpression(TypeDescriptors.get().javaLangString.getNullValue())
+                    .setSourcePosition(SourcePosition.NONE)
+                    .build())
+            .build());
+  }
+
+  /** Synthetic compilation unit for all types synthesized at bundling time. */
+  private final CompilationUnit compilationUnit = CompilationUnit.createSynthetic("j2wasm-bundler");
+
+  /** Synthetic library all types synthesized at bundling time. */
+  private final Library library =
+      Library.newBuilder().setCompilationUnits(ImmutableList.of(compilationUnit)).build();
+
+  private final Map<TypeDeclaration, com.google.j2cl.transpiler.ast.Type> typesByDeclaration =
+      new LinkedHashMap<>();
+
+  private com.google.j2cl.transpiler.ast.Type getType(TypeDeclaration typeDeclaration) {
+    return typesByDeclaration.computeIfAbsent(
+        typeDeclaration,
+        t -> {
+          var newType = new com.google.j2cl.transpiler.ast.Type(SourcePosition.NONE, t);
+          compilationUnit.addType(newType);
+          return newType;
+        });
   }
 
   /** Represents the inheritance structure of the whole application. */
@@ -96,100 +339,232 @@ final class BazelJ2wasmBundler extends BazelWorker {
 
     private static final int NO_TYPE_INDEX = 0;
     // The list of all interfaces.
-    private final List<Type> interfaces = new ArrayList<>();
+    private final List<TypeGraph.Type> classes = new ArrayList<>();
+    // The list of all classes.
+    private final List<TypeGraph.Type> interfaces = new ArrayList<>();
+    private final Map<String, TypeGraph.Type> typesByName = new LinkedHashMap<>();
 
-    public Collection<Type> build(Stream<Summary> summaries) {
-      Map<String, Type> typesByName = new LinkedHashMap<>();
-      List<Type> classes = new ArrayList<>();
+    private final ItableAllocator<String> itableAllocator;
 
+    private TypeGraph(Stream<Summary> summaries) {
       // Collect all types from all summaries.
-      summaries.forEachOrdered(
-          summary -> {
-            for (TypeHierarchyInfo typeHierarchyInfo : summary.getTypeList()) {
-              String name = summary.getDeclaredTypeMap(typeHierarchyInfo.getDeclaredTypeId());
-              Type type = typesByName.computeIfAbsent(name, Type::new);
-              classes.add(type);
-              if (typeHierarchyInfo.getExtendsDeclaredTypeId() != NO_TYPE_INDEX) {
-                String superTypeName =
-                    summary.getDeclaredTypeMap(typeHierarchyInfo.getExtendsDeclaredTypeId());
-                type.superType = checkNotNull(typesByName.get(superTypeName));
-              }
-              for (int interfaceId : typeHierarchyInfo.getImplementsDeclaredTypeIdList()) {
-                String interfaceName = summary.getDeclaredTypeMap(interfaceId);
-                Type interfaceType =
-                    typesByName.computeIfAbsent(
-                        interfaceName,
-                        n -> {
-                          var newInterfaceType = new Type(n);
-                          // Add the interface to the global list of interfaces, where the index in
-                          // the list corresponds to the slot in the itable.
-                          interfaces.add(newInterfaceType);
-                          return newInterfaceType;
-                        });
-                type.implementedInterfaces.add(interfaceType);
-              }
-            }
-          });
+      summaries.forEachOrdered(this::addToTypeGraph);
+      this.itableAllocator = createItableAllocator();
+    }
 
+    private ItableAllocator<String> createItableAllocator() {
+      SetMultimap<String, String> implementedInterfaceNamesByTypeName = LinkedHashMultimap.create();
+      classes.forEach(
+          c ->
+              c.getImplementedInterfaces()
+                  .forEach(i -> implementedInterfaceNamesByTypeName.put(c.getName(), i.getName())));
+      ImmutableMap<String, String> superInterfaceNamesByTypeName =
+          interfaces.stream()
+              .filter(i -> i.superType != null)
+              .collect(toImmutableMap(Type::getName, i -> i.superType.getName()));
+      return new ItableAllocator<>(
+          classes.stream().map(Type::getName).collect(toImmutableList()),
+          implementedInterfaceNamesByTypeName::get,
+          superInterfaceNamesByTypeName::get);
+    }
+
+    private void addToTypeGraph(Summary summary) {
+      for (TypeInfo interfaceInfo : summary.getInterfacesList()) {
+        var interfaceName = summary.getTypeNames(interfaceInfo.getTypeId());
+        var interfaceType = new TypeGraph.Type(interfaceName);
+        if (interfaceInfo.getExtendsType() != NO_TYPE_INDEX) {
+          String superTypeName = summary.getTypeNames(interfaceInfo.getExtendsType());
+          interfaceType.superType = checkNotNull(typesByName.get(superTypeName));
+        }
+        typesByName.put(interfaceName, interfaceType);
+        interfaces.add(interfaceType);
+      }
+
+      for (TypeInfo typeInfo : summary.getTypesList()) {
+        var name = summary.getTypeNames(typeInfo.getTypeId());
+        var type =
+            typesByName.computeIfAbsent(name, n -> new TypeGraph.Type(n, typeInfo.getAbstract()));
+        classes.add(type);
+        if (typeInfo.getExtendsType() != NO_TYPE_INDEX) {
+          String superTypeName = summary.getTypeNames(typeInfo.getExtendsType());
+          type.superType = checkNotNull(typesByName.get(superTypeName));
+        }
+        for (int interfaceId : typeInfo.getImplementsTypesList()) {
+          String interfaceName = summary.getTypeNames(interfaceId);
+          var interfaceType = typesByName.get(interfaceName);
+          type.implementedInterfaces.add(interfaceType);
+        }
+      }
+    }
+
+    List<TypeGraph.Type> getClasses() {
       return classes;
     }
 
     /** Emits the top-level itable struct. */
     String getTopLevelItableStructDeclaration() {
       StringBuilder sb = new StringBuilder();
-      sb.append("(type $itable (sub \n");
+      sb.append("(type $itable (sub (struct\n");
       // In the unoptimized itables each interface has its own slot.
-      for (Type i : interfaces) {
-        sb.append(format("  (field $%s (ref null struct)\n", i.name));
+      for (int i = 0; i < itableAllocator.getItableSize(); i++) {
+        sb.append("  (field (ref null struct))\n");
+      }
+      sb.append(")))\n");
+      return sb.toString();
+    }
+
+    public static final String EMPTY_ITABLE_NAME = "$itable.empty";
+
+    public String getEmptyItableDeclaration() {
+      StringBuilder sb = new StringBuilder();
+      sb.append(format("(global %s (ref $itable) (struct.new $itable \n", EMPTY_ITABLE_NAME));
+      for (int i = 0; i < itableAllocator.getItableSize(); i++) {
+        sb.append("(ref.null struct)\n");
       }
       sb.append("))\n");
       return sb.toString();
+    }
+
+    public String getItableInterfaceGetters(WasmGenerationEnvironment environment) {
+      SourceBuilder sourceBuilder = new SourceBuilder();
+      WasmConstructsGenerator constructsGenerator =
+          new WasmConstructsGenerator(
+              environment, sourceBuilder, /* sourceMappingPathPrefix= */ null);
+      interfaces.forEach(
+          i -> {
+            int itableFieldIndex = itableAllocator.getItableFieldIndex(i.name);
+            String itableFieldIndexString =
+                itableFieldIndex == -1 ? null : String.valueOf(itableFieldIndex);
+            constructsGenerator.emitItableInterfaceGetter(
+                environment.getWasmItableInterfaceGetter(i.name), itableFieldIndexString);
+          });
+      return sourceBuilder.build();
     }
 
     private class Type {
       private final String name;
       private Type superType;
       private final Set<Type> implementedInterfaces = new HashSet<>();
+      private final boolean isAbstract;
+
+      public Type(String name, boolean isAbstract) {
+        this.name = name;
+        this.isAbstract = isAbstract;
+      }
 
       public Type(String name) {
-        this.name = name;
+        this(name, false);
+      }
+
+      public String getName() {
+        return name;
+      }
+
+      public Set<Type> getImplementedInterfaces() {
+        return implementedInterfaces;
+      }
+
+      public boolean isSuperTypeOf(Type other) {
+        if (other == null) {
+          return false;
+        }
+        return this == other.superType || isSuperTypeOf(other.superType);
+      }
+
+      public String getItableTypeName() {
+        if (implementedInterfaces.isEmpty()) {
+          return "$itable";
+        }
+        return format("%s.itable", name);
       }
 
       /** Emits the itable struct type for a class. */
       public String getItableStructDeclaration() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-            format(
-                "(type %s.itable (sub $%s \n",
-                name, superType != null ? superType.name + ".itable" : "itable"));
-
-        for (Type i : interfaces) {
-          sb.append(
-              format(
-                  "  (field $%s (ref %s))\n",
-                  i.name, implementsInterface(i) ? i.name : "null struct"));
+        if (implementedInterfaces.isEmpty()) {
+          return "";
         }
-        sb.append("))\n");
+
+        String superItableTypeName = superType == null ? "$itable" : superType.getItableTypeName();
+        StringBuilder sb = new StringBuilder();
+        sb.append(format("(type %s.itable (sub %s (struct \n", name, superItableTypeName));
+
+        for (Type i : getItableFieldTypes()) {
+          sb.append(
+              format("  (field (ref %s))\n", i != null ? (i.name + ".vtable") : "null struct"));
+        }
+        sb.append(")))\n");
         return sb.toString();
       }
 
       public String getItableInitialization() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-            format("(global %s.itable (ref %s.itable) (struct.new %s.itable \n", name, name, name));
-
-        for (Type ifce : interfaces) {
-          sb.append(format("  %s\n", implementsInterface(ifce) ? ifce.name : "(ref.null struct)"));
+        if (isAbstract) {
+          // Abstract classes don't have itable instances.
+          return "";
         }
-        sb.append("))\n");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(format("(global %s.itable (ref %s) ", name, getItableTypeName()));
+        if (implementedInterfaces.isEmpty()) {
+          sb.append(format("(global.get %s)", EMPTY_ITABLE_NAME));
+        } else {
+          sb.append(format("(struct.new %s \n", getItableTypeName()));
+          for (Type i : getItableFieldTypes()) {
+            sb.append(
+                i == null
+                    ? "(ref.null struct)\n"
+                    : format("(global.get %s.vtable@%s)\n", i.name, this.name));
+          }
+          sb.append(")");
+        }
+        sb.append(")\n");
         return sb.toString();
       }
 
-      private boolean implementsInterface(Type type) {
-        return implementedInterfaces.contains(type)
-            || (superType != null && superType.implementsInterface(type));
+      private Type[] itableFieldTypes;
+
+      /**
+       * Computes the itable for this type: gets an array of interface types indexed by itable slot
+       * assignment.
+       */
+      private Type[] getItableFieldTypes() {
+        if (itableFieldTypes == null) {
+          // Determine the type for each itable field by going through all implemented interfaces
+          // and assigning it to the index as determined by the itable allocator. If the itable
+          // index is shared by multiple interfaces, itable allocator guarantees that they are part
+          // of the same inheritance chain; use the more specific type.
+          itableFieldTypes = new Type[itableAllocator.getItableSize()];
+          for (Type i : implementedInterfaces) {
+            int itableIndex = itableAllocator.getItableFieldIndex(i.name);
+            if (itableFieldTypes[itableIndex] == null
+                || itableFieldTypes[itableIndex].isSuperTypeOf(i)) {
+              itableFieldTypes[itableIndex] = i;
+            } else {
+              checkState(
+                  i.isSuperTypeOf(itableFieldTypes[itableIndex]),
+                  "Interfaces %s and %s are expected to be in same inheritance chain.",
+                  i,
+                  itableFieldTypes[itableIndex]);
+            }
+          }
+        }
+        return itableFieldTypes;
       }
     }
+  }
+
+  private void emitJsImportsFile() {
+    var requiredModules =
+        getSummaries()
+            .flatMap(s -> s.getJsImportRequiresList().stream())
+            .distinct()
+            .collect(toImmutableList());
+
+    var jsImportsContents = getDedupedSnippets(Summary::getJsImportSnippetsList);
+
+    writeToFile(
+        jsimportPath.toString(),
+        ImmutableList.of(JsImportsGenerator.generateOutputs(requiredModules, jsImportsContents)),
+        problems);
   }
 
   private Stream<Summary> getSummaries() {
@@ -207,7 +582,8 @@ final class BazelJ2wasmBundler extends BazelWorker {
   }
 
   private static Summary readSummary(Path summaryPath) throws IOException {
-    try (InputStream inputStream = java.nio.file.Files.newInputStream(summaryPath)) {
+    try (InputStream inputStream =
+        new BufferedInputStream(java.nio.file.Files.newInputStream(summaryPath))) {
       return Summary.parseFrom(inputStream);
     }
   }
@@ -220,7 +596,7 @@ final class BazelJ2wasmBundler extends BazelWorker {
     try {
       Files.asCharSink(new File(filePath), UTF_8).writeLines(contents);
     } catch (IOException e) {
-      problems.fatal(FatalError.CANNOT_WRITE_FILE, e.toString());
+      problems.fatal(FatalError.CANNOT_WRITE_FILE, e.getMessage());
     }
   }
 

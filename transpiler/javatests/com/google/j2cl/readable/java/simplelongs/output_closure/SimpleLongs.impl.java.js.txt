@@ -38,11 +38,10 @@ class SimpleLongs extends j_l_Object {
  }
  /** @nodts */
  m_main__void() {
-  let /** SimpleLongs */ $qualifier, /** !$Long */ $value, /** !$Long */ $value_1, /** SimpleLongs */ $qualifier_1, /** !$Long */ $value_2;
   let a = $Long.fromInt(0);
-  a = $LongUtils.negate($Long.fromInt(100000));
+  a = $Long.fromInt(-100000);
   a = $Long.fromInt(100000);
-  let b = $LongUtils.negate($Long.fromBits(-2147483648, 0) /* 2147483648 */);
+  let b = $Long.fromInt(-2147483648);
   b = $Long.fromBits(-2147483648, 0) /* 2147483648 */;
   b = $Long.fromBits(0, -2147483648) /* -9223372036854775808 */;
   b = $Long.fromBits(-1, 2147483647) /* 9223372036854775807 */;
@@ -50,6 +49,7 @@ class SimpleLongs extends j_l_Object {
   c = $LongUtils.divide(a, b);
   let e = a = $LongUtils.plus(a, $Long.fromInt(1));
   e = this.f_foo__simplelongs_SimpleLongs = $LongUtils.plus(this.f_foo__simplelongs_SimpleLongs, $Long.fromInt(1));
+  let /** SimpleLongs */ $qualifier, /** !$Long */ $value, /** !$Long */ $value_1, /** SimpleLongs */ $qualifier_1, /** !$Long */ $value_2;
   e = ($qualifier = this.m_getWithSideEffect__simplelongs_SimpleLongs(), $qualifier.f_foo__simplelongs_SimpleLongs = $LongUtils.plus($qualifier.f_foo__simplelongs_SimpleLongs, $Long.fromInt(1)));
   let f = ($value = a, a = $LongUtils.plus(a, $Long.fromInt(1)), $value);
   f = ($value_1 = this.f_foo__simplelongs_SimpleLongs, this.f_foo__simplelongs_SimpleLongs = $LongUtils.plus(this.f_foo__simplelongs_SimpleLongs, $Long.fromInt(1)), $value_1);

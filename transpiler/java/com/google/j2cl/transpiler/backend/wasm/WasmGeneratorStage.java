@@ -35,6 +35,7 @@ import com.google.j2cl.transpiler.ast.TypeDeclaration;
 import com.google.j2cl.transpiler.ast.TypeDescriptor;
 import com.google.j2cl.transpiler.ast.Variable;
 import com.google.j2cl.transpiler.backend.common.SourceBuilder;
+import com.google.j2cl.transpiler.backend.wasm.JsImportsGenerator.Imports;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -44,23 +45,72 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+// TODO(goktug): Support cancellation for this backend..
 /** Generates all the outputs for Wasm compilation. */
 public class WasmGeneratorStage {
 
   private final Problems problems;
   private final Output output;
   private final Path libraryInfoOutputPath;
+  private final String sourceMappingPathPrefix;
+  private final boolean enableCustomDescriptors;
+  private final boolean enableCustomDescriptorsJsInterop;
   private WasmGenerationEnvironment environment;
 
-  private WasmGeneratorStage(Output output, Path libraryInfoOutputPath, Problems problems) {
+  /** Returns a generator stage that can emit code as strings. */
+  public WasmGeneratorStage(Library library, Problems problems) {
+    this(
+        /* output= */ null,
+        /* libraryInfoOutputPath= */ null,
+        /* sourceMappingPathPrefix= */ null,
+        /* enableCustomDescriptors= */ false,
+        /* enableCustomDescriptorsJsInterop= */ false,
+        problems);
+    this.environment =
+        new WasmGenerationEnvironment(
+            library,
+            JsImportsGenerator.collectImports(library, problems),
+            sourceMappingPathPrefix,
+            enableCustomDescriptors,
+            enableCustomDescriptorsJsInterop,
+            /* isModular= */ true);
+  }
+
+  private WasmGeneratorStage(
+      Output output,
+      Path libraryInfoOutputPath,
+      String sourceMappingPathPrefix,
+      boolean enableCustomDescriptors,
+      boolean enableCustomDescriptorsJsInterop,
+      Problems problems) {
     this.output = output;
     this.libraryInfoOutputPath = libraryInfoOutputPath;
+    this.sourceMappingPathPrefix = sourceMappingPathPrefix;
+    this.enableCustomDescriptors = enableCustomDescriptors;
+    this.enableCustomDescriptorsJsInterop = enableCustomDescriptorsJsInterop;
     this.problems = problems;
   }
 
+  public WasmGenerationEnvironment getEnvironment() {
+    return environment;
+  }
+
   public static void generateModularOutput(
-      Library library, Output output, Path libraryInfoOutputPath, Problems problems) {
-    new WasmGeneratorStage(output, libraryInfoOutputPath, problems).generateModularOutput(library);
+      Library library,
+      Output output,
+      Path libraryInfoOutputPath,
+      String sourceMappingPathPrefix,
+      boolean enableCustomDescriptors,
+      boolean enableCustomDescriptorsJsInterop,
+      Problems problems) {
+    new WasmGeneratorStage(
+            output,
+            libraryInfoOutputPath,
+            sourceMappingPathPrefix,
+            enableCustomDescriptors,
+            enableCustomDescriptorsJsInterop,
+            problems)
+        .generateModularOutput(library);
   }
 
   private void generateModularOutput(Library library) {
@@ -68,56 +118,125 @@ public class WasmGeneratorStage {
       OutputUtils.writeToFile(libraryInfoOutputPath, new byte[0], problems);
     }
 
+    Imports jsImports = JsImportsGenerator.collectImports(library, problems);
     environment =
         new WasmGenerationEnvironment(
-            library, JsImportsGenerator.collectImports(library, problems), /* isModular= */ true);
+            library,
+            jsImports,
+            sourceMappingPathPrefix,
+            enableCustomDescriptors,
+            enableCustomDescriptorsJsInterop,
+            /* isModular= */ true);
+    problems.abortIfCancelled();
+
     SummaryBuilder summaryBuilder = new SummaryBuilder(library, environment, problems);
 
-    // TODO(rluble): Introduce/use flags to emit the readable version of the summary. For now emit
-    // summaries in both binary and text form for now.
-    output.write("summary.txtpb", summaryBuilder.toJson(problems));
-    output.write("summary.binpb", summaryBuilder.toByteArray());
+    JsImportsGenerator.collectImportSnippets(jsImports)
+        .forEach(summaryBuilder::addSharedJsImportSnippet);
 
-    List<ArrayTypeDescriptor> usedNativeArrayTypes = collectUsedNativeArrayTypes(library);
+    jsImports.getModuleImports().forEach(summaryBuilder::addSharedJsImportRequireSnippet);
+    problems.abortIfCancelled();
+
+    collectUsedNativeArrayTypes(library)
+        .forEach(
+            t -> {
+              if (t.isPrimitiveArray()) {
+                // Emit all native primitive arrays into a different section in the summary
+                // so that they can be emitted outside the rec group. Binaryen requires that the
+                // i16 arrays used by the string operations be the plain i16 array and an array
+                // of the same definition emitted in a rec group would be of a different type.
+                summaryBuilder.addNativeArrayTypeSnippet(
+                    environment.getWasmTypeName(t), emitToString(g -> g.emitWasmArrayType(t)));
+              } else {
+                // Non primitive arrays reference 'java.lang.Object' and need to be emitted after
+                // its declaration.
+                summaryBuilder.addSharedTypeSnippet(
+                    environment.getWasmTypeName(t), emitToString(g -> g.emitWasmArrayType(t)));
+              }
+              summaryBuilder.addSharedGlobalSnippet(
+                  environment.getWasmEmptyArrayGlobalName(t),
+                  emitToString(g -> g.emitEmptyArraySingleton(t)));
+            });
+    problems.abortIfCancelled();
+
+    environment
+        .collectMethodsThatNeedTypeDeclarations()
+        .forEach(
+            (k, m) ->
+                summaryBuilder.addSharedTypeSnippet(
+                    k, emitToString(g -> g.emitFunctionType(k, m))));
+    problems.abortIfCancelled();
+
+    environment
+        .collectMethodsNeedingIntrinsicDeclarations()
+        .forEach(
+            (k, m) ->
+                summaryBuilder.addSharedWasmImportSnippet(
+                    k, emitToString(g -> g.emitBinaryenIntrinsicImport(k, m))));
+
+    output.write("summary.binpb", summaryBuilder.toByteArray());
+    problems.abortIfCancelled();
 
     copyJavaSources(library);
 
     emitToFile(
         "types.wat",
-        generator -> {
-          generator.emitDynamicDispatchMethodTypes();
-          generator.emitNativeArrayTypes(usedNativeArrayTypes);
-          generator.emitForEachType(
-              library, generator::renderModularTypeStructs, "type definition");
-        });
+        generator ->
+            generator.emitForEachType(
+                library, generator::renderModularTypeStructs, "type definition"));
 
     emitToFile(
-        "functions.wat",
-        generator -> generator.emitForEachType(library, generator::renderTypeMethods, "methods"));
+        "imports.wat",
+        generator ->
+            generator.emitForEachType(library, generator::renderImportedMethods, "imports"));
 
-    emitToFile("globals.wat", generator -> generator.emitGlobals(library));
+    emitToFile(
+        "contents.wat",
+        generator -> {
+          generator.emitDataSegments(library);
+          generator.emitGlobals(library);
+          generator.emitClassDispatchTables(library, /* emitItableInitialization= */ false);
+          generator.emitForEachType(library, generator::renderTypeMethods, "methods");
+        });
 
-    emitToFile("data.wat", generator -> generator.emitDataSegments(library));
-
+    emitNameMappingFile(library, output);
     generateJsImportsFile();
   }
 
-  private void emitToFile(String filename, Consumer<WasmConstructsGenerator> emitter) {
+  public String emitToString(Consumer<WasmConstructsGenerator> emitter) {
     SourceBuilder builder = new SourceBuilder();
-    WasmConstructsGenerator generator = new WasmConstructsGenerator(environment, builder);
+    WasmConstructsGenerator generator =
+        new WasmConstructsGenerator(environment, builder, sourceMappingPathPrefix);
 
     emitter.accept(generator);
 
-    String content = builder.build();
-      if (content.isEmpty()) {
+    return builder.build();
+  }
+
+  private void emitToFile(String filename, Consumer<WasmConstructsGenerator> emitter) {
+    problems.abortIfCancelled();
+    String content = emitToString(emitter);
+    if (content.isEmpty()) {
       return;
     }
     output.write(filename, content);
   }
 
   public static void generateMonolithicOutput(
-      Library library, Output output, Path libraryInfoOutputPath, Problems problems) {
-    new WasmGeneratorStage(output, libraryInfoOutputPath, problems)
+      Library library,
+      Output output,
+      Path libraryInfoOutputPath,
+      String sourceMappingPathPrefix,
+      boolean enableCustomDescriptors,
+      boolean enableCustomDescriptorsJsInterop,
+      Problems problems) {
+    new WasmGeneratorStage(
+            output,
+            libraryInfoOutputPath,
+            sourceMappingPathPrefix,
+            enableCustomDescriptors,
+            enableCustomDescriptorsJsInterop,
+            problems)
         .generateMonolithicOutput(library);
   }
 
@@ -141,15 +260,19 @@ public class WasmGeneratorStage {
         new WasmGenerationEnvironment(
             library, JsImportsGenerator.collectImports(library, problems));
     SourceBuilder builder = new SourceBuilder();
-    WasmConstructsGenerator generator = new WasmConstructsGenerator(environment, builder);
+    WasmConstructsGenerator generator =
+        new WasmConstructsGenerator(environment, builder, sourceMappingPathPrefix);
 
     List<ArrayTypeDescriptor> usedNativeArrayTypes = collectUsedNativeArrayTypes(library);
 
     builder.appendln(";;; Code generated by J2WASM");
     builder.append("(module");
     // Emit all types at the beginning of the module.
-    generator.emitLibraryRecGroup(library, usedNativeArrayTypes);
+    generator.emitLibraryTypes(library, usedNativeArrayTypes);
 
+    // Emit imports.
+    generator.emitImportsForBinaryenIntrinsics();
+    generator.emitForEachType(library, generator::renderImportedMethods, "imports");
     generator.emitExceptionTag();
 
     // Emit all the globals, e.g. vtable instances, etc.
@@ -158,25 +281,35 @@ public class WasmGeneratorStage {
     generator.emitEmptyArraySingletons(usedNativeArrayTypes);
     generator.emitGlobals(library);
 
-    // Emit intrinsics imports
-    generator.emitImportsForBinaryenIntrinsics();
 
     // Last, emit all methods at the very end so that the synthetic code generated above does
     // not inherit an incorrect source position.
     generator.emitForEachType(library, generator::renderTypeMethods, "methods");
+    generator.emitItableInterfaceGetters(library);
 
     builder.newLine();
     builder.append(")");
     output.write("module.wat", builder.buildToList());
-    output.write("namemap", emitNameMapping(library));
+    emitNameMappingFile(library, output);
   }
 
-  public static void generateMethods(List<Method> methods, Output output, Problems problems) {
-    new WasmGeneratorStage(output, /* libraryInfoOutputPath= */ null, problems)
-        .generateMethods(methods);
+  public static void generateWasmExportMethods(
+      List<Method> methods, Output output, Problems problems) {
+    WasmGeneratorStage wasmGeneratorStage =
+        new WasmGeneratorStage(
+            output,
+            /* libraryInfoOutputPath= */ null,
+            /* sourceMappingPathPrefix= */ null,
+            /* enableCustomDescriptors= */ false,
+            /* enableCustomDescriptorsJsInterop= */ false,
+            problems);
+    wasmGeneratorStage.generateWasmExportMethods(methods);
+
+    // Emit the name map for the generated methods.
+    wasmGeneratorStage.emitNameMappingFile(methods, output);
   }
 
-  private void generateMethods(List<Method> methods) {
+  private void generateWasmExportMethods(List<Method> methods) {
     if (methods.isEmpty()) {
       return;
     }
@@ -201,10 +334,11 @@ public class WasmGeneratorStage {
             library, JsImportsGenerator.collectImports(library, problems));
 
     SourceBuilder builder = new SourceBuilder();
-    WasmConstructsGenerator generator = new WasmConstructsGenerator(environment, builder);
+    WasmConstructsGenerator generator =
+        new WasmConstructsGenerator(environment, builder, sourceMappingPathPrefix);
 
     methods.forEach(generator::renderMethod);
-    output.write("functions.wat", builder.buildToList());
+    output.write("contents.wat", builder.buildToList());
   }
 
   private List<ArrayTypeDescriptor> collectUsedNativeArrayTypes(Library library) {
@@ -244,24 +378,36 @@ public class WasmGeneratorStage {
     JsImportsGenerator.generateOutputs(output, environment.getJsImports());
   }
 
-  private String emitNameMapping(Library library) {
-    SourceBuilder builder = new SourceBuilder();
+  /** Emits a symbol to name mapping file for all methods in the library. */
+  private void emitNameMappingFile(Library library, Output output) {
+    List<Method> methods = new ArrayList<>();
+
     library.accept(
         new AbstractVisitor() {
           @Override
           public void exitMethod(Method method) {
-            MethodDescriptor methodDescriptor = method.getDescriptor();
-            String methodImplementationName =
-                environment.getMethodImplementationName(methodDescriptor);
-            checkState(methodImplementationName.startsWith("$"));
-            builder.append(
-                String.format(
-                    "%s:%s",
-                    methodImplementationName.substring(1),
-                    methodDescriptor.getQualifiedBinaryName()));
-            builder.newLine();
+            methods.add(method);
           }
         });
-    return builder.build();
+
+    emitNameMappingFile(methods, output);
+  }
+
+  /** Emits a symbol to name mapping file for the supplied methods. */
+  private void emitNameMappingFile(List<Method> methods, Output output) {
+    SourceBuilder builder = new SourceBuilder();
+    methods.forEach(m -> emitMethodMapping(m, builder));
+    output.write("namemap", builder.build());
+  }
+
+  private void emitMethodMapping(Method method, SourceBuilder builder) {
+    MethodDescriptor methodDescriptor = method.getDescriptor();
+    String methodImplementationName = environment.getMethodImplementationName(methodDescriptor);
+    checkState(methodImplementationName.startsWith("$"));
+    builder.append(
+        String.format(
+            "%s:%s",
+            methodImplementationName.substring(1), methodDescriptor.getQualifiedBinaryName()));
+    builder.newLine();
   }
 }

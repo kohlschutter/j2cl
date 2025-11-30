@@ -19,10 +19,14 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.j2cl.common.visitor.Processor;
+import com.google.j2cl.common.visitor.Visitable;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 /** A primitive type. */
-public class PrimitiveTypeDescriptor extends TypeDescriptor {
+@Visitable
+public final class PrimitiveTypeDescriptor extends TypeDescriptor {
   private final String name;
   private final String signature;
   private final String boxedClassName;
@@ -49,7 +53,7 @@ public class PrimitiveTypeDescriptor extends TypeDescriptor {
   }
 
   @Override
-  public Expression getDefaultValue() {
+  public Literal getDefaultValue() {
     checkState(!TypeDescriptors.isPrimitiveVoid(this));
     if (TypeDescriptors.isPrimitiveBoolean(this)) {
       return BooleanLiteral.get(false);
@@ -108,11 +112,6 @@ public class PrimitiveTypeDescriptor extends TypeDescriptor {
   }
 
   @Override
-  public PrimitiveTypeDescriptor toUnparameterizedTypeDescriptor() {
-    return this;
-  }
-
-  @Override
   public DeclaredTypeDescriptor toBoxedType() {
     return TypeDescriptors.getBoxTypeFromPrimitiveType(this).toNonNullable();
   }
@@ -148,7 +147,7 @@ public class PrimitiveTypeDescriptor extends TypeDescriptor {
       return true;
     }
 
-    // Note that primitve longs are only assignable to/from primitive longs, so they are completely
+    // Note that primitive longs are only assignable to/from primitive longs, so they are completely
     // absent in the following logic.
     if (TypeDescriptors.isPrimitiveByte(this)) {
       return TypeDescriptors.isPrimitiveShort(that)
@@ -170,6 +169,13 @@ public class PrimitiveTypeDescriptor extends TypeDescriptor {
   @Override
   public boolean canBeReferencedExternally() {
     return true;
+  }
+
+  @Override
+  @Nullable
+  public MethodDescriptor getMethodDescriptor(String methodName, TypeDescriptor... parameters) {
+    throw new UnsupportedOperationException(
+        "getMethodDescriptor is unsupported in primitive types.");
   }
 
   @Override
@@ -195,6 +201,12 @@ public class PrimitiveTypeDescriptor extends TypeDescriptor {
     return specializeTypeVariables(replacementTypeArgumentByTypeVariable, ImmutableSet.of());
   }
 
+  @Override
+  @Nullable
+  public DeclaredTypeDescriptor findSupertype(TypeDeclaration supertypeDeclaration) {
+    throw new UnsupportedOperationException();
+  }
+
   /** A unique string for a give type. Used for interning. */
   @Override
   public String getUniqueId() {
@@ -218,5 +230,15 @@ public class PrimitiveTypeDescriptor extends TypeDescriptor {
     this.boxedClassName = boxedClassName;
     this.precisionOrder = precisionOrder;
     this.width = width;
+  }
+
+  @Override
+  String toStringInternal(ImmutableSet<TypeVariable> seen) {
+    return getSimpleSourceName();
+  }
+
+  @Override
+  TypeDescriptor acceptInternal(Processor processor) {
+    return Visitor_PrimitiveTypeDescriptor.visit(processor, this);
   }
 }

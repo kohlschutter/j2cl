@@ -20,7 +20,7 @@ import com.google.j2cl.common.visitor.Visitable;
 
 /** Null literal node. */
 @Visitable
-public class NullLiteral extends Literal {
+public final class NullLiteral extends Literal {
 
   static NullLiteral get(TypeDescriptor typeDescriptor) {
     return new NullLiteral(typeDescriptor.toNullable());
@@ -43,9 +43,30 @@ public class NullLiteral extends Literal {
   }
 
   @Override
+  public boolean isAlwaysNull() {
+    return true;
+  }
+
+  @Override
+  public boolean canBeNull() {
+    return true;
+  }
+
+  @Override
   public NullLiteral clone() {
     // Null literals are value types do not need to actually clone.
     return this;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return o == this
+        || (o instanceof NullLiteral other && other.typeDescriptor.equals(typeDescriptor));
+  }
+
+  @Override
+  public int hashCode() {
+    return typeDescriptor.hashCode();
   }
 
   @Override
@@ -53,3 +74,4 @@ public class NullLiteral extends Literal {
     return Visitor_NullLiteral.visit(processor, this);
   }
 }
+

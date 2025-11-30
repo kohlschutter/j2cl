@@ -27,10 +27,21 @@ interface Serial {}
 
 interface Cmp {
   int cmp();
+
+  default int defaultM() {
+    return 1;
+  }
 }
 
 interface Cmp2<T> {
   int cmp(int a);
+}
+
+class CmpImpl implements Cmp {
+  @Override
+  public int cmp() {
+    return 1;
+  }
 }
 
 @SuppressWarnings({"TypeParameterUnusedInFormals", "unused"})
@@ -109,10 +120,31 @@ public class IntersectionTypeTest<U> {
     Getable<?> g = n();
   }
 
+  public void testDefaultMethodCall(Object o) {
+    ((EmptyA & Cmp) o).defaultM();
+    ((CmpImpl & EmptyA) o).defaultM();
+  }
+
   private static class SomeConcreteType {}
 
   private static <T extends SomeConcreteType & Cmp> void callOnIntersetionTypes(T t) {
     t.cmp();
     ((SomeConcreteType & Cmp) null).cmp();
+  }
+
+  static class GenericType<T> {
+    void doSomething(T t) {}
+  }
+
+  private static <T extends GenericType<String> & Getable<Integer>>
+      void callOnIntersectionTypeWithParameterizedType(T t) {
+    t.doSomething("");
+    t.get();
+  }
+
+  private static void callOnIntersectionTypeWithRawType() {
+    var t = (GenericType & Getable) new GenericType<String>();
+    t.doSomething("");
+    t.get();
   }
 }

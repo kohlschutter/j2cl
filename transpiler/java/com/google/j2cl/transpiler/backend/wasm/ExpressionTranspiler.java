@@ -21,6 +21,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.j2cl.common.StringUtils.escapeAsUtf8;
 import static com.google.j2cl.transpiler.ast.TypeDescriptors.isPrimitiveVoid;
 import static com.google.j2cl.transpiler.backend.wasm.WasmGenerationEnvironment.getGetterInstruction;
+import static com.google.j2cl.transpiler.backend.wasm.WasmGenerationEnvironment.getWasmInfo;
 import static java.lang.String.format;
 
 import com.google.common.collect.Iterables;
@@ -35,6 +36,7 @@ import com.google.j2cl.transpiler.ast.BooleanLiteral;
 import com.google.j2cl.transpiler.ast.CastExpression;
 import com.google.j2cl.transpiler.ast.ConditionalExpression;
 import com.google.j2cl.transpiler.ast.DeclaredTypeDescriptor;
+import com.google.j2cl.transpiler.ast.EmbeddedStatement;
 import com.google.j2cl.transpiler.ast.Expression;
 import com.google.j2cl.transpiler.ast.ExpressionWithComment;
 import com.google.j2cl.transpiler.ast.FieldAccess;
@@ -42,6 +44,8 @@ import com.google.j2cl.transpiler.ast.FieldDescriptor;
 import com.google.j2cl.transpiler.ast.InstanceOfExpression;
 import com.google.j2cl.transpiler.ast.Invocation;
 import com.google.j2cl.transpiler.ast.JsDocCastExpression;
+import com.google.j2cl.transpiler.ast.Label;
+import com.google.j2cl.transpiler.ast.LabeledStatement;
 import com.google.j2cl.transpiler.ast.MethodCall;
 import com.google.j2cl.transpiler.ast.MethodDescriptor;
 import com.google.j2cl.transpiler.ast.MultiExpression;
@@ -50,6 +54,7 @@ import com.google.j2cl.transpiler.ast.NewInstance;
 import com.google.j2cl.transpiler.ast.NullLiteral;
 import com.google.j2cl.transpiler.ast.NumberLiteral;
 import com.google.j2cl.transpiler.ast.PrimitiveTypeDescriptor;
+import com.google.j2cl.transpiler.ast.Statement;
 import com.google.j2cl.transpiler.ast.StringLiteral;
 import com.google.j2cl.transpiler.ast.ThisOrSuperReference;
 import com.google.j2cl.transpiler.ast.TypeDescriptor;
@@ -124,16 +129,16 @@ final class ExpressionTranspiler {
       }
 
       private void renderAccessExpression(Expression expression, boolean setter) {
-        if (expression instanceof VariableReference) {
+        if (expression instanceof VariableReference variableReference) {
           sourceBuilder.append(
               format(
                   "local.%s %s",
                   setter ? "set" : "get",
-                  environment.getDeclarationName(((VariableReference) expression).getTarget())));
+                  environment.getDeclarationName(variableReference.getTarget())));
 
-        } else if (expression instanceof FieldAccess) {
-          FieldDescriptor fieldDescriptor = ((FieldAccess) expression).getTarget();
-          Expression qualifier = ((FieldAccess) expression).getQualifier();
+        } else if (expression instanceof FieldAccess fieldAccess) {
+          FieldDescriptor fieldDescriptor = fieldAccess.getTarget();
+          Expression qualifier = fieldAccess.getQualifier();
           if (fieldDescriptor.isStatic()) {
             sourceBuilder.append(
                 format(
@@ -149,8 +154,7 @@ final class ExpressionTranspiler {
             render(qualifier);
           }
 
-        } else if (expression instanceof ArrayAccess) {
-          ArrayAccess arrayAccess = (ArrayAccess) expression;
+        } else if (expression instanceof ArrayAccess arrayAccess) {
           Expression arrayExpression = arrayAccess.getArrayExpression();
 
           sourceBuilder.append(
@@ -260,13 +264,6 @@ final class ExpressionTranspiler {
           sourceBuilder.append(")");
         } else {
           DeclaredTypeDescriptor targetTypeDescriptor = (DeclaredTypeDescriptor) testTypeDescriptor;
-          String interfaceSlotFieldName =
-              environment.getInterfaceSlotFieldName(targetTypeDescriptor.getTypeDeclaration());
-          if (interfaceSlotFieldName == null) {
-            // The interface does not have implementors, hence instanceof is false.
-            sourceBuilder.append("(i32.const 0)");
-            return false;
-          }
           sourceBuilder.append("(if (result i32) (ref.is_null ");
           render(instanceOfExpression.getExpression());
           sourceBuilder.append(")");
@@ -278,15 +275,16 @@ final class ExpressionTranspiler {
           sourceBuilder.append("(else ");
           sourceBuilder.indent();
           sourceBuilder.newLine();
-          // Check whether the itable slot assigned to the interface actually contains the
-          // interface vtable, since the slots are reused.
+          // Retrieve the interface vtable and use non-nullable `ref.test` so that it returns false
+          // if the vtable is null or is not of the expected interface.
           sourceBuilder.append(
               format(
-                  "(ref.test (ref %s) (struct.get $itable %s "
-                      + "(struct.get $java.lang.Object $itable ",
-                  environment.getWasmVtableTypeName(targetTypeDescriptor), interfaceSlotFieldName));
+                  "(ref.test (ref %s) (call %s ",
+                  environment.getWasmVtableTypeName(targetTypeDescriptor),
+                  environment.getWasmItableInterfaceGetter(
+                      targetTypeDescriptor.getTypeDeclaration())));
           render(instanceOfExpression.getExpression());
-          sourceBuilder.append(" )))");
+          sourceBuilder.append(" ))");
           sourceBuilder.unindent();
           sourceBuilder.newLine();
           sourceBuilder.append(")");
@@ -328,6 +326,37 @@ final class ExpressionTranspiler {
       }
 
       @Override
+      public boolean enterEmbeddedStatement(EmbeddedStatement embeddedStatement) {
+        Statement statement = embeddedStatement.getStatement();
+        Label label = null;
+        // TODO(b/391582571): Use a cleaner representation for a labeled block that has a
+        // return value.
+        if (statement instanceof LabeledStatement labeledStatement) {
+          label = labeledStatement.getLabel();
+          statement = labeledStatement.getStatement();
+        }
+        sourceBuilder.newLine();
+        sourceBuilder.openParens("block ");
+        if (label != null) {
+          sourceBuilder.append(environment.getDeclarationName(label));
+        }
+        sourceBuilder.append(
+            " (result " + environment.getWasmType(embeddedStatement.getTypeDescriptor()) + ")");
+
+        StatementTranspiler.render(statement, sourceBuilder, environment);
+        if (!TypeDescriptors.isPrimitiveVoid(embeddedStatement.getTypeDescriptor())) {
+          // If the embedded statement returns a value, it should have an explicit yield and never
+          // reach the end; we add an unreachable instruction at the end to make the code
+          // verifiable. This prevents wasm from rejecting exhaustive switch expressions that will
+          // never reach this point but wouldn't be verifiable in the resulting wasm.
+          sourceBuilder.newLine();
+          sourceBuilder.append("(unreachable)");
+        }
+        sourceBuilder.closeParens();
+        return false;
+      }
+
+      @Override
       public boolean enterArrayLiteral(ArrayLiteral arrayLiteral) {
         checkArgument(arrayLiteral.getTypeDescriptor().isNativeWasmArray());
 
@@ -343,7 +372,9 @@ final class ExpressionTranspiler {
           return false;
         }
 
-        sourceBuilder.append(format("(array.new_fixed %s ", arrayType));
+        sourceBuilder.append(
+            format(
+                "(array.new_fixed %s %d ", arrayType, arrayLiteral.getValueExpressions().size()));
         arrayLiteral.getValueExpressions().forEach(this::render);
         sourceBuilder.append(")");
         return false;
@@ -353,10 +384,9 @@ final class ExpressionTranspiler {
       public boolean enterNewArray(NewArray newArray) {
         checkArgument(newArray.getTypeDescriptor().isNativeWasmArray());
 
-        Expression dimensionExpression = newArray.getDimensionExpressions().get(0);
+        Expression dimensionExpression = newArray.getDimensionExpressions().getFirst();
 
-        if (dimensionExpression instanceof NumberLiteral
-            && ((NumberLiteral) dimensionExpression).getValue().equals(0)) {
+        if (dimensionExpression instanceof NumberLiteral literal && literal.getValue().equals(0)) {
           // Do not allocate zero-length arrays, instead reuse the array singletons that
           // are allocated as globals.
           sourceBuilder.append(
@@ -390,13 +420,20 @@ final class ExpressionTranspiler {
           return false;
         }
 
-        sourceBuilder.append(
-            format(
-                "(struct.new %s "
-                    + "(ref.as_non_null (global.get %s)) (ref.as_non_null (global.get %s))",
-                environment.getWasmTypeName(newInstance.getTypeDescriptor()),
-                environment.getWasmVtableGlobalName(newInstance.getTypeDescriptor()),
-                environment.getWasmItableGlobalName(newInstance.getTypeDescriptor())));
+        if (environment.isCustomDescriptorsEnabled()) {
+          sourceBuilder.append(
+              format(
+                  "(struct.new %s (global.get %s)",
+                  environment.getWasmTypeName(newInstance.getTypeDescriptor()),
+                  environment.getWasmItableGlobalName(newInstance.getTypeDescriptor())));
+        } else {
+          sourceBuilder.append(
+              format(
+                  "(struct.new %s (global.get %s) (global.get %s)",
+                  environment.getWasmTypeName(newInstance.getTypeDescriptor()),
+                  environment.getWasmVtableGlobalName(newInstance.getTypeDescriptor()),
+                  environment.getWasmItableGlobalName(newInstance.getTypeDescriptor())));
+        }
 
         // TODO(b/178728155): Go back to using struct.new_default once it supports assigning
         //  immutable fields at construction. See b/178738025 for an alternative design
@@ -429,13 +466,18 @@ final class ExpressionTranspiler {
                   render(initialValue);
                 });
 
+        if (environment.isCustomDescriptorsEnabled()) {
+          sourceBuilder.append(
+              format(
+                  " (global.get %s)",
+                  environment.getWasmVtableGlobalName(newInstance.getTypeDescriptor())));
+        }
         sourceBuilder.append(")");
         return false;
       }
 
       private void renderPolymorphicMethodCall(MethodCall methodCall) {
         MethodDescriptor target = methodCall.getTarget();
-        DeclaredTypeDescriptor enclosingTypeDescriptor = target.getEnclosingTypeDescriptor();
         if (target.isSideEffectFree()) {
           sourceBuilder.append(
               format("(call %s ", environment.getNoSideEffectWrapperFunctionName(target)));
@@ -449,53 +491,69 @@ final class ExpressionTranspiler {
         // Pass the rest of the parameters.
         methodCall.getArguments().forEach(this::render);
 
-        // Retrieve the method reference from the appropriate vtable to provide it to call_ref.
-        sourceBuilder.append(
-            format(
-                "(struct.get %s %s ",
-                environment.getWasmVtableTypeName(enclosingTypeDescriptor),
-                environment.getVtableSlot(target)));
+        Expression qualifier = methodCall.getQualifier();
+        TypeDescriptor qualifierTypeDescriptor =
+            methodCall.getQualifier().getTypeDescriptor().toRawTypeDescriptor();
 
-        // Retrieve the corresponding vtable.
-        if (target.isClassDynamicDispatch()) {
+        boolean isClassDispatch =
+            !qualifierTypeDescriptor.isInterface() || target.isOrOverridesJavaLangObjectMethod();
+
+        if (isClassDispatch) {
           // For a class dynamic dispatch the vtable resides in the $vtable field of object passed
-          // as the qualifier.
-          sourceBuilder.append(
-              format(
-                  "(struct.get %s $vtable", environment.getWasmTypeName(enclosingTypeDescriptor)));
-          render(methodCall.getQualifier());
-          sourceBuilder.append(")");
-        } else {
-          // For an interface dynamic dispatch the vtable resides in a field of the $itable struct
-          // object passed as the qualifier.
+          // as the qualifier. Use type of the qualifier to determine the vtable type.
+          DeclaredTypeDescriptor vtableTypeDescriptor =
+              qualifierTypeDescriptor.isClass() || qualifierTypeDescriptor.isEnum()
+                  ? (DeclaredTypeDescriptor) qualifierTypeDescriptor
+                  // Use java.lang.Object as the vtable type for interfaces and arrays. Note that
+                  // this is only the case when dispatching java.lang.Object methods.
+                  : TypeDescriptors.get().javaLangObject;
 
-          String itableSlotFieldName =
-              environment.getInterfaceSlotFieldName(enclosingTypeDescriptor.getTypeDeclaration());
-          if (itableSlotFieldName == null) {
-            // The interface is not implemented by any class, skip the itable lookup and emit
-            // null instead.
+          // Retrieve the corresponding class vtable.
+          if (environment.isCustomDescriptorsEnabled()) {
             sourceBuilder.append(
-                String.format(
-                    "(ref.null %s)", environment.getWasmVtableTypeName(enclosingTypeDescriptor)));
+                format(
+                    "(struct.get %s %s (ref.get_desc %s",
+                    environment.getWasmVtableTypeName(vtableTypeDescriptor),
+                    environment.getVtableFieldName(target),
+                    environment.getWasmTypeName(vtableTypeDescriptor)));
           } else {
-            // Retrieve the interface vtable from the corresponding slot field in the $itable
-            // and cast it to the appropriate type.
-            // Use non-nullable `ref.cast` to retrieve the interface vtable. If the
-            // receiver was `null` then the NPE will be thrown when retrieving the `$itable` field.
-            // Otherwise if the receiver is not null, then at this point we expect that the
-            // correct interface vtable in the `itable` slot.
             sourceBuilder.append(
-                String.format(
-                    "(ref.cast (ref %s) (struct.get $itable %s (struct.get %s $itable ",
-                    environment.getWasmVtableTypeName(enclosingTypeDescriptor),
-                    itableSlotFieldName,
-                    environment.getWasmTypeName(enclosingTypeDescriptor)));
-            render(methodCall.getQualifier());
-            sourceBuilder.append(")))");
+                format(
+                    "(struct.get %s %s (struct.get %s $vtable",
+                    environment.getWasmVtableTypeName(vtableTypeDescriptor),
+                    environment.getVtableFieldName(target),
+                    environment.getWasmTypeName(vtableTypeDescriptor)));
           }
+          render(qualifier);
+          sourceBuilder.append("))");
+        } else {
+          checkState(qualifierTypeDescriptor.isInterface());
+          DeclaredTypeDescriptor vtableTypeDescriptor =
+              (DeclaredTypeDescriptor) qualifierTypeDescriptor;
+
+          // For an interface dynamic dispatch the vtable is accessed through the $itable field in
+          // object passed as the qualifier.
+          // The method call qualifier type is used to retrieve the vtable. If the method call
+          // target is in a superinterface, it is still included in the subinterface vtable.
+          String vtableTypeName = environment.getWasmVtableTypeName(vtableTypeDescriptor);
+
+          // Retrieve the interface vtable from the $itable field and cast it to the expected type.
+          // Use a non-nullable `ref.cast` to access the interface vtable, because if the interface
+          // is not implemented by the object the result might either be `null` or a vtable
+          // for a different interface that was coalesced to save storage.
+          sourceBuilder.append(
+              String.format(
+                  "(struct.get %s %s (ref.cast (ref %s) (call %s ",
+                  vtableTypeName,
+                  environment.getVtableFieldName(target),
+                  vtableTypeName,
+                  environment.getWasmItableInterfaceGetter(
+                      vtableTypeDescriptor.getTypeDeclaration())));
+          render(qualifier);
+          sourceBuilder.append(")))");
         }
 
-        sourceBuilder.append("))");
+        sourceBuilder.append(")");
       }
 
       /**
@@ -505,7 +563,7 @@ final class ExpressionTranspiler {
        */
       private void renderNonPolymorphicMethodCall(Invocation methodCall) {
         MethodDescriptor target = methodCall.getTarget();
-        String wasmInfo = target.getWasmInfo();
+        String wasmInfo = getWasmInfo(target);
         if (wasmInfo == null) {
           sourceBuilder.append(
               String.format(
@@ -584,7 +642,7 @@ final class ExpressionTranspiler {
 
       @Override
       public boolean enterVariableDeclarationExpression(VariableDeclarationExpression expression) {
-        // Render the first declaration with no preceeding newline. Most places that can have a
+        // Render the first declaration with no preceding newline. Most places that can have a
         // declaration already emit the newline (e.g. ExpressionStatement and MultiExpression).
         boolean isFirst = true;
         for (VariableDeclarationFragment fragment : expression.getFragments()) {
@@ -621,7 +679,7 @@ final class ExpressionTranspiler {
   }
 
   public static boolean returnsVoid(Expression expression) {
-    if (expression instanceof MethodCall && ((MethodCall) expression).getTarget().isConstructor()) {
+    if (expression instanceof MethodCall methodCall && methodCall.getTarget().isConstructor()) {
       // This is a super() or this() call and the generated constructor for Wasm is actually returns
       // the instance (as opposed to how it is modeled in the AST where the return is void).
       return false;

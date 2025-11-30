@@ -1,4 +1,4 @@
-#!/bin/bash -i
+#!/bin/bash
 # Copyright 2019 Google Inc. All Rights Reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,151 +27,245 @@
 # 2) create a key pair by running:
 #   gpg2 --gen-key
 #
-# The script will ask you the passphrase of your key.
+# The script will ask you the passphrase of your key if the MAVEN_GPG_PASSPHRASE
+# environment variable is not set.
 #
 # You have to also configure the repository credentials by creating a settings.xml
 # file in the ~/.m2/ directory and add this section :
 # <servers>
 #   <server>
-#     <id>sonatype-nexus-staging</id>
-#     <username>...</username>
-#     <password>...</password>
+#      <id>central</id>
+#      <username>central_portal_token_username</username>
+#      <password>central_portal_token_password</password>
 #   </server>
 # </servers>
 #
-set -e
+# You can find the repository credentials in go/valentine
+#
+readonly BAZEL_ROOT=$(pwd)
+readonly BUILD_SECTION_FILE="${BAZEL_ROOT}/maven/build_section.xml"
 
-merge_src=true
-deploy_to_sonatype=true
-
-while [[ "$1" != "" ]]; do
-  case $1 in
-    --artifact )        shift
-                        artifact=$1
-                        ;;
-    --jar-file )        shift
-                        jar_file=$1
-                        ;;
-    --src-jar )         shift
-                        src_jar=$1
-                        ;;
-    --javadoc-jar)      shift
-                        javadoc_jar=$1
-                        ;;
-    --license-header )  shift
-                        license_header=$1
-                        ;;
-    --pom-template )    shift
-                        pom_template=$1
-                        ;;
-    --lib-version )     shift
-                        lib_version=$1
-                        ;;
-    --group-id )        shift
-                        group_id=$1
-                        ;;
-    --gpg-passphrase )  shift
-                        gpg_passphrase=$1
-                        ;;
-    --no-merge-src )    merge_src=false
-                        ;;
-    --no-deploy )       deploy_to_sonatype=false
-                        ;;
-    --artifact_dir )    shift
-                        artifact_directory=$1
-                        ;;
-     * )                echo "Error: Unknown flag $1"
-                        exit 1
-                        ;;
-  esac
-  shift
-done
-
-
-if [[ ${deploy_to_sonatype} == true ]] && [[ -z ${gpg_passphrase} ]]; then
-  # As this script can be called in a for loop for releasing several artifacts at once, the caller
-  # script can pass the gpg_passphrase as argument to avoid to ask several time the user for the
-  # passphrase.
-  # If gpg_passphrase is unset, ask the user to provide it.
-  echo "enter your gpg passphrase:"
-  read -s gpg_passphrase
-fi
-
-create_artifact() {
-  jar cf $1 .
-  mv $1 $2
+common::error() {
+  echo "Error: $@" >&2
+  exit 1
 }
 
-classes_directory=$(mktemp -d)
-srcs_directory=$(mktemp -d)
-if [[ -z ${artifact_directory} ]]; then
-  artifact_directory=$(mktemp -d)
-fi
+common::info() {
+  echo "Info: $@"
+}
 
-cd ${srcs_directory}
+#######################################
+# Check if :
+# - Bazel is installed,
+# - the script is run from the root of the Bazel repository.
+# - Bazel environment variables are set.
+# Globals:
+#   BAZEL
+#   BAZEL_ARTIFACT
+#   BAZEL_PATH
+#######################################
+common::check_bazel_prerequisites() {
+  if [ ! -f "MODULE.bazel" ]; then
+    common::error "This script must be run from the root of the Bazel repository (where MODULE.bazel exists)."
+  fi
 
-# - extract src and class files in order to merge them in one jar if requested.
-# - sonatype requires a separate jar file containing only the sources
-# - Add license header on each src file.
-jar xf ${src_jar}
+  # Check for Bazel or Bazelisk
+  if command -v bazelisk &> /dev/null; then
+    BAZEL="bazelisk"
+  elif command -v bazel &> /dev/null; then
+    BAZEL="bazel"
+  else
+    common::error "Neither Bazel nor Bazelisk is installed or in your PATH."
+  fi
 
-if [[ -n "${license_header}" ]]; then
-  tmp_file=$(mktemp)
+  if [[ -z "${BAZEL_ARTIFACT:-}" ]]; then
+    common::error "BAZEL_ARTIFACT is not set."
+  fi
 
-  for java in $(find ${srcs_directory} -name '*.java'); do
-    cat  ${license_header} ${java} > ${tmp_file}
-    mv ${tmp_file} ${java}
-  done
-fi
+  if [[ -z "${BAZEL_PATH:-}" ]]; then
+    common::error "BAZEL_PATH is not set."
+  fi
+}
 
-# source file for sonatype
-create_artifact "${artifact}-sources.jar" ${artifact_directory}
+#######################################
+# Check if :
+# - Maven is installed.
+# - MAVEN_ARTIFACT is set.
+# - a pom xml file is present in the maven directory
+# - global variables used for deployement are set.
+# Globals:
+#   MAVEN_ARTIFACT
+#   BAZEL_ROOT
+#######################################
+common::check_maven_prerequisites() {
+  if ! command -v mvn &> /dev/null; then
+    common::error "Maven is not installed. Please install it."
+  fi
 
-if [[ ${merge_src} == true ]]; then
-  # Copy srcs with class files
-  cp -r * ${classes_directory}
-fi
+  if [[ -z "${MAVEN_ARTIFACT:-}" ]]; then
+    common::error "MAVEN_ARTIFACT is not set."
+  fi
 
-cd ${classes_directory}
-jar xf ${jar_file}
+  # TODO(dramaix): Rename the pom files by using the maven artifact name.
+  if [ ! -f "${BAZEL_ROOT}/maven/pom-${BAZEL_ARTIFACT}.xml" ]; then
+    common::error "Maven pom file not found for artifact ${MAVEN_ARTIFACT}."
+  fi
 
-# create the jar file that contains source and class files
-create_artifact "${artifact}.jar" ${artifact_directory}
+  if [[ -n "${COMMON_DEPENDENCIES_FILE:-}" ]] && [[ ! -f "${COMMON_DEPENDENCIES_FILE}" ]]; then
+    common::error "COMMON_DEPENDENCIES_FILE is set but the file '${COMMON_DEPENDENCIES_FILE}' does not exist."
+  fi
 
-# Create javadoc jar file
-cp ${javadoc_jar} "${artifact_directory}/${artifact}-javadoc.jar"
-# Replace version in template and generate the final pom.xml
-sed -e "s/__VERSION__/${lib_version}/g" -e "s/__ARTIFACT_ID__/${artifact}/g" -e "s/__GROUP_ID__/${group_id}/g"  ${pom_template} > ${artifact_directory}/pom.xml
+  # Every project that deploy to sonatype with maven needs to set the
+  # deploy_to_sonatype variable to be able to skip the deployment step.
+  if [[ -z "${deploy_to_sonatype:-}" ]]; then
+    common::error "deploy_to_sonatype variable is missing."
+  fi
 
-if [[ ${deploy_to_sonatype} == true ]]; then
-  # Use maven to sign and deploy jar, sources jar and javadocs jar to OSS sonatype
-  cd ${artifact_directory}
+  # sonatype_auto_publish is used to automatically publish the artifacts after
+  # deployment.
+  if [[ -z "${sonatype_auto_publish:-}" ]]; then
+    common::error "sonatype_auto_publish variable is missing."
+  fi
+}
 
-  for i in "" sources javadoc; do
-    if [[ -n "$i" ]]; then
-      classifier="-Dclassifier=$i"
-      suffix="-$i"
-    else
-      classifier=""
-      suffix=""
-    fi
-    mvn gpg:sign-and-deploy-file \
-      -Dgpg.passphrase=${gpg_passphrase} \
-      -Dfile=${artifact}${suffix}.jar \
-      -DrepositoryId=sonatype-nexus-staging \
-      -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 \
-      -Dpackaging=jar \
-      -DartifactId=${artifact} \
-      -DgroupId=${group_id} \
-      -Dversion=${lib_version} \
-      -DpomFile=pom.xml $classifier
-  done
+#######################################
+# Check if --version flag is set and the value is valid.
+# Every project requires a version number for deployment.
+#######################################
+common::check_version_set() {
+  if [[ -z "$lib_version" ]]; then
+    common::error "--version flag is missing"
+  fi
+  if [[ "$lib_version" == "--"* ]]; then
+      common::error "Incorrect version value: $lib_version"
+  fi
+}
 
-  rm -rf ${artifact_directory}
-else
-  echo "Artifacts created in ${artifact_directory}"
-fi
+common::_bazel_build() {
+  local target="$1"
+  common::info "Building Bazel target: ${target}"
+  "${BAZEL}" build "${target}"
+}
 
-rm -rf ${classes_directory}
-rm -rf ${srcs_directory}
+common::build() {
+  common::_bazel_build "//${BAZEL_PATH}:lib${BAZEL_ARTIFACT}.jar"
+  common::_bazel_build "//${BAZEL_PATH}:lib${BAZEL_ARTIFACT}-src.jar"
+  common::_bazel_build "//${BAZEL_PATH}:${BAZEL_ARTIFACT}-javadoc.jar"
+}
 
+common::_prepare_sources_artifact() {
+  local maven_src_jar="$1"
+  local bazel_src_jar="${BAZEL_ROOT}/bazel-bin/${BAZEL_PATH}/lib${BAZEL_ARTIFACT}-src.jar"
+
+  if [[ -n "${LICENSE_HEADER_FILE:-}" ]]; then
+    common::info "Adding license header to java source files."
+
+    local srcs_directory=$(mktemp -d)
+    (cd "${srcs_directory}" && jar xf "${bazel_src_jar}")
+
+    local tmp_file=$(mktemp)
+
+    for java in $(find "${srcs_directory}" -name '*.java'); do
+      cat "${LICENSE_HEADER_FILE}" "${java}" > "${tmp_file}"
+      mv "${tmp_file}" "${java}"
+    done
+
+    jar cf "${maven_src_jar}" -C "${srcs_directory}" .
+    rm -rf "${srcs_directory}"
+  else
+    common::info "Copy sources jar to maven directory."
+    cp "${bazel_src_jar}" "${maven_src_jar}"
+  fi
+}
+
+common::_prepare_javadoc_artifact() {
+  common::info "Copying javadoc jar to maven directory."
+  local javadoc_jar="${BAZEL_ROOT}/bazel-bin/${BAZEL_PATH}/${BAZEL_ARTIFACT}-javadoc.jar"
+  local maven_javadoc_jar="${maven_wd}/${MAVEN_ARTIFACT}-javadoc.jar"
+  cp "${javadoc_jar}" "${maven_javadoc_jar}"
+}
+
+common::_extract_classes(){
+  common::info "Extracting class files to maven directory."
+  local maven_src_jar="$1"
+
+  local classes_directory="${maven_wd}/${MAVEN_ARTIFACT}-classes"
+  mkdir -p "${classes_directory}"
+
+  local bazel_jar_file="${BAZEL_ROOT}/bazel-bin/${BAZEL_PATH}/lib${BAZEL_ARTIFACT}.jar"
+
+  (cd "${classes_directory}" && jar xf "${bazel_jar_file}")
+
+  if [[ "${COPY_SRCS_IN_JAR:-true}" == true ]]; then
+    common::info "Extracting sources along with the class files."
+    (cd "${classes_directory}" && jar xf "${maven_src_jar}")
+  fi
+}
+
+common::_prepare_pom_file() {
+  common::info "Generating pom file for ${MAVEN_ARTIFACT}."
+  # Replace placeholders and generate the final pom.xml
+  local -a sed_args
+  sed_args+=(-e "s/__VERSION__/${lib_version}/g")
+  sed_args+=(-e "/__BUILD_SECTION__/r ${BUILD_SECTION_FILE}")
+  sed_args+=(-e "/__BUILD_SECTION__/d")
+
+  if [[ -n "${COMMON_DEPENDENCIES_FILE:-}" ]]; then
+    common::info "Adding common dependencies to pom file."
+    sed_args+=(-e "/__COMMON_DEPENDENCIES__/r ${COMMON_DEPENDENCIES_FILE}")
+    sed_args+=(-e "/__COMMON_DEPENDENCIES__/d")
+  fi
+
+  sed "${sed_args[@]}" \
+    "${BAZEL_ROOT}/maven/pom-${BAZEL_ARTIFACT}.xml" > "${maven_wd}/pom-${MAVEN_ARTIFACT}.xml"
+}
+
+common::_prepare_artifact_for_sonatype() {
+  local maven_src_jar="${maven_wd}/${MAVEN_ARTIFACT}-sources.jar"
+
+  common::_prepare_sources_artifact "${maven_src_jar}"
+  common::_prepare_javadoc_artifact
+  # Extract the class files, maven will repackage everything in its own jar.
+  common::_extract_classes "${maven_src_jar}"
+  common::_prepare_pom_file
+}
+
+common::deploy_to_sonatype() {
+  # TODO(Dramaix): Let the caller pass in the maven directory and be responsible
+  # for setting the trap to cleanup the tmp directory
+  if [[ -n "${1:-}" ]]; then
+    common::info "Using provided directory '$1' for maven artifacts."
+    maven_wd="$1"
+  else
+    common::info "Created temporary directory for maven artifacts."
+    maven_wd=$(mktemp -d)
+  fi
+
+  common::_prepare_artifact_for_sonatype
+
+  local pom_file="${maven_wd}/pom-${MAVEN_ARTIFACT}.xml"
+
+  if [[ "${deploy_to_sonatype}" == true ]]; then
+    common::info "Deploying artifacts to sonatype..."
+    # Use maven to sign and deploy jar, sources jar and javadocs jar to OSS sonatype
+    mvn -f "${pom_file}" clean deploy "-DautoPublish=${sonatype_auto_publish}"
+
+    common::info "Deployment completed."
+  else
+    common::info "Packaging and installing maven artifacts locally..."
+    mvn -f "${pom_file}" clean install
+
+    common::info "Maven artifacts created in ${maven_wd}"
+    common::info "Deployment not requested. No artifacts will be deployed."
+    # set maven_wd to empty string so it's not deleted in cleanup_temp_files
+    maven_wd=""
+  fi
+
+  common::cleanup_temp_files
+}
+
+common::cleanup_temp_files() {
+  if [[ -d "${maven_wd:-}" ]]; then
+    rm -rf "${maven_wd}"
+  fi
+}

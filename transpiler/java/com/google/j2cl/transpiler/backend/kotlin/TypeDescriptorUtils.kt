@@ -20,10 +20,10 @@ import com.google.j2cl.transpiler.ast.DeclaredTypeDescriptor
 import com.google.j2cl.transpiler.ast.IntersectionTypeDescriptor
 import com.google.j2cl.transpiler.ast.KtVariance
 import com.google.j2cl.transpiler.ast.MethodDescriptor
+import com.google.j2cl.transpiler.ast.NullabilityAnnotation.NOT_NULLABLE
 import com.google.j2cl.transpiler.ast.PrimitiveTypeDescriptor
 import com.google.j2cl.transpiler.ast.TypeDescriptor
 import com.google.j2cl.transpiler.ast.TypeDescriptors
-import com.google.j2cl.transpiler.ast.TypeDescriptors.isJavaLangVoid
 import com.google.j2cl.transpiler.ast.TypeVariable
 import com.google.j2cl.transpiler.ast.UnionTypeDescriptor
 import com.google.j2cl.transpiler.backend.kotlin.common.runIf
@@ -31,25 +31,6 @@ import kotlin.streams.asSequence
 
 internal val TypeDescriptor.isImplicitUpperBound
   get() = this == nullableAnyTypeDescriptor
-
-// TODO(b/216796920): Remove when the bug is fixed.
-private val DeclaredTypeDescriptor.directlyDeclaredTypeArgumentDescriptors: List<TypeDescriptor>
-  get() = typeArgumentDescriptors.take(typeDeclaration.directlyDeclaredTypeParameterCount)
-
-internal fun DeclaredTypeDescriptor.directlyDeclaredNonRawTypeArgumentDescriptors(
-  projectToWildcards: Boolean
-): List<TypeDescriptor> =
-  if (!isRaw) directlyDeclaredTypeArgumentDescriptors
-  else
-    projectToWildcards.or(typeDeclaration.hasRecursiveTypeBounds()).let { mapToWildcard ->
-      typeDeclaration.directlyDeclaredTypeParameterDescriptors.map {
-        if (mapToWildcard) {
-          TypeVariable.createWildcard()
-        } else {
-          it.upperBoundTypeDescriptor.toRawTypeDescriptor()
-        }
-      }
-    }
 
 /** Returns direct super type to use for super method call. */
 internal fun DeclaredTypeDescriptor.directSuperTypeForMethodCall(
@@ -66,12 +47,12 @@ internal fun DeclaredTypeDescriptor.directSuperTypeForMethodCall(
         superType.declaredMethodDescriptors.find {
           it == methodDescriptor || it.isOverride(methodDescriptor)
         }
-      when (declaredSuperMethodDescriptor) {
+      when (declaredSuperMethodDescriptor?.declarationDescriptor) {
         // The method has not been found nor it is overridden in this supertype so continue looking
         // up the hierarchy; so if we find it up the hierarchy this is the supertype to return.
         null -> superType.takeIf { it.directSuperTypeForMethodCall(methodDescriptor) != null }
         // We found the implementation targeted, so return this supertype.
-        methodDescriptor -> superType
+        methodDescriptor.declarationDescriptor -> superType
         // We found an override of the method in the hierarchy, so this supertype is not providing
         // the implementation targeted.
         else -> null
@@ -81,7 +62,7 @@ internal fun DeclaredTypeDescriptor.directSuperTypeForMethodCall(
 
 internal fun TypeDescriptor.contains(
   typeVariable: TypeVariable,
-  seenTypeVariables: Set<TypeVariable> = setOf()
+  seenTypeVariables: Set<TypeVariable> = setOf(),
 ): Boolean =
   when (this) {
     is DeclaredTypeDescriptor ->
@@ -98,29 +79,16 @@ internal fun TypeDescriptor.contains(
             upperBoundTypeDescriptor.contains(typeVariable, seenTypeVariablesPlusThis) ||
               (lowerBoundTypeDescriptor?.contains(typeVariable, seenTypeVariablesPlusThis) ?: false)
           }
-    else -> false
+    is PrimitiveTypeDescriptor,
+    is UnionTypeDescriptor -> false
   }
 
-internal val TypeDescriptor.isKtDenotableNonWildcard: Boolean
+internal val TypeDescriptor.isDenotableNonWildcard: Boolean
   get() =
     when (this) {
-      is TypeVariable -> !isWildcard && isKtDenotable
-      else -> isKtDenotable
-    }
-
-internal val TypeDescriptor.isKtDenotable: Boolean
-  get() =
-    when (this) {
-      is IntersectionTypeDescriptor ->
-        // Kotlin supports "T & Any" intersection.
-        intersectionTypeDescriptors.let { intersections ->
-          intersections.size == 2 &&
-            intersections[0].let { it is TypeVariable && !it.isWildcardOrCapture } &&
-            intersections[1] == anyTypeDescriptor
-        }
+      is TypeVariable -> !isWildcard && isDenotable
       else -> isDenotable
     }
-
 internal val TypeVariable.hasNullableBounds: Boolean
   get() = upperBoundTypeDescriptor.canBeNull() && hasNullableRecursiveBounds
 
@@ -139,20 +107,20 @@ internal fun TypeDescriptor.makeNonNull(): TypeDescriptor =
       is DeclaredTypeDescriptor -> toNonNullable()
       is TypeVariable ->
         if (!isWildcardOrCapture) {
+          // TODO(b/328541289): Here it should be just `toNonNullable()`, in fact the handing below
+          // for wildcards and captures should also be done by `toNonNullable()`. The only
+          // kotlin output specific piece is the handling of `*`.
           if (hasNullableBounds) {
-            // Convert to {@code T & Any}
-            IntersectionTypeDescriptor.newBuilder()
-              .setIntersectionTypeDescriptors(listOf(toNonNullable(), anyTypeDescriptor))
-              .build()
+            TypeVariable.Builder.from(this).setNullabilityAnnotation(NOT_NULLABLE).build()
           } else {
-            toNonNullable()
+            withoutNullabilityAnnotations()
           }
         } else if (upperBoundTypeDescriptor.isImplicitUpperBound) {
           // Ignore type variables which will be rendered as star (unbounded wildcard).
           this
         } else {
           TypeVariable.Builder.from(this)
-            .setUpperBoundTypeDescriptorSupplier { upperBoundTypeDescriptor.makeNonNull() }
+            .setUpperBoundTypeDescriptorFactory { _ -> upperBoundTypeDescriptor.makeNonNull() }
             // Set some unique ID to avoid conflict with other type variables.
             // TODO(b/246332093): Remove when the bug is fixed, and uniqueId reflects bounds
             // properly.
@@ -176,7 +144,7 @@ internal fun TypeDescriptor.makeNonNull(): TypeDescriptor =
       else -> error("Unhandled $this")
     }
 
-private val nullableAnyTypeDescriptor: TypeDescriptor
+internal val nullableAnyTypeDescriptor: TypeDescriptor
   get() = typeDescriptors.javaLangObject
 
 private val anyTypeDescriptor: TypeDescriptor
@@ -203,5 +171,35 @@ internal val TypeVariable.hasAmpersandAny: Boolean
 internal val TypeDescriptor.variableHasAmpersandAny: Boolean
   get() = this is TypeVariable && hasAmpersandAny
 
-internal val TypeDescriptor.withImplicitNullability
-  get() = runIf(isJavaLangVoid(this)) { toNullable() }
+internal val arrayComponentTypeParameter: TypeVariable
+  get() =
+    TypeVariable.newBuilder()
+      .setName("T")
+      .setUpperBoundTypeDescriptorFactory { _ -> nullableAnyTypeDescriptor }
+      .setUniqueKey("kotlin.Array:T")
+      .build()
+
+/** Returns upper bound type descriptor with nullability annotation of this type variable. */
+internal val TypeVariable.normalizedUpperBoundTypeDescriptor: TypeDescriptor
+  get() = upperBoundTypeDescriptor.withNullabilityAnnotation(nullabilityAnnotation)
+
+internal val TypeDescriptor.withoutRedundantNullabilityAnnotation: TypeDescriptor
+  get() =
+    when (this) {
+      is TypeVariable ->
+        runIf(
+          nullabilityAnnotation == NOT_NULLABLE && !upperBoundTypeDescriptor.canBeNullableAsBound
+        ) {
+          withoutNullabilityAnnotations()
+        }
+      else -> this
+    }
+
+internal val TypeDescriptor.isProtobuf: Boolean
+  get() = this is DeclaredTypeDescriptor && typeDeclaration.isProtobuf
+
+internal val TypeDescriptor.isCollection: Boolean
+  get() = collectionTypeDescriptors.any { isAssignableTo(it) }
+
+private val collectionTypeDescriptors: Set<TypeDescriptor>
+  get() = setOf(typeDescriptors.javaUtilCollection, typeDescriptors.javaUtilMap)

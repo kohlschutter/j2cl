@@ -19,13 +19,17 @@ import static com.google.j2cl.integration.testing.Asserts.assertEquals;
 import static com.google.j2cl.integration.testing.Asserts.assertFalse;
 import static com.google.j2cl.integration.testing.Asserts.assertThrows;
 import static com.google.j2cl.integration.testing.Asserts.assertThrowsClassCastException;
+import static com.google.j2cl.integration.testing.Asserts.assertThrowsNullPointerException;
 import static com.google.j2cl.integration.testing.Asserts.assertTrue;
 import static com.google.j2cl.integration.testing.Asserts.assertUnderlyingTypeEquals;
 import static com.google.j2cl.integration.testing.Asserts.fail;
 import static jsenum.NativeEnums.nativeClinitCalled;
 
+import com.google.j2cl.integration.testing.TestUtils;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -34,6 +38,7 @@ import javaemul.internal.annotations.DoNotAutobox;
 import javaemul.internal.annotations.UncheckedCast;
 import javaemul.internal.annotations.Wasm;
 import jsenum.NativeEnums.NativeEnum;
+import jsenum.NativeEnums.NativeEnumWitMissingValues;
 import jsenum.NativeEnums.NativeEnumWithClinit;
 import jsenum.NativeEnums.NumberNativeEnum;
 import jsenum.NativeEnums.StringNativeEnum;
@@ -51,6 +56,7 @@ public class Main {
 
   public static void main(String... args) {
     testNativeJsEnum();
+    testNativeJsEnumWithMissingValues();
     testStringNativeJsEnum();
     testCastOnNative();
     testComparableJsEnum();
@@ -71,6 +77,12 @@ public class Main {
     testAutoBoxing_intersectionCasts();
     testSpecializedSuperType();
     testSpecializedSuperTypeUnderlyingType();
+    testBoxingPartialInlining();
+    testNonNativeJsEnumArrays();
+    testNonNativeStringJsEnumArrays();
+    testNonNativeJsEnumArrayBoxing();
+    testNativeJsEnumArray();
+    testJsEnumVarargs();
   }
 
   @Wasm("nop") // TODO(b/288145698): Support native JsEnum.
@@ -92,6 +104,7 @@ public class Main {
         () -> {
           NativeEnum nullJsEnum = null;
           switch (nullJsEnum) {
+            default:
           }
         });
 
@@ -148,6 +161,17 @@ public class Main {
     assertTrue(asSeenFromJs(NativeEnum.ACCEPT) == OK_STRING);
   }
 
+  @Wasm("nop") // TODO(b/288145698): Support native JsEnum.
+  private static void testNativeJsEnumWithMissingValues() {
+    NativeEnumWitMissingValues e = (NativeEnumWitMissingValues) (Object) NativeEnum.CANCEL;
+    int i =
+        switch (e) {
+          case OK -> 1;
+          default -> -1;
+        };
+    assertEquals(-1, i);
+  }
+
   @JsMethod(name = "passThrough")
   @Wasm("nop") // TODO(b/288145698): Support native JsEnum.
   private static native Object asSeenFromJs(NativeEnum s);
@@ -171,6 +195,7 @@ public class Main {
         () -> {
           StringNativeEnum nullJsEnum = null;
           switch (nullJsEnum) {
+            default:
           }
         });
 
@@ -311,8 +336,7 @@ public class Main {
         break;
     }
 
-    assertThrows(
-        NullPointerException.class,
+    assertThrowsNullPointerException(
         () -> {
           PlainJsEnum nullJsEnum = null;
           switch (nullJsEnum) {
@@ -385,7 +409,10 @@ public class Main {
     Integer i = v.ordinal();
     assertTrue(i.intValue() == 1);
 
-    assertFalse(v instanceof Enum);
+    if (!TestUtils.isWasm()) {
+      // JsEnums are still instance of Enum in Wasm.
+      assertFalse(v instanceof Enum);
+    }
     assertTrue(v instanceof PlainJsEnum);
     assertFalse((Object) v instanceof Double);
     assertTrue(v instanceof Comparable);
@@ -473,8 +500,7 @@ public class Main {
         break;
     }
 
-    assertThrows(
-        NullPointerException.class,
+    assertThrowsNullPointerException(
         () -> {
           StringJsEnum nullJsEnum = null;
           switch (nullJsEnum) {
@@ -491,7 +517,6 @@ public class Main {
     // Object methods calls on a variable of JsEnum type.
     assertTrue(v.hashCode() == StringJsEnum.HELLO.hashCode());
     assertTrue(v.hashCode() != StringJsEnum.GOODBYE.hashCode());
-    assertTrue(v.toString().equals(HELLO_STRING));
     assertTrue(v.equals(StringJsEnum.HELLO));
     assertFalse(v.equals(HELLO_STRING));
 
@@ -505,7 +530,6 @@ public class Main {
     // Object methods calls on a variable of Object type.
     assertTrue(o.hashCode() == StringJsEnum.HELLO.hashCode());
     assertTrue(o.hashCode() != StringJsEnum.GOODBYE.hashCode());
-    assertTrue(o.toString().equals(HELLO_STRING));
     assertTrue(o.equals(StringJsEnum.HELLO));
     assertFalse(o.equals(StringJsEnum.GOODBYE));
     assertTrue(o.equals(v));
@@ -513,10 +537,16 @@ public class Main {
 
     assertTrue(v.value.equals(HELLO_STRING));
 
-    assertFalse(v instanceof Enum);
+    if (!TestUtils.isWasm()) {
+      // JsEnums are still instance of Enum in Wasm.
+      assertFalse(v instanceof Enum);
+    }
     assertTrue(v instanceof StringJsEnum);
     assertFalse((Object) v instanceof String);
-    assertFalse(v instanceof Comparable);
+    if (!TestUtils.isWasm()) {
+      // JsEnums are still instance of Enum in Wasm.
+      assertFalse(v instanceof Comparable);
+    }
     assertTrue(v instanceof Serializable);
     assertFalse((Object) v instanceof PlainJsEnum);
 
@@ -545,6 +575,12 @@ public class Main {
           Object unused = (StringJsEnum & Comparable<StringJsEnum>) o;
         },
         Comparable.class);
+
+    if (!TestUtils.isWasm()) {
+      // TODO(b/353352388): The value field is not used in toString in Wasm.
+      assertTrue(v.toString().equals(HELLO_STRING));
+      assertTrue(o.toString().equals(HELLO_STRING));
+    }
   }
 
   @Wasm("nop") // Non-native JsMethod not supported in Wasm.
@@ -571,6 +607,7 @@ public class Main {
     }
   }
 
+  @Wasm("nop") // In Wasm, there is no boxing logic and clinit is called for JsEnum value accesses.
   private static void testJsEnumClassInitialization() {
     assertFalse(nonNativeClinitCalled);
     // Access to an enum value does not trigger clinit.
@@ -764,15 +801,20 @@ public class Main {
     assertUnderlyingTypeEquals(Double.class, templatedField.value.ordinal());
 
     // Boxing/unboxing in varargs.
-    assertUnderlyingTypeEquals(Double.class, Arrays.asList(PlainJsEnum.ONE).get(0));
+    List<?> list = Arrays.asList(PlainJsEnum.ONE);
+    assertUnderlyingTypeEquals(PlainJsEnum.class, list.get(0));
+    unboxed = (PlainJsEnum) list.get(0);
+    assertUnderlyingTypeEquals(Double.class, unboxed);
 
     // TODO(b/118615488): Rewrite the following checks when JsEnum arrays are allowed.
     // In Java the varargs array will be of the inferred argument type. Since non native JsEnum
     // arrays are not allowed, the created array is of the declared type.
-    assertUnderlyingTypeEquals(Comparable[].class, varargsToComparableArray(PlainJsEnum.ONE));
-    assertUnderlyingTypeEquals(PlainJsEnum.class, varargsToComparableArray(PlainJsEnum.ONE)[0]);
-    assertUnderlyingTypeEquals(Object[].class, varargsToObjectArray(PlainJsEnum.ONE));
-    assertUnderlyingTypeEquals(PlainJsEnum.class, varargsToObjectArray(PlainJsEnum.ONE)[0]);
+    Object[] arr = varargsToComparableArray(PlainJsEnum.ONE);
+    assertUnderlyingTypeEquals(Comparable[].class, arr);
+    assertUnderlyingTypeEquals(PlainJsEnum.class, arr[0]);
+    arr = varargsToObjectArray(PlainJsEnum.ONE);
+    assertUnderlyingTypeEquals(Object[].class, arr);
+    assertUnderlyingTypeEquals(PlainJsEnum.class, arr[0]);
   }
 
   private static class TemplatedField<T> {
@@ -919,4 +961,144 @@ public class Main {
     assertTrue(o instanceof String || o instanceof Double || o instanceof Boolean);
     return o;
   }
+
+  private static void testBoxingPartialInlining() {
+    // TODO(b/315214896) Check the size difference to see if cases such as these take advantage of
+    // partial inlining in Wasm to turn this into a simple null check, avoiding boxing.
+    PlainJsEnum nonnullJsEnum = PlainJsEnum.ONE;
+    checkNotNull(nonnullJsEnum);
+    // Use the local so it doesn't get removed.
+    assertTrue(nonnullJsEnum == PlainJsEnum.ONE);
+
+    PlainJsEnum nullJsEnum = null;
+    assertThrowsNullPointerException(() -> checkNotNull(nullJsEnum));
+    assertTrue(nullJsEnum == null);
+  }
+
+  private static void checkNotNull(Object obj) {
+    if (obj == null) {
+      throw new NullPointerException();
+    }
+  }
+
+  private static void testNonNativeJsEnumArrays() {
+    PlainJsEnum[] arr = new PlainJsEnum[] {PlainJsEnum.THREE, PlainJsEnum.TWO};
+    assertTrue(arr.length == 2);
+    assertTrue(arr[0] == PlainJsEnum.THREE);
+    assertTrue(arr[1] == PlainJsEnum.TWO);
+
+    PlainJsEnum[] arr2 = new PlainJsEnum[2];
+    assertTrue(arr2.length == 2);
+    arr2[0] = PlainJsEnum.THREE;
+    arr2[1] = PlainJsEnum.TWO;
+    assertTrue(arr2[0] == PlainJsEnum.THREE);
+    assertTrue(arr2[1] == PlainJsEnum.TWO);
+
+    PlainJsEnum[] arrayWithNull = new PlainJsEnum[] {null};
+    assertTrue(arrayWithNull[0] == null);
+
+    PlainJsEnum[] arrayWithDefaults = new PlainJsEnum[1];
+    assertTrue(arrayWithDefaults[0] == null);
+
+    Object[] objArray = new Object[] {PlainJsEnum.ONE};
+    assertTrue(objArray[0] == PlainJsEnum.ONE);
+
+    List<PlainJsEnum> list = new ArrayList<PlainJsEnum>();
+    list.add(PlainJsEnum.ONE);
+    assertTrue(list.toArray()[0] == PlainJsEnum.ONE);
+
+    PlainJsEnum[][] nestedArr = new PlainJsEnum[][] {{PlainJsEnum.THREE}};
+    assertTrue(nestedArr.length == 1);
+    assertTrue(nestedArr[0].length == 1);
+    assertTrue(nestedArr[0][0] == PlainJsEnum.THREE);
+
+    nestedArr[0] = new PlainJsEnum[] {PlainJsEnum.TWO};
+    assertTrue(nestedArr[0][0] == PlainJsEnum.TWO);
+  }
+
+  private static void testNonNativeStringJsEnumArrays() {
+    StringJsEnum[] arr = new StringJsEnum[] {StringJsEnum.HELLO, StringJsEnum.GOODBYE};
+    assertTrue(arr.length == 2);
+    assertTrue(arr[0] == StringJsEnum.HELLO);
+    assertTrue(arr[1] == StringJsEnum.GOODBYE);
+
+    StringJsEnum[] arr2 = new StringJsEnum[2];
+    assertTrue(arr2.length == 2);
+    arr2[0] = StringJsEnum.HELLO;
+    arr2[1] = StringJsEnum.GOODBYE;
+    assertTrue(arr2[0] == StringJsEnum.HELLO);
+    assertTrue(arr2[1] == StringJsEnum.GOODBYE);
+
+    StringJsEnum[] arrayWithNull = new StringJsEnum[] {null};
+    assertTrue(arrayWithNull[0] == null);
+
+    StringJsEnum[] arrayWithDefaults = new StringJsEnum[1];
+    assertTrue(arrayWithDefaults[0] == null);
+  }
+
+  @Wasm("nop") // JsEnum boxing not implemented in Wasm.
+  private static void testNonNativeJsEnumArrayBoxing() {
+    // JsEnums are stored as unboxed in an array.
+    PlainJsEnum[] arr = new PlainJsEnum[] {PlainJsEnum.THREE};
+    assertUnderlyingTypeEquals(Double.class, arr[0]);
+
+    StringJsEnum[] arr2 = new StringJsEnum[] {StringJsEnum.HELLO};
+    assertUnderlyingTypeEquals(String.class, arr2[0]);
+  }
+
+  @Wasm("nop") // TODO(b/288145698): Support native JsEnum.
+  private static void testNativeJsEnumArray() {
+    NativeEnum[] arr = new NativeEnum[] {NativeEnum.ACCEPT, NativeEnum.CANCEL};
+    assertTrue(arr.length == 2);
+    assertTrue(arr[0] == NativeEnum.ACCEPT);
+    assertTrue(arr[1] == NativeEnum.CANCEL);
+
+    NativeEnum[] arr2 = new NativeEnum[2];
+    assertTrue(arr2.length == 2);
+    arr2[0] = NativeEnum.ACCEPT;
+    arr2[1] = NativeEnum.CANCEL;
+    assertTrue(arr2[0] == NativeEnum.ACCEPT);
+    assertTrue(arr2[1] == NativeEnum.CANCEL);
+
+    NativeEnum[] arrayWithNull = new NativeEnum[] {null};
+    assertTrue(arrayWithNull[0] == null);
+
+    NativeEnum[] arrayWithDefaults = new NativeEnum[1];
+    assertTrue(arrayWithDefaults[0] == null);
+
+    NativeEnum[][] nestedArr = new NativeEnum[][] {{NativeEnum.ACCEPT}};
+    assertTrue(nestedArr.length == 1);
+    assertTrue(nestedArr[0].length == 1);
+    assertTrue(nestedArr[0][0] == NativeEnum.ACCEPT);
+
+    nestedArr[0] = new NativeEnum[] {NativeEnum.CANCEL};
+    assertTrue(nestedArr[0][0] == NativeEnum.CANCEL);
+  }
+
+  private static void testJsEnumVarargs() {
+    checkTVarargs(PlainJsEnum.ONE);
+    checkJsEnumVarargs(PlainJsEnum.ONE);
+
+    DerivedWithoutJsEnumVarargs d = new DerivedWithoutJsEnumVarargs();
+    d.checkTVarargs(PlainJsEnum.ONE);
+
+    BaseWithTVarargs b = new DerivedWithoutJsEnumVarargs();
+    b.checkTVarargs(PlainJsEnum.ONE);
+  }
+
+  private static <T> void checkTVarargs(T... t) {
+    assertTrue(t[0] == PlainJsEnum.ONE);
+  }
+
+  private static void checkJsEnumVarargs(PlainJsEnum... t) {
+    assertTrue(t[0] == PlainJsEnum.ONE);
+  }
+
+  private static class BaseWithTVarargs<T> {
+    public void checkTVarargs(T... t) {
+      assertTrue(t[0] == PlainJsEnum.ONE);
+    }
+  }
+
+  private static class DerivedWithoutJsEnumVarargs extends BaseWithTVarargs<PlainJsEnum> {}
 }

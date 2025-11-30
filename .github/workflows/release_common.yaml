@@ -1,0 +1,211 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+name: Reusable Release Workflow
+
+# This workflow is designed to be called from other workflows.
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'The version to release'
+        required: true
+        type: string
+      git_ref:
+        description: 'The git ref to use to create the final release.'
+        type: string
+        required: true
+      publish_to_sonatype:
+        description: 'Publish the release to Sonatype'
+        type: boolean
+        required: true
+      sonatype_auto_publish:
+        description: 'Automatically publish the release to Sonatype'
+        type: boolean
+        required: false
+        default: false
+      publish_to_bcr:
+        description: 'Publish the repo to BCR'
+        type: boolean
+        required: false
+        default: true
+      create_github_release:
+        description: 'Create a GitHub release (which also creates a git tag)'
+        type: boolean
+        required: false
+        default: true
+      continue_if_tag_exists:
+        description: 'Continue the workflow even if the git tag already exists'
+        type: boolean
+        required: false
+        default: false
+    secrets:
+      SONATYPE_USERNAME_TOKEN:
+        description: 'Sonatype username token'
+        required: false
+      SONATYPE_PASSWORD_TOKEN:
+        description: 'Sonatype password token'
+        required: false
+      MAVEN_GPG_PRIVATE_KEY:
+        description: 'GPG private key for signing Maven artifacts'
+        required: false
+      MAVEN_GPG_PASSPHRASE:
+        description: 'Passphrase for the GPG private key'
+        required: false
+
+jobs:
+  create_git_tag:
+    runs-on: ubuntu-latest
+    permissions:
+      # Required for creating and pushing git tags.
+      contents: write
+    steps:
+      - name: Checkout current commit
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          # Fetch the entire history to have branch information. This will allow us to check that
+          # the commit we start the release on is part of the master branch.
+          # In our case, fetching the whole history only adds a few seconds to the checkout time for
+          # our larger repository, which is acceptable for a release process that is not run
+          # frequently.
+          fetch-depth: 0
+          ref: ${{ inputs.git_ref }}
+
+      - name: Check if on Master Branch
+        run: |
+          if ! git merge-base --is-ancestor "${{ inputs.git_ref }}" "refs/remotes/origin/master"; then
+            echo "Error: Releases can only be created from commits that are on the 'master' branch."
+            exit 1
+          fi
+
+      - name: Check and Create Git Tag
+        run: |
+          TAG_NAME="${{ inputs.version }}"
+          # Get all remote refs matching the TAG_NAME
+          ALL_REFS=$(git ls-remote origin "$TAG_NAME")
+
+          # Check if any refs were found and if we should continue
+          if [ -n "${ALL_REFS}" ]; then
+            # Check if this is a tag reference
+            if echo "${ALL_REFS}" | grep -q "refs/tags/${TAG_NAME}"; then
+              echo "Tag '$TAG_NAME' already exists."
+              if [[ "${{ inputs.continue_if_tag_exists }}" == "true" ]]; then
+                echo "Continuing workflow as 'continue_if_tag_exists' is true. Skipping tag creation."
+                exit 0
+              else
+                echo "Error: Tag '$TAG_NAME' already exists and 'continue_if_tag_exists' is false. Aborting."
+                exit 1
+              fi
+            else
+              echo "A ref with name '${TAG_NAME}' exists but is not a tag (e.g., a branch). Aborting."
+              exit 1
+            fi
+          fi
+
+          echo "Creating tag '$TAG_NAME'"
+
+          git config --local user.email "j2cl-github-bot@github.com"
+          git config --local user.name "J2CL GitHub Bot"
+          git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
+          git push origin "$TAG_NAME"
+
+  publish_to_sonatype:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.publish_to_sonatype }}
+    needs: create_git_tag
+
+    steps:
+      - name: Check secrets are provided
+        run: |
+          check_secret() {
+            if [[ -z "${2:-}" ]]; then
+              echo "Error: secret ${1} is required but not provided."
+              exit 1
+            fi
+          }
+          check_secret "SONATYPE_USERNAME_TOKEN" "${{ secrets.SONATYPE_USERNAME_TOKEN }}"
+          check_secret "SONATYPE_PASSWORD_TOKEN" "${{ secrets.SONATYPE_PASSWORD_TOKEN }}"
+          check_secret "MAVEN_GPG_PRIVATE_KEY" "${{ secrets.MAVEN_GPG_PRIVATE_KEY }}"
+          check_secret "MAVEN_GPG_PASSPHRASE" "${{ secrets.MAVEN_GPG_PASSPHRASE }}"
+      - name: Checkout release tag
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ inputs.version }}
+
+      # Maven and Bazel require Java to be available.
+      - name: Setup Java
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+          java-package: jdk
+          # This will trigger the import of the private key in the GPG secret keyring.
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          # This will create the maven settings.xml file needed for deploying to Sonatype.
+          server-id: central
+          server-username: SONATYPE_USERNAME_TOKEN
+          server-password: SONATYPE_PASSWORD_TOKEN
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Setup Bazel
+        uses: bazelbuild/setup-bazelisk@v3
+
+      # NOTE: This step assumes the calling repository has this script at the specified path.
+      - name: Publish to Sonatype
+        run: |
+          auto_publish_flag=""
+          if [[ "${{ inputs.sonatype_auto_publish }}" == true ]]; then
+            auto_publish_flag="--sonatype-auto-publish"
+          fi
+          ./maven/publish_to_sonatype.sh --version ${{ inputs.version }} $auto_publish_flag
+        env:
+          SONATYPE_USERNAME_TOKEN: ${{ secrets.SONATYPE_USERNAME_TOKEN }}
+          SONATYPE_PASSWORD_TOKEN: ${{ secrets.SONATYPE_PASSWORD_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+  run_tests:
+    needs: create_git_tag
+    uses: ./.github/workflows/ci.yaml
+    with:
+      git_ref: ${{ inputs.version }}
+
+  release:
+    needs: run_tests
+    if: ${{ inputs.create_github_release }}
+    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.3
+    with:
+      prerelease: ${{ contains(inputs.version, '-RC') }}
+      release_files: ${{ github.event.repository.name }}-*.tar.gz
+      tag_name: ${{ inputs.version }}
+      # TODO(dramaix): contribute upstream to allow skipping test.
+      bazel_test_command: "bazel build"
+
+  publish_to_bcr:
+    if: ${{ inputs.publish_to_bcr }}
+    needs: release
+    uses: bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v1.0.0
+    with:
+      tag_name: ${{ inputs.version }}
+      registry_fork: j2cl-github-bot/bazel-central-registry
+      attest: true
+      author_name: j2cl-github-bot
+      author_email: j2cl-github-bot@google.com
+      # The PR is authored by a bot account, which requires team member approval. Therefore, we
+      # don't need to create it as a draft.
+      draft: false
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    secrets:
+      publish_token: ${{ secrets.BCR_PUBLISH_TOKEN }}

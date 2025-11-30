@@ -25,7 +25,7 @@ import com.google.j2cl.transpiler.ast.TypeDescriptor;
  * Inserts explicit JsDoc casts when assigning JsFunction implementations to JsFunction interface
  * types and vice-versa.
  *
- * <p>Note: The pass addes the casts in both directions because the constructor of JsFunction
+ * <p>Note: The pass adds the casts in both directions because the constructor of JsFunction
  * implementations was modified to return a JsFunction interface types.
  */
 public class InsertJsFunctionImplementationConversionCasts extends NormalizationPass {
@@ -37,7 +37,7 @@ public class InsertJsFunctionImplementationConversionCasts extends Normalization
               @Override
               public Expression rewriteTypeConversionContext(
                   TypeDescriptor inferredTypeDescriptor,
-                  TypeDescriptor actualTypeDescriptor,
+                  TypeDescriptor declaredTypeDescriptor,
                   Expression expression) {
                 if (expression instanceof NullLiteral) {
                   // No need to add extra casts to a null literal.
@@ -49,7 +49,7 @@ public class InsertJsFunctionImplementationConversionCasts extends Normalization
                     || (inferredTypeDescriptor.isJsFunctionImplementation()
                         && expression.getTypeDescriptor().isJsFunctionInterface())) {
                   return JsDocCastExpression.newBuilder()
-                      .setCastType(inferredTypeDescriptor)
+                      .setCastTypeDescriptor(inferredTypeDescriptor)
                       .setExpression(expression)
                       .build();
                 }

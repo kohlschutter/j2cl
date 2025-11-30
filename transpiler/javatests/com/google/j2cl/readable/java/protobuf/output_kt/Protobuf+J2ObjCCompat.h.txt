@@ -3,9 +3,31 @@
 #import <Foundation/NSObjCRuntime.h>
 
 @class J2ktProtobufProtobuf;
+@class J2ktProtobufProtobuf_Test;
+@class J2ktProtobufProtobuf_TestCompanion;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@compatibility_alias ProtobufProtobuf J2ktProtobufProtobuf;
+#define ProtobufProtobuf J2ktProtobufProtobuf
+
+NS_INLINE J2ktProtobufProtobuf* create_ProtobufProtobuf_init(void) {
+ return [[J2ktProtobufProtobuf alloc] init];
+}
+
+NS_INLINE J2ktProtobufProtobuf* new_ProtobufProtobuf_init(void) {
+ return [[J2ktProtobufProtobuf alloc] init];
+}
+
+#define ProtobufProtobuf_Test J2ktProtobufProtobuf_Test
+
+#define ProtobufProtobuf_TestCompanion J2ktProtobufProtobuf_TestCompanion
+
+NS_INLINE void ProtobufProtobuf_Test_acceptStaticWithMyMessage_(id myMessage) {
+ [J2ktProtobufProtobuf_TestCompanion.shared acceptStaticWithMyMessage:myMessage];
+}
+
+NS_INLINE id ProtobufProtobuf_Test_getStaticWithMyMessage_(id myMessage) {
+ return [J2ktProtobufProtobuf_TestCompanion.shared getStaticWithMyMessage:myMessage];
+}
 
 NS_ASSUME_NONNULL_END

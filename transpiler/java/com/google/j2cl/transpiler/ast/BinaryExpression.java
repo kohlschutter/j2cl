@@ -17,9 +17,31 @@ package com.google.j2cl.transpiler.ast;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.j2cl.transpiler.ast.StaticEvaluators.booleanOperation;
+import static com.google.j2cl.transpiler.ast.StaticEvaluators.convertToLiteralString;
+import static com.google.j2cl.transpiler.ast.StaticEvaluators.doubleOperation;
+import static com.google.j2cl.transpiler.ast.StaticEvaluators.doubleRelationalOperator;
+import static com.google.j2cl.transpiler.ast.StaticEvaluators.floatOperation;
+import static com.google.j2cl.transpiler.ast.StaticEvaluators.intOperation;
+import static com.google.j2cl.transpiler.ast.StaticEvaluators.longOperation;
+import static com.google.j2cl.transpiler.ast.StaticEvaluators.longRelationalOperator;
+import static com.google.j2cl.transpiler.ast.StaticEvaluators.stringOperation;
+import static com.google.j2cl.transpiler.ast.TypeDescriptors.isIntegralPrimitiveType;
+import static com.google.j2cl.transpiler.ast.TypeDescriptors.isJavaLangString;
+import static com.google.j2cl.transpiler.ast.TypeDescriptors.isNumericPrimitive;
+import static com.google.j2cl.transpiler.ast.TypeDescriptors.isPrimitiveBoolean;
+import static com.google.j2cl.transpiler.ast.TypeDescriptors.isPrimitiveDouble;
+import static com.google.j2cl.transpiler.ast.TypeDescriptors.isPrimitiveFloat;
+import static com.google.j2cl.transpiler.ast.TypeDescriptors.isPrimitiveFloatOrDouble;
+import static com.google.j2cl.transpiler.ast.TypeDescriptors.isPrimitiveInt;
+import static com.google.j2cl.transpiler.ast.TypeDescriptors.isPrimitiveLong;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.j2cl.common.InternalCompilerError;
 import com.google.j2cl.common.visitor.Processor;
 import com.google.j2cl.common.visitor.Visitable;
+import javax.annotation.Nullable;
 
 /**
  * Binary operator expression.
@@ -98,6 +120,11 @@ public class BinaryExpression extends Expression {
   }
 
   @Override
+  public boolean isAlwaysNull() {
+    return isSimpleAssignment() && rightOperand.isAlwaysNull();
+  }
+
+  @Override
   public boolean isIdempotent() {
     return !operator.hasSideEffect() && leftOperand.isIdempotent() && rightOperand.isIdempotent();
   }
@@ -109,14 +136,89 @@ public class BinaryExpression extends Expression {
         && rightOperand.isCompileTimeConstant();
   }
 
+  @Override
+  @Nullable
+  public Literal getConstantValue() {
+    if (!isCompileTimeConstant()) {
+      return null;
+    }
+
+    // Use the type of the operation to select the semantics, e.g whether the operation is performed
+    // as an integer operation and overflow or a long, etc. Ideally we would have
+    // Operator.isArithmetic() but the operations that are "arithmetic" are the only ones that
+    // have a numeric result type.
+    TypeDescriptor typeDescriptor = getTypeDescriptor();
+
+    if (TypeDescriptors.isNumericPrimitive(typeDescriptor)) {
+      Number left = ((NumberLiteral) leftOperand.getConstantValue()).getValue();
+      Number right = ((NumberLiteral) rightOperand.getConstantValue()).getValue();
+
+      // Handle all the arithmetic operations here using the right semantics; types that are smaller
+      // than int are always promoted to int, so there is no need to handle them separately.
+      if (isPrimitiveInt(typeDescriptor)) {
+        return NumberLiteral.fromInt(intOperation(operator, left.intValue(), right.intValue()));
+      } else if (isPrimitiveLong(typeDescriptor)) {
+        return NumberLiteral.fromLong(longOperation(operator, left.longValue(), right.longValue()));
+      } else if (isPrimitiveFloat(typeDescriptor)) {
+        return NumberLiteral.fromValue(
+            floatOperation(operator, left.floatValue(), right.floatValue()), typeDescriptor);
+      } else {
+        checkState(isPrimitiveDouble(typeDescriptor));
+        return NumberLiteral.fromValue(
+            doubleOperation(operator, left.doubleValue(), right.doubleValue()), typeDescriptor);
+      }
+    }
+
+    if (isPrimitiveBoolean(typeDescriptor)) {
+      if (operator.isRelationalOperator()) {
+        NumberLiteral left = ((NumberLiteral) leftOperand.getConstantValue());
+        NumberLiteral right = ((NumberLiteral) rightOperand.getConstantValue());
+        // Relational operations only need to be performed on long and doubles, since the int
+        // and float comparisons have the same semantics as the long and double comparisons.
+        if (isIntegralPrimitiveType(left.getTypeDescriptor())
+            && isIntegralPrimitiveType(right.getTypeDescriptor())) {
+          return BooleanLiteral.get(
+              longRelationalOperator(
+                  operator, left.getValue().longValue(), right.getValue().longValue()));
+        } else {
+          checkState(
+              isNumericPrimitive(left.getTypeDescriptor())
+                  && isNumericPrimitive(right.getTypeDescriptor())
+                  && (isPrimitiveFloatOrDouble(left.getTypeDescriptor())
+                      || isPrimitiveFloatOrDouble(right.getTypeDescriptor())));
+          return BooleanLiteral.get(
+              doubleRelationalOperator(
+                  operator, left.getValue().doubleValue(), right.getValue().doubleValue()));
+        }
+      } else {
+        // Handle all the boolean operations.
+        checkState(
+            isPrimitiveBoolean(leftOperand.getTypeDescriptor())
+                && isPrimitiveBoolean(rightOperand.getTypeDescriptor()));
+        boolean left = ((BooleanLiteral) leftOperand.getConstantValue()).getValue();
+        boolean right = ((BooleanLiteral) rightOperand.getConstantValue()).getValue();
+        return BooleanLiteral.get(booleanOperation(operator, left, right));
+      }
+    }
+
+    if (isJavaLangString(typeDescriptor)) {
+      // Handle all the string operations.
+      String left = convertToLiteralString(leftOperand.getConstantValue());
+      String right = convertToLiteralString(rightOperand.getConstantValue());
+
+      return new StringLiteral(stringOperation(operator, left, right));
+    }
+
+    // There should not be other cases.
+    throw new InternalCompilerError(
+        "Unexpected compile-time constant expression: %s %s %s",
+        leftOperand.getConstantValue(), operator, rightOperand.getConstantValue());
+  }
+
   public boolean isReferenceComparison() {
     return (getOperator() == BinaryOperator.EQUALS || getOperator() == BinaryOperator.NOT_EQUALS)
         && !getLeftOperand().getTypeDescriptor().isPrimitive()
-        && !getRightOperand().getTypeDescriptor().isPrimitive()
-        // We use the value type in the case of JsEnums with the declaration descriptor to ignore
-        // specialization of type variables in case any boxing occurs.
-        && !AstUtils.isPrimitiveNonNativeJsEnum(getLeftOperand().getDeclaredTypeDescriptor())
-        && !AstUtils.isPrimitiveNonNativeJsEnum(getRightOperand().getDeclaredTypeDescriptor());
+        && !getRightOperand().getTypeDescriptor().isPrimitive();
   }
 
   @Override
@@ -127,6 +229,12 @@ public class BinaryExpression extends Expression {
   @Override
   public boolean isSimpleOrCompoundAssignment() {
     return getOperator().isSimpleOrCompoundAssignment();
+  }
+
+  @Override
+  public boolean canBeNull() {
+    // Only plain assignments can return nulls.
+    return getOperator().isSimpleAssignment() && super.canBeNull();
   }
 
   @Override
@@ -161,7 +269,7 @@ public class BinaryExpression extends Expression {
 
     PrimitiveTypeDescriptor primitiveLeftOperandType = leftOperandType.toUnboxedType();
 
-    /**
+    /*
      * Rules per JLS (Chapter 15) require that binary promotion be previously applied to the
      * operands and makes the operation to be the same type as both operands. Since this method is
      * potentially called before or while numeric promotion is being performed there is no guarantee
@@ -195,7 +303,7 @@ public class BinaryExpression extends Expression {
       case TIMES:
       case DIVIDE:
       case REMAINDER:
-        /**
+        /*
          * The type of the operation should the promoted type of the operands, which is equivalent
          * to the widest type of its operands (or integer is integer is wider).
          */
@@ -205,7 +313,7 @@ public class BinaryExpression extends Expression {
       case LEFT_SHIFT:
       case RIGHT_SHIFT_SIGNED:
       case RIGHT_SHIFT_UNSIGNED:
-        /**
+        /*
          * Shift operators: JLS 15.19.
          *
          * <p>Type type of the operation is the type of the promoted left hand operand.
@@ -229,12 +337,8 @@ public class BinaryExpression extends Expression {
       return false;
     }
 
-    if (TypeDescriptors.isJavaLangString(leftOperandType.toRawTypeDescriptor())
-        || TypeDescriptors.isJavaLangString(rightOperandType.toRawTypeDescriptor())) {
-      return true;
-    }
-
-    return false;
+    return isJavaLangString(leftOperandType.toRawTypeDescriptor())
+        || isJavaLangString(rightOperandType.toRawTypeDescriptor());
   }
 
   public static Builder newBuilder() {
@@ -278,26 +382,31 @@ public class BinaryExpression extends Expression {
           .setOperator(BinaryOperator.ASSIGN);
     }
 
+    @CanIgnoreReturnValue
     public Builder setLeftOperand(Expression operand) {
       this.leftOperand = operand;
       return this;
     }
 
+    @CanIgnoreReturnValue
     public Builder setLeftOperand(Variable variable) {
       this.leftOperand = variable.createReference();
       return this;
     }
 
+    @CanIgnoreReturnValue
     public Builder setRightOperand(Expression operand) {
       this.rightOperand = operand;
       return this;
     }
 
+    @CanIgnoreReturnValue
     public Builder setRightOperand(Variable variable) {
       this.rightOperand = variable.createReference();
       return this;
     }
 
+    @CanIgnoreReturnValue
     public Builder setOperator(BinaryOperator operator) {
       this.operator = operator;
       return this;

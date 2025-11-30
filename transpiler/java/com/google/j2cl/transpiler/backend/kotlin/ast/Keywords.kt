@@ -23,6 +23,9 @@ object Keywords {
    */
   fun isHard(string: String) = HARD_KEYWORD_SET.contains(string)
 
+  /** Returns [true] if [string] is a reserved keyword. */
+  fun isReserved(string: String) = RESERVED_KEYWORD_SET.contains(string)
+
   /** Returns [true] if [string] keyword is not valid in enum value declaration. */
   fun isForbiddenInEnumValueDeclaration(string: String) = string == "init"
 
@@ -59,6 +62,8 @@ object Keywords {
       "val",
       "var",
       "when",
-      "while"
+      "while",
     )
+
+  private val RESERVED_KEYWORD_SET = setOf("_", "__", "___", "...")
 }

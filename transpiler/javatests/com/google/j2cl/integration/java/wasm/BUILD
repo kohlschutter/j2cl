@@ -16,13 +16,12 @@ j2wasm_library(
     javacopts = ["-XepDisableAllChecks"],
     deps = [
         "//jre/java:javaemul_internal_annotations-j2wasm",
-        "//third_party:gwt-jsinterop-annotations-j2wasm",
+        "//third_party:jsinterop-annotations-j2wasm",
         "//transpiler/javatests/com/google/j2cl/integration/testing:testing-j2wasm",
     ],
 )
 
 integration_test(
-    name = "wasm",
     srcs = glob(["*.java"]),
     # Contains features which are only applicable for Wasm.
     enable_jvm_test = False,

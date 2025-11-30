@@ -28,20 +28,23 @@ public final class Class<T> implements Type, Serializable {
   // TODO(b/183548819): Unify this with the closure version so that it does not need supersourcing.
 
   private static final boolean SIMPLE_METADATA =
-      "SIMPLE".equals(System.getProperty("jre.classMetadata"));
+      System.getProperty("jre.classMetadata") == "SIMPLE";
 
   private String nameOrNull;
   private final String primitiveShortName;
   private final boolean isEnum;
   private final boolean isInterface;
   private final boolean isPrimitive;
+
   /** Dimension count for the underlying array type; or {@code 0} if this is not for an array. */
   private final int dimensionCount;
 
   /** The class literal for the super class. */
   private final Class<? super T> superClass;
+
   /** The leaf type for an array. {@code null} if not an array. */
   private final Class<?> leafType;
+
   /** * Class objects for arrays of this type, created lazily. */
   private Class<?>[] arrayTypes;
 
@@ -67,6 +70,7 @@ public final class Class<T> implements Type, Serializable {
     this.leafType = leafType;
   }
 
+  @HasNoSideEffects
   public String getName() {
     if (isArray()) {
       String className = isPrimitive ? primitiveShortName : "L" + getClassName() + ";";
@@ -77,12 +81,14 @@ public final class Class<T> implements Type, Serializable {
 
   // J2CL doesn't follow JLS strictly here and provides an approximation that is good enough for
   // debugging and testing uses.
+  @HasNoSideEffects
   public String getCanonicalName() {
     return getClassName() + repeatString("[]", dimensionCount);
   }
 
   // J2CL doesn't follow JLS strictly here and provides an approximation that is good enough for
   // debugging and testing uses.
+  @HasNoSideEffects
   public String getSimpleName() {
     return stripToLastOccurrenceOf(stripToLastOccurrenceOf(getCanonicalName(), "."), "$");
   }

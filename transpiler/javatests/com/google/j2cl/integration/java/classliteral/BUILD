@@ -1,8 +1,8 @@
+load("//build_defs:rules.bzl", "j2wasm_library")
 load(
     "//transpiler/javatests/com/google/j2cl/integration:integration_test.bzl",
     "integration_test",
 )
-load("//build_defs:rules.bzl", "j2wasm_library")
 
 package(
     default_applicable_licenses = ["//:j2cl_license"],
@@ -17,14 +17,14 @@ j2wasm_library(
     ) + glob(["super-wasm/*.java"]),
     deps = [
         "//jre/java:javaemul_internal_annotations-j2wasm",
-        "//third_party:gwt-jsinterop-annotations-j2wasm",
+        "//third_party:jsinterop-annotations-j2wasm",
+        "//third_party:jspecify_annotations-j2wasm",
         "//transpiler/javatests/com/google/j2cl/integration/testing:testing-j2wasm",
     ],
 )
 
 integration_test(
-    name = "classliteral",
     srcs = glob(["*.java"]),
-    # TODO(b/202428351): Generics support
-    enable_kt = False,
+    enable_nullability = True,
+    deps = ["//third_party:jspecify_annotations"],
 )

@@ -1,9 +1,9 @@
+load("@rules_closure//closure:defs.bzl", "closure_js_library")
 load("//build_defs:rules.bzl", "j2kt_jvm_library")
 load(
     "//transpiler/javatests/com/google/j2cl/readable:readable_example.bzl",
     "readable_example",
 )
-load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_library")
 
 package(
     default_applicable_licenses = ["//:j2cl_license"],
@@ -14,7 +14,8 @@ package(
 j2kt_jvm_library(
     name = "readable-j2kt-jvm",
     srcs = glob(["*.java"]),
-    deps = ["//third_party:gwt-jsinterop-annotations-j2kt-jvm"],
+    j2kt_j2objc_interop_enabled = False,
+    deps = ["//third_party:jsinterop-annotations-j2kt-jvm"],
 )
 
 closure_js_library(
@@ -29,9 +30,10 @@ readable_example(
     ]),
     # Native JsType does not make sense for j2kt-native.
     build_kt_native_readables = False,
+    # Casting non-native type to/from native type not supported in Wasm.
     generate_wasm_readables = False,
     deps = [
         ":externs",
-        "//third_party:gwt-jsinterop-annotations-j2cl",
+        "//third_party:jsinterop-annotations-j2cl",
     ],
 )

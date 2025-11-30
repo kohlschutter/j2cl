@@ -1,0 +1,10 @@
+goog.module('unsafevariance.StringListSub');
+
+goog.require('java.util.Iterator');
+goog.require('java.util.List');
+goog.require('java.util.ListIterator');
+goog.require('nativebootstrap.Util');
+goog.require('unsafevariance.StringList');
+
+const StringListSub = goog.require('unsafevariance.StringListSub$impl');
+exports = StringListSub;

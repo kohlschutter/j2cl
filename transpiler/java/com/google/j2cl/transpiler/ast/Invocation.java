@@ -19,6 +19,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 import com.google.common.collect.Lists;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.j2cl.common.visitor.Visitable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,14 +30,25 @@ import java.util.List;
 @Visitable
 public abstract class Invocation extends MemberReference {
   @Visitable List<Expression> arguments = new ArrayList<>();
+  @Visitable List<TypeDescriptor> typeArguments = new ArrayList<>();
 
-  Invocation(Expression qualifier, MethodDescriptor target, List<Expression> arguments) {
+  Invocation(
+      Expression qualifier,
+      MethodDescriptor target,
+      List<Expression> arguments,
+      List<TypeDescriptor> typeArguments) {
     super(qualifier, target);
     this.arguments.addAll(arguments);
+    this.typeArguments.addAll(typeArguments);
   }
 
   public final List<Expression> getArguments() {
     return arguments;
+  }
+
+  /** Type arguments that are explicitly provided (as opposed to inferred). */
+  public List<TypeDescriptor> getTypeArguments() {
+    return typeArguments;
   }
 
   @Override
@@ -63,25 +75,30 @@ public abstract class Invocation extends MemberReference {
       extends MemberReference.Builder<T, I, MethodDescriptor> {
 
     private List<Expression> arguments = new ArrayList<>();
+    private List<TypeDescriptor> typeArguments = new ArrayList<>();
 
     public static Builder<?, ?> from(Invocation invocation) {
       return invocation.createBuilder();
     }
 
+    @CanIgnoreReturnValue
     public final T setArguments(Expression... arguments) {
       return setArguments(Arrays.asList(arguments));
     }
 
+    @CanIgnoreReturnValue
     public final T setArguments(List<Expression> arguments) {
       this.arguments.clear();
       this.arguments.addAll(arguments);
       return getThis();
     }
 
+    @CanIgnoreReturnValue
     public final T addArgumentsAndUpdateDescriptor(int index, Expression... argumentExpressions) {
       return addArgumentsAndUpdateDescriptor(index, Arrays.asList(argumentExpressions));
     }
 
+    @CanIgnoreReturnValue
     public final T addArgumentsAndUpdateDescriptor(
         int index, Collection<Expression> argumentExpressions) {
       if (argumentExpressions.isEmpty()) {
@@ -101,6 +118,7 @@ public abstract class Invocation extends MemberReference {
                               .collect(toImmutableList()))));
     }
 
+    @CanIgnoreReturnValue
     public final T addArgumentAndUpdateDescriptor(
         int index, Expression argumentExpression, TypeDescriptor parameterTypeDescriptor) {
       arguments.add(index, argumentExpression);
@@ -112,10 +130,12 @@ public abstract class Invocation extends MemberReference {
                   builder -> builder.addParameterTypeDescriptors(index, parameterTypeDescriptor)));
     }
 
+    @CanIgnoreReturnValue
     public final T replaceVarargsArgument(Expression... replacementArguments) {
       return replaceVarargsArgument(Arrays.asList(replacementArguments));
     }
 
+    @CanIgnoreReturnValue
     public final T replaceVarargsArgument(List<Expression> replacementArguments) {
       checkState(getTarget().isVarargs());
       int lastArgumentPosition = arguments.size() - 1;
@@ -128,9 +148,21 @@ public abstract class Invocation extends MemberReference {
       return arguments;
     }
 
+    @CanIgnoreReturnValue
+    public final T setTypeArguments(List<TypeDescriptor> typeArguments) {
+      this.typeArguments.clear();
+      this.typeArguments.addAll(typeArguments);
+      return getThis();
+    }
+
+    protected final List<TypeDescriptor> getTypeArguments() {
+      return typeArguments;
+    }
+
     Builder(Invocation invocation) {
       super(invocation);
       this.arguments = Lists.newArrayList(invocation.getArguments());
+      this.typeArguments = Lists.newArrayList(invocation.getTypeArguments());
     }
 
     Builder() {}

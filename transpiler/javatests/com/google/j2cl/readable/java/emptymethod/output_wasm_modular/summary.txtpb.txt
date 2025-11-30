@@ -1,7 +1,0 @@
-{
-  "declaredTypeMap": ["\u003cno-type\u003e", "$emptymethod.EmptyMethod", "$java.lang.Object"],
-  "type": [{
-    "declaredTypeId": 1,
-    "extendsDeclaredTypeId": 2
-  }]
-}

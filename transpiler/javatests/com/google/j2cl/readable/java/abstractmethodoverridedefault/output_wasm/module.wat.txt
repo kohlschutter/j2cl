@@ -1,120 +1,202 @@
- ;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.I [type definition]
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.vtable (sub (struct
-  (field $m_bar__void (ref $function.m_bar__void))
-  (field $m_foo__void (ref $function.m_foo__void))
-  ))
- )
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.I [type definition]
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.vtable (sub (struct
+ (field $m_bar__void (ref $function.m_bar__void))
+ (field $m_foo__void (ref $function.m_foo__void))
+ ))
+)
 
- ;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.J [type definition]
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.vtable (sub (struct
-  (field $m_bar__void (ref $function.m_bar__void))
-  (field $m_foo__void (ref $function.m_foo__void))
-  ))
- )
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.J [type definition]
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.vtable (sub (struct
+ (field $m_bar__void (ref $function.m_bar__void))
+ (field $m_foo__void (ref $function.m_foo__void))
+ ))
+)
 
- ;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault [type definition]
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault (sub $java.lang.Object (struct
-  (field $vtable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  ))
- )
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault [type definition]
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault (sub $java.lang.Object (struct
+ (field $vtable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ ))
+)
 
- ;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.A [type definition]
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (sub $java.lang.Object (struct
-  (field $vtable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.vtable))
-  (field $itable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_bar__void (ref $function.m_bar__void))
-  (field $m_foo__void (ref $function.m_foo__void))
-  ))
- )
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.itable (sub $itable (struct
- (field $slot0 (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.vtable))
- (field $slot1 (ref null struct))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor [type definition]
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor (sub $java.lang.Object (struct
+ (field $vtable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor.vtable))
+ (field $itable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_bar__void (ref $function.m_bar__void))
+ (field $m_foo__void (ref $function.m_foo__void))
+ ))
+)
 
- ;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.B [type definition]
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B (sub $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (struct
-  (field $vtable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B.vtable))
-  (field $itable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B.vtable (sub $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_bar__void (ref $function.m_bar__void))
-  (field $m_foo__void (ref $function.m_foo__void))
-  ))
- )
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B.itable (sub $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.itable (struct
- (field $slot0 (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.vtable))
- (field $slot1 (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.vtable))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor [type definition]
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor (sub $java.lang.Object (struct
+ (field $vtable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor.vtable))
+ (field $itable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_bar__void (ref $function.m_bar__void))
+ (field $m_foo__void (ref $function.m_foo__void))
+ ))
+)
 
- ;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.C [type definition]
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C (sub $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (struct
-  (field $vtable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.vtable))
-  (field $itable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.vtable (sub $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_bar__void (ref $function.m_bar__void))
-  (field $m_foo__void (ref $function.m_foo__void))
-  ))
- )
- (type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.itable (sub $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.itable (struct
- (field $slot0 (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.vtable))
- (field $slot1 (ref null struct))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.A [type definition]
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (sub $java.lang.Object (struct
+ (field $vtable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.vtable))
+ (field $itable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_bar__void (ref $function.m_bar__void))
+ (field $m_foo__void (ref $function.m_foo__void))
+ ))
+)
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.B [type definition]
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B (sub $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (struct
+ (field $vtable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B.vtable))
+ (field $itable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B.vtable (sub $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_bar__void (ref $function.m_bar__void))
+ (field $m_foo__void (ref $function.m_foo__void))
+ ))
+)
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.C [type definition]
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C (sub $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (struct
+ (field $vtable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.vtable))
+ (field $itable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.vtable (sub $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_bar__void (ref $function.m_bar__void))
+ (field $m_foo__void (ref $function.m_foo__void))
+ ))
+)
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.I [imports]
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.J [imports]
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault [imports]
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor [imports]
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor [imports]
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.A [imports]
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.B [imports]
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.C [imports]
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault [static fields]
+(global $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault (mut i32)
+ (i32.const 0)
+)
+(global $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor [static fields]
+(global $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor (mut i32)
+ (i32.const 0)
+)
+(global $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor [static fields]
+(global $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor (mut i32)
+ (i32.const 0)
+)
+(global $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.I [static fields]
+(global $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I (mut i32)
+ (i32.const 0)
+)
+(global $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.J [static fields]
+(global $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J (mut i32)
+ (i32.const 0)
+)
+(global $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.A [static fields]
+(global $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (mut i32)
+ (i32.const 0)
+)
+(global $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.B [static fields]
+(global $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B (mut i32)
+ (i32.const 0)
+)
+(global $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.C [static fields]
+(global $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C (mut i32)
+ (i32.const 0)
+)
+(global $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
 
 ;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault [vtable.init]
 (global $abstractmethodoverridedefault.AbstractMethodOverrideDefault.vtable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.vtable)
  (struct.new $abstractmethodoverridedefault.AbstractMethodOverrideDefault.vtable
   (ref.func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
  )
@@ -125,98 +207,17 @@
  (struct.new $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.vtable
   (ref.func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C)
   (ref.func $m_foo__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C)
  )
 )
-
-;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.C [itable.init]
-
 (global $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.vtable@$abstractmethodoverridedefault.AbstractMethodOverrideDefault.C (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.vtable)
  (struct.new $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.vtable
   (ref.func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C)
   (ref.func $m_foo__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C)
  )
-)
-(global $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.itable (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.itable)
- (struct.new $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.itable
-   (global.get $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.vtable@$abstractmethodoverridedefault.AbstractMethodOverrideDefault.C)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
- )
-)
-
-;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault [static fields]
-(global $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault (mut i32)
- (i32.const 0)
-)
-(global $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.I [static fields]
-(global $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_I (mut i32)
- (i32.const 0)
-)
-(global $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_I (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_I (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.J [static fields]
-(global $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_J (mut i32)
- (i32.const 0)
-)
-(global $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_J (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_J (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.A [static fields]
-(global $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_A (mut i32)
- (i32.const 0)
-)
-(global $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_A (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_A (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.B [static fields]
-(global $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_B (mut i32)
- (i32.const 0)
-)
-(global $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_B (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_B (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.C [static fields]
-(global $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_C (mut i32)
- (i32.const 0)
-)
-(global $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_C (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_C (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
 )
 
 ;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.I [methods]
@@ -224,51 +225,39 @@
 ;;; void I.bar()
 (func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I
  (param $this (ref null $java.lang.Object))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:22:17
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:22:17
  (block
  )
 )
 (elem declare func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I)
 
 ;;; void I.$clinit()
-(func $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+(func $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
-  (if (global.get $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_I)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+  (if (global.get $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I)
    (then
-    ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
     (return )
    )
   )
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
-  (global.set $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_I (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+  (global.set $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I (i32.const 1))
  )
 )
 
 ;;; Class<T> I.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I
+(func $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_I))
+  (if (i32.eqz (ref.is_null (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I)))
    (then
-    (global.set $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_I (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|abstractmeth...|__java_lang_String (ref.func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I) )))
+    (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I))
    )
   )
-  (return (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_I))
- )
-)
-
-;;; String I.$getString_|abstractmeth...|()
-(func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_I))
-   (then
-    (global.set $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_I (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "abstractmethodoverridedefault.AbstractMethodOverrideDefault$I")))
-   )
-  )
-  (return (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_I))
+  (global.set $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $$getString_|abstractmeth...|__java_lang_String_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I )))
+  (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I))
  )
 )
 
@@ -277,51 +266,39 @@
 ;;; void J.foo()
 (func $m_foo__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J
  (param $this (ref null $java.lang.Object))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:26:17
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:26:17
  (block
  )
 )
 (elem declare func $m_foo__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J)
 
 ;;; void J.$clinit()
-(func $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+(func $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
-  (if (global.get $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_J)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+  (if (global.get $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J)
    (then
-    ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
     (return )
    )
   )
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
-  (global.set $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_J (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+  (global.set $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J (i32.const 1))
  )
 )
 
 ;;; Class<T> J.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J
+(func $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_J))
+  (if (i32.eqz (ref.is_null (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J)))
    (then
-    (global.set $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_J (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|abstractmeth...|__java_lang_String (ref.func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J) )))
+    (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J))
    )
   )
-  (return (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_J))
- )
-)
-
-;;; String J.$getString_|abstractmeth...|()
-(func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_J))
-   (then
-    (global.set $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_J (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "abstractmethodoverridedefault.AbstractMethodOverrideDefault$J")))
-   )
-  )
-  (return (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_J))
+  (global.set $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $$getString_|abstractmeth...|__java_lang_String_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J )))
+  (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J))
  )
 )
 
@@ -330,16 +307,16 @@
 ;;; AbstractMethodOverrideDefault AbstractMethodOverrideDefault.$create()
 (func $$create__@abstractmethodoverridedefault.AbstractMethodOverrideDefault
  (result (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
  (local $$instance (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault))
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
-  (call $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault )
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
-  (local.set $$instance (struct.new $abstractmethodoverridedefault.AbstractMethodOverrideDefault (ref.as_non_null (global.get $abstractmethodoverridedefault.AbstractMethodOverrideDefault.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+  (call $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+  (local.set $$instance (struct.new $abstractmethodoverridedefault.AbstractMethodOverrideDefault (global.get $abstractmethodoverridedefault.AbstractMethodOverrideDefault.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
   (call $$ctor__void_$p_abstractmethodoverridedefault_AbstractMethodOverrideDefault@abstractmethodoverridedefault.AbstractMethodOverrideDefault (ref.as_non_null (local.get $$instance)))
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
   (return (local.get $$instance))
  )
 )
@@ -347,41 +324,42 @@
 ;;; void AbstractMethodOverrideDefault.$ctor()
 (func $$ctor__void_$p_abstractmethodoverridedefault_AbstractMethodOverrideDefault@abstractmethodoverridedefault.AbstractMethodOverrideDefault
  (param $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
 
 ;;; void AbstractMethodOverrideDefault.$clinit()
-(func $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+(func $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
-  (if (global.get $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+  (if (global.get $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault)
    (then
-    ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
     (return )
    )
   )
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
-  (global.set $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault (i32.const 1))
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+  (global.set $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:18:13
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> AbstractMethodOverrideDefault.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault
+(func $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault))
+  (if (i32.eqz (ref.is_null (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault)))
    (then
-    (global.set $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|abstractmeth...|__java_lang_String (ref.func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault))
    )
   )
-  (return (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault))
+  (global.set $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|abstractmeth...|__java_lang_String_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault))
  )
 )
 
@@ -393,32 +371,165 @@
  (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault))
  (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault)
 
-;;; String AbstractMethodOverrideDefault.$getString_|abstractmeth...|()
-(func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault
- (result (ref null $java.lang.String))
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor [methods]
+
+;;; void $LambdaAdaptor.$ctor()
+(func $$ctor__void_$p_abstractmethodoverridedefault_AbstractMethodOverrideDefault_I_$LambdaAdaptor@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor
+ (param $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
  (block
-  (if (ref.is_null (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault))
-   (then
-    (global.set $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "abstractmethodoverridedefault.AbstractMethodOverrideDefault")))
-   )
-  )
-  (return (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+  (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
+
+;;; void $LambdaAdaptor.bar()
+(func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor
+ (type $function.m_bar__void)
+ (param $this.untyped (ref $java.lang.Object))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+ (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor))
+ (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor) (local.get $this.untyped)))
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+  (call $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I (ref.as_non_null (local.get $this)))
+ )
+)
+(elem declare func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor)
+
+;;; void $LambdaAdaptor.$clinit()
+(func $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+  (if (global.get $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor)
+   (then
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+    (return )
+   )
+  )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+  (global.set $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+  (call $$clinit__void_<once>_@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:19:12
+  (call $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I )
+ )
+)
+
+;;; Class<T> $LambdaAdaptor.$getClassMetadata()
+(func $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor
+ (result (ref null $java.lang.Class))
+ (block
+  (if (i32.eqz (ref.is_null (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor)))
+   (then
+    (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor))
+   )
+  )
+  (global.set $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|abstractmeth...|__java_lang_String_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor))
+ )
+)
+
+;;; Class<?> $LambdaAdaptor.$getClassImpl()
+(func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor
+ (type $function.$getClassImpl__java_lang_Class)
+ (param $this.untyped (ref $java.lang.Object))
+ (result (ref null $java.lang.Class))
+ (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor))
+ (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor) (local.get $this.untyped)))
+ (block
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor ))
+ )
+)
+(elem declare func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I.$LambdaAdaptor)
+
+;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor [methods]
+
+;;; void $LambdaAdaptor.$ctor()
+(func $$ctor__void_$p_abstractmethodoverridedefault_AbstractMethodOverrideDefault_J_$LambdaAdaptor@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor
+ (param $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+  (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
+ )
+)
+
+;;; void $LambdaAdaptor.foo()
+(func $m_foo__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor
+ (type $function.m_foo__void)
+ (param $this.untyped (ref $java.lang.Object))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+ (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor))
+ (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor) (local.get $this.untyped)))
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+  (call $m_foo__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J (ref.as_non_null (local.get $this)))
+ )
+)
+(elem declare func $m_foo__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor)
+
+;;; void $LambdaAdaptor.$clinit()
+(func $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+  (if (global.get $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor)
+   (then
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+    (return )
+   )
+  )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+  (global.set $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+  (call $$clinit__void_<once>_@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:25:12
+  (call $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J )
+ )
+)
+
+;;; Class<T> $LambdaAdaptor.$getClassMetadata()
+(func $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor
+ (result (ref null $java.lang.Class))
+ (block
+  (if (i32.eqz (ref.is_null (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor)))
+   (then
+    (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor))
+   )
+  )
+  (global.set $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|abstractmeth...|__java_lang_String_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor))
+ )
+)
+
+;;; Class<?> $LambdaAdaptor.$getClassImpl()
+(func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor
+ (type $function.$getClassImpl__java_lang_Class)
+ (param $this.untyped (ref $java.lang.Object))
+ (result (ref null $java.lang.Class))
+ (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor))
+ (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor) (local.get $this.untyped)))
+ (block
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor ))
+ )
+)
+(elem declare func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J.$LambdaAdaptor)
 
 ;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.A [methods]
 
 ;;; void A.$ctor()
 (func $$ctor__void_$p_abstractmethodoverridedefault_AbstractMethodOverrideDefault_A@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A
  (param $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -427,70 +538,71 @@
 (func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A
  (type $function.m_bar__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
  (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A))
  (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A) (local.get $this.untyped)))
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
   (call $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I (ref.as_non_null (local.get $this)))
  )
 )
 (elem declare func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A)
 
 ;;; void A.$clinit()
-(func $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
+(func $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
-  (if (global.get $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_A)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
+  (if (global.get $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A)
    (then
-    ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
     (return )
    )
   )
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
-  (global.set $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_A (i32.const 1))
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
-  (call $$clinit__void@java.lang.Object )
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
-  (call $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
+  (global.set $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
+  (call $$clinit__void_<once>_@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:31:24
+  (call $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I )
  )
 )
 
 ;;; Class<T> A.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A
+(func $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_A))
+  (if (i32.eqz (ref.is_null (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A)))
    (then
-    (global.set $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_A (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|abstractmeth...|__java_lang_String (ref.func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A))
    )
   )
-  (return (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_A))
+  (global.set $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|abstractmeth...|__java_lang_String_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A))
  )
 )
 
-;;; String A.$getString_|abstractmeth...|()
-(func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A
- (result (ref null $java.lang.String))
+;;; Class<?> A.$getClassImpl()
+(func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A
+ (type $function.$getClassImpl__java_lang_Class)
+ (param $this.untyped (ref $java.lang.Object))
+ (result (ref null $java.lang.Class))
+ (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A))
+ (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.A) (local.get $this.untyped)))
  (block
-  (if (ref.is_null (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_A))
-   (then
-    (global.set $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_A (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "abstractmethodoverridedefault.AbstractMethodOverrideDefault$A")))
-   )
-  )
-  (return (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_A))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A ))
  )
 )
+(elem declare func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A)
 
 ;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.B [methods]
 
 ;;; void B.$ctor()
 (func $$ctor__void_$p_abstractmethodoverridedefault_AbstractMethodOverrideDefault_B@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B
  (param $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
   (call $$ctor__void_$p_abstractmethodoverridedefault_AbstractMethodOverrideDefault_A@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (ref.as_non_null (local.get $this)))
  )
 )
@@ -499,15 +611,15 @@
 (func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B
  (type $function.m_bar__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:39:16
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:39:16
  (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B))
  (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B) (local.get $this.untyped)))
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:40:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:40:6
   (if (i32.const 0)
    (then
     (block
-     ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:41:8
+     ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:41:8
      (call_ref $function.m_bar__void (ref.as_non_null (local.get $this))(struct.get $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B.vtable $m_bar__void (struct.get $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B $vtable(local.get $this))))
     )
    )
@@ -517,66 +629,67 @@
 (elem declare func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B)
 
 ;;; void B.$clinit()
-(func $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
+(func $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
-  (if (global.get $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_B)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
+  (if (global.get $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B)
    (then
-    ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
     (return )
    )
   )
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
-  (global.set $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_B (i32.const 1))
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
-  (call $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A )
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
-  (call $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
+  (global.set $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
+  (call $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:36:24
+  (call $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.J )
  )
 )
 
 ;;; Class<T> B.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B
+(func $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_B))
+  (if (i32.eqz (ref.is_null (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B)))
    (then
-    (global.set $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_B (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|abstractmeth...|__java_lang_String (ref.func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A) )))
+    (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B))
    )
   )
-  (return (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_B))
+  (global.set $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|abstractmeth...|__java_lang_String_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B )(call $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A )))
+  (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B))
  )
 )
 
-;;; String B.$getString_|abstractmeth...|()
-(func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B
- (result (ref null $java.lang.String))
+;;; Class<?> B.$getClassImpl()
+(func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B
+ (type $function.$getClassImpl__java_lang_Class)
+ (param $this.untyped (ref $java.lang.Object))
+ (result (ref null $java.lang.Class))
+ (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B))
+ (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.B) (local.get $this.untyped)))
  (block
-  (if (ref.is_null (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_B))
-   (then
-    (global.set $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_B (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "abstractmethodoverridedefault.AbstractMethodOverrideDefault$B")))
-   )
-  )
-  (return (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_B))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B ))
  )
 )
+(elem declare func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.B)
 
 ;;; Code for abstractmethodoverridedefault.AbstractMethodOverrideDefault.C [methods]
 
 ;;; C C.$create()
 (func $$create__@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C
  (result (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
  (local $$instance (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C))
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
-  (call $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C )
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
-  (local.set $$instance (struct.new $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C (ref.as_non_null (global.get $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.vtable)) (ref.as_non_null (global.get $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.itable)) (i32.const 0)))
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+  (call $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+  (local.set $$instance (struct.new $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C (global.get $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.vtable) (global.get $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C.itable) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
   (call $$ctor__void_$p_abstractmethodoverridedefault_AbstractMethodOverrideDefault_C@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C (ref.as_non_null (local.get $$instance)))
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
   (return (local.get $$instance))
  )
 )
@@ -584,9 +697,9 @@
 ;;; void C.$ctor()
 (func $$ctor__void_$p_abstractmethodoverridedefault_AbstractMethodOverrideDefault_C@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C
  (param $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
   (call $$ctor__void_$p_abstractmethodoverridedefault_AbstractMethodOverrideDefault_A@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A (ref.as_non_null (local.get $this)))
  )
 )
@@ -595,7 +708,7 @@
 (func $m_foo__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C
  (type $function.m_foo__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:47:16
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:47:16
  (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C))
  (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C) (local.get $this.untyped)))
  (block
@@ -607,44 +720,45 @@
 (func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C
  (type $function.m_bar__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:49:16
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:49:16
  (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C))
  (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C) (local.get $this.untyped)))
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:50:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:50:6
   (call $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.I (ref.as_non_null (local.get $this)))
  )
 )
 (elem declare func $m_bar__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C)
 
 ;;; void C.$clinit()
-(func $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C
- ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+(func $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
  (block
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
-  (if (global.get $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_C)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+  (if (global.get $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C)
    (then
-    ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
     (return )
    )
   )
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
-  (global.set $f_$initialized__abstractmethodoverridedefault_AbstractMethodOverrideDefault_C (i32.const 1))
-  ;;@ abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
-  (call $$clinit__void@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+  (global.set $$class-initialized@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/abstractmethodoverridedefault/readable-j2wasm.js/abstractmethodoverridedefault/AbstractMethodOverrideDefault.java:46:15
+  (call $$clinit__void_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A )
  )
 )
 
 ;;; Class<T> C.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C
+(func $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_C))
+  (if (i32.eqz (ref.is_null (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C)))
    (then
-    (global.set $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_C (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|abstractmeth...|__java_lang_String (ref.func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A) )))
+    (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C))
    )
   )
-  (return (global.get $f_$class__abstractmethodoverridedefault_AbstractMethodOverrideDefault_C))
+  (global.set $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|abstractmeth...|__java_lang_String_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C )(call $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.A )))
+  (return (global.get $$class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C))
  )
 )
 
@@ -656,20 +770,7 @@
  (local $this (ref null $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C))
  (local.set $this (ref.cast (ref $abstractmethodoverridedefault.AbstractMethodOverrideDefault.C) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C)
-
-;;; String C.$getString_|abstractmeth...|()
-(func $$getString_|abstractmeth...|__java_lang_String@abstractmethodoverridedefault.AbstractMethodOverrideDefault.C
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_C))
-   (then
-    (global.set $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_C (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "abstractmethodoverridedefault.AbstractMethodOverrideDefault$C")))
-   )
-  )
-  (return (global.get $f_$string_|abstractmeth...|__abstractmethodoverridedefault_AbstractMethodOverrideDefault_C))
- )
-)

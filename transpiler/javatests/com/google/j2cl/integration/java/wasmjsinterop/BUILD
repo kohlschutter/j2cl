@@ -1,8 +1,8 @@
+load("//build_defs:rules.bzl", "j2wasm_library")
 load(
     "//transpiler/javatests/com/google/j2cl/integration:integration_test.bzl",
     "integration_test",
 )
-load("//build_defs:rules.bzl", "j2wasm_library")
 
 package(
     default_applicable_licenses = ["//:j2cl_license"],
@@ -16,12 +16,9 @@ j2wasm_library(
         "*.js",
     ]),
     deps = [
-        "//third_party:gwt-jsinterop-annotations-j2wasm",
+        "//third_party:jsinterop-annotations-j2wasm",
         "//transpiler/javatests/com/google/j2cl/integration/testing:testing-j2wasm",
     ],
 )
 
-integration_test(
-    name = "wasmjsinterop",
-    srcs = glob(["*.java"]),
-)
+integration_test(srcs = glob(["*.java"]))

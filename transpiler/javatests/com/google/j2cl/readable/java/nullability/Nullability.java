@@ -23,7 +23,8 @@ import jsinterop.annotations.JsConstructor;
 import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsNonNull;
-import org.jspecify.nullness.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 public class Nullability {
   @Nonnull private String f1 = "Hello";
@@ -253,6 +254,32 @@ public class Nullability {
     RecursiveNullableParam<T> generic = new RecursiveNullableParam<>();
     RecursiveNullableParam<RecursiveNullableChild> parametrized = new RecursiveNullableParam<>();
   }
+
+  @NullMarked
+  static void testMethodNullmarked() {
+    class ImplicitlyNullmarkedLocalClass {
+      void acceptsNonNullStrng(String i) {}
+    }
+  }
+
+  // Repro for b/443782901
+  @NullMarked
+  static class WithNullableParameterInConstructor {
+    WithNullableParameterInConstructor(@Nullable String s) {}
+
+    static void m() {
+      var o = new WithNullableParameterInConstructor(null) {};
+    }
+  }
+
+  // TODO(b/451682710): Remove this when it becomes a compile error.
+  @JsNonNull
+  interface NonNullInterface {}
+
+  void testNonNullOnType(
+      NonNullInterface unannotated,
+      @JsNonNull NonNullInterface annotatedNonNull,
+      @Nullable NonNullInterface annotatedNullable) {}
 }
 
 interface Marker {}

@@ -13,7 +13,7 @@
  */
 package com.google.j2cl.transpiler;
 
-import static com.google.j2cl.transpiler.TranspilerTester.newTesterWithDefaultsWasm;
+import static com.google.j2cl.transpiler.TranspilerTester.newTesterWithWasmDefaults;
 
 import com.google.common.collect.ImmutableList;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
@@ -31,37 +31,45 @@ public final class J2wasmTranspilerTest extends TestCase {
     assertTranspileSucceedsWithEntryPoints(
         "wasm.entrypoint.Main",
         ImmutableList.of("wasm.entrypoint.Main#main"),
-        "class Main {",
-        "  public static void main() {}",
-        "}");
+        """
+        class Main {
+          public static void main() {}
+        }
+        """);
   }
 
   public void testEntryPointRegexFoundPasses() {
     assertTranspileSucceedsWithEntryPoints(
         "wasm.entrypoint.Main",
         ImmutableList.of("wasm.entrypoint.Main#m.*"),
-        "class Main {",
-        "  public static void main() {}",
-        "}");
+        """
+        class Main {
+          public static void main() {}
+        }
+        """);
   }
 
   public void testMultipleEntryPointRegexFoundPasses() {
     assertTranspileSucceedsWithEntryPoints(
         "wasm.entrypoint.Main",
         ImmutableList.of("wasm.entrypoint.Main#m.*"),
-        "class Main {",
-        "  public static void main() {}",
-        "  public static void main2() {}",
-        "}");
+        """
+        class Main {
+          public static void main() {}
+          public static void main2() {}
+        }
+        """);
   }
 
   public void testEntryPointNotFoundFails() {
     assertTranspileFailsWithEntryPoints(
             "wasm.entrypoint.Main",
             ImmutableList.of("wasm.entrypoint.Main#notFound"),
-            "class Main {",
-            "  public static void main() {}",
-            "}")
+            """
+            class Main {
+              public static void main() {}
+            }
+            """)
         .assertErrorsWithoutSourcePosition(
             "No public static method matched the entry point string"
                 + " 'wasm.entrypoint.Main#notFound'.");
@@ -71,9 +79,11 @@ public final class J2wasmTranspilerTest extends TestCase {
     assertTranspileFailsWithEntryPoints(
             "wasm.entrypoint.Main",
             ImmutableList.of("wasm.entrypoint.Main#not.*", "wasm.entrypoint.Main#alsoNot"),
-            "class Main {",
-            "  public static void main() {}",
-            "}")
+            """
+            class Main {
+              public static void main() {}
+            }
+            """)
         .assertErrorsWithoutSourcePosition(
             "No public static method matched the entry point string 'wasm.entrypoint.Main#not.*'.",
             "No public static method matched the entry point string"
@@ -84,10 +94,12 @@ public final class J2wasmTranspilerTest extends TestCase {
     assertTranspileFailsWithEntryPoints(
             "wasm.entrypoint.Main",
             ImmutableList.of("wasm.entrypoint.Main#main"),
-            "class Main {",
-            "  public static void main() {}",
-            "  public static void main(int arg) {}",
-            "}")
+            """
+            class Main {
+              public static void main() {}
+              public static void main(int arg) {}
+            }
+            """)
         .assertErrorsWithoutSourcePosition(
             "More than one method are exported with the same name 'main'.");
   }
@@ -96,10 +108,12 @@ public final class J2wasmTranspilerTest extends TestCase {
     assertTranspileFailsWithEntryPoints(
             "wasm.entrypoint.Main",
             ImmutableList.of("wasm.entrypoint.Main#m.*"),
-            "class Main {",
-            "  public static void main() {}",
-            "  public static void main(int arg) {}",
-            "}")
+            """
+            class Main {
+              public static void main() {}
+              public static void main(int arg) {}
+            }
+            """)
         .assertErrorsWithoutSourcePosition(
             "More than one method are exported with the same name 'main'.");
   }
@@ -108,24 +122,26 @@ public final class J2wasmTranspilerTest extends TestCase {
     assertTranspileFailsWithEntryPoints(
             "wasm.entrypoint.Main",
             ImmutableList.of("wasm\\.entrypoint.Main#m.*"),
-            "class Main {",
-            "}")
+            """
+            class Main {
+            }
+            """)
         .assertErrorsWithoutSourcePosition(
             "Invalid entry point syntax in 'wasm\\.entrypoint.Main#m.*'.");
   }
 
   @CanIgnoreReturnValue
-  private TranspileResult assertTranspileSucceeds(String compilationUnitName, String... code) {
-    return newTesterWithDefaultsWasm()
+  private TranspileResult assertTranspileSucceeds(String compilationUnitName, String code) {
+    return newTesterWithWasmDefaults()
         .addCompilationUnit(compilationUnitName, code)
         .assertTranspileSucceeds();
   }
 
   @CanIgnoreReturnValue
   private TranspileResult assertTranspileSucceedsWithEntryPoints(
-      String compilationUnitName, List<String> entryPoints, String... code) {
+      String compilationUnitName, List<String> entryPoints, String code) {
     TranspilerTester tester =
-        newTesterWithDefaultsWasm().addCompilationUnit(compilationUnitName, code);
+        newTesterWithWasmDefaults().addCompilationUnit(compilationUnitName, code);
     for (String entryPoint : entryPoints) {
       tester.addArgs("-generateWasmExport", entryPoint);
     }
@@ -133,9 +149,9 @@ public final class J2wasmTranspilerTest extends TestCase {
   }
 
   private TranspileResult assertTranspileFailsWithEntryPoints(
-      String compilationUnitName, List<String> entryPoints, String... code) {
+      String compilationUnitName, List<String> entryPoints, String code) {
     TranspilerTester tester =
-        newTesterWithDefaultsWasm().addCompilationUnit(compilationUnitName, code);
+        newTesterWithWasmDefaults().addCompilationUnit(compilationUnitName, code);
     for (String entryPoint : entryPoints) {
       tester.addArgs("-generateWasmExport", entryPoint);
     }

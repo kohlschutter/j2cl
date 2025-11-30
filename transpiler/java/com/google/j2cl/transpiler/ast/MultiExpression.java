@@ -18,6 +18,7 @@ package com.google.j2cl.transpiler.ast;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.collect.Iterables;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.j2cl.common.visitor.Processor;
 import com.google.j2cl.common.visitor.Visitable;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Represents multiple ordered expressions as a single compound expression.
@@ -45,17 +47,17 @@ public class MultiExpression extends Expression {
 
   @Override
   public TypeDescriptor getTypeDescriptor() {
-    return Iterables.getLast(expressions).getTypeDescriptor();
+    return expressions.getLast().getTypeDescriptor();
   }
 
   @Override
   public TypeDescriptor getDeclaredTypeDescriptor() {
-    return Iterables.getLast(expressions).getDeclaredTypeDescriptor();
+    return expressions.getLast().getDeclaredTypeDescriptor();
   }
 
   @Override
   public boolean isLValue() {
-    return Iterables.getLast(expressions).isLValue();
+    return expressions.getLast().isLValue();
   }
 
   @Override
@@ -74,9 +76,28 @@ public class MultiExpression extends Expression {
   }
 
   @Override
+  @Nullable
+  public Literal getConstantValue() {
+    if (!isCompileTimeConstant()) {
+      return null;
+    }
+    return expressions.getLast().getConstantValue();
+  }
+
+  @Override
   public Expression.Precedence getPrecedence() {
     // MutliExpressions are emitted always with a parenthesis, so no need for extra.
     return Precedence.HIGHEST;
+  }
+
+  @Override
+  public boolean isAlwaysNull() {
+    return expressions.getLast().isAlwaysNull();
+  }
+
+  @Override
+  public boolean canBeNull() {
+    return expressions.getLast().canBeNull();
   }
 
   @Override
@@ -97,20 +118,24 @@ public class MultiExpression extends Expression {
   public static class Builder {
     private List<Expression> expressions = new ArrayList<>();
 
+    @CanIgnoreReturnValue
     public Builder setExpressions(Expression... expressions) {
       return setExpressions(Arrays.asList(expressions));
     }
 
+    @CanIgnoreReturnValue
     public Builder setExpressions(Collection<Expression> expressions) {
       this.expressions = new ArrayList<>(expressions);
       return this;
     }
 
+    @CanIgnoreReturnValue
     public Builder addExpressions(Expression... expressions) {
       Collections.addAll(this.expressions, expressions);
       return this;
     }
 
+    @CanIgnoreReturnValue
     public Builder addExpressions(Collection<Expression> expressions) {
       this.expressions.addAll(expressions);
       return this;

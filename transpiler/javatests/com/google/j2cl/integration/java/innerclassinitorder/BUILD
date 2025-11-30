@@ -8,8 +8,4 @@ package(
     licenses = ["notice"],
 )
 
-integration_test(
-    name = "innerclassinitorder",
-    srcs = glob(["*.java"]),
-    enable_kt = False,
-)
+integration_test(srcs = glob(["*.java"]))

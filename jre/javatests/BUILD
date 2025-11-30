@@ -1,11 +1,11 @@
 # Description:
 #   j2cl/jre: JRE subset for transpilation.
 
-load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_binary")
-load("//javascript/tools/jscompiler/builddefs:flags.bzl", "VERBOSE_WARNING_FLAGS_STRICT", "WHITESPACE_ONLY_FLAGS")
-load("//third_party/bazel_rules/rules_closure/closure:defs.bzl", "closure_js_binary")
-load("//build_defs:rules.bzl", "j2cl_library", "j2cl_test", "j2kt_native_library")
-load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@rules_closure//closure:defs.bzl", "closure_js_binary")
+load("//build_defs:rules.bzl", "j2cl_library", "j2kt_native_library")
+load("@rules_closure//closure:defs.bzl", "closure_js_binary")
+load("@rules_java//java:defs.bzl", "java_library")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load(":j2cl_multi_test.bzl", "j2cl_multi_test")
 
 package(
@@ -23,25 +23,47 @@ SRCS = glob(
     exclude = JS_ONLY_SRCS,
 )
 
-j2cl_library(
+ERROR_PRONE_SUPPRESSIONS = [
+    # keep sorted
+    "-Xep:CheckReturnValue:OFF",
+    "-Xep:ComparableType:OFF",
+    "-Xep:DoNotCall:OFF",
+    "-Xep:EqualsIncompatibleType:OFF",
+    "-Xep:IdentityBinaryExpression:OFF",
+    "-Xep:MixedArrayDimensions:OFF",  # See go/lsc-mixedarraydimensions
+    "-Xep:ReturnValueIgnored:OFF",
+    "-Xep:SelfAssertion:OFF",
+    "-Xep:SelfComparison:OFF",
+    "-Xep:SelfEquality:OFF",
+    "-Xep:SelfEquals:OFF",
+    "-Xep:StringJoin:OFF",
+    "-Xlint:-removal",
+]
+
+java_library(
     name = "emul_tests_lib",
     testonly = 1,
     srcs = SRCS,
-    generate_build_test = False,
-    javacopts = [
-        "-Xep:DoNotCall:OFF",
-        "-Xep:CheckReturnValue:OFF",
-        "-Xep:EqualsIncompatibleType:OFF",
-        "-Xep:ReturnValueIgnored:OFF",
-        "-Xep:IdentityBinaryExpression:OFF",
-        "-Xep:SelfComparison:OFF",
-        "-Xep:SelfEquality:OFF",
-        "-Xep:SelfEquals:OFF",
-        "-XepOpt:CheckReturnValue:CheckAllConstructors=false",  # b/226969262
+    javacopts = ERROR_PRONE_SUPPRESSIONS,
+    deps = [
+        "//jre/java:javaemul_internal_annotations",
+        "//third_party:jsinterop-annotations",
+        "//third_party:jspecify_annotations",
+        "//third_party:junit",
     ],
+)
+
+j2cl_library(
+    name = "emul_tests_lib-j2cl",
+    testonly = 1,
+    srcs = SRCS,
+    # Safe here as this is for tests only and there are no downstream users.
+    experimental_enable_jspecify_support_do_not_enable_without_jspecify_static_checking_or_you_might_cause_an_outage = True,
+    javacopts = ERROR_PRONE_SUPPRESSIONS,
     deps = [
         "//jre/java:javaemul_internal_annotations-j2cl",
-        "//third_party:gwt-jsinterop-annotations-j2cl",
+        "//third_party:jsinterop-annotations-j2cl",
+        "//third_party:jspecify_annotations-j2cl",
         "//third_party:junit-j2cl",
     ],
 )
@@ -49,187 +71,33 @@ j2cl_library(
 j2kt_native_library(
     name = "emul_tests_lib-j2kt-native",
     testonly = 1,
-    srcs = [
-        "com/google/j2cl/jre/BigDecimalSuite.java",
-        "com/google/j2cl/jre/BigIntegerSuite.java",
-        "com/google/j2cl/jre/DateTimeSuite.java",
-        "com/google/j2cl/jre/EmulSuite.java",
-        "com/google/j2cl/jre/java/util/ComparatorTest.java",
-        "com/google/j2cl/jre/java/util/DateTest.java",
-        "com/google/j2cl/jre/java/util/EmulTestBase.java",
-        "com/google/j2cl/jre/java/util/ObjectsTest.java",
-        "com/google/j2cl/jre/java/util/RandomTest.java",
-        "com/google/j2cl/jre/java/util/TestComparator.java",
-        "com/google/j2cl/jre/java/util/TestObject.java",
-        "com/google/j2cl/jre/testing/J2ktIncompatible.java",
-        "com/google/j2cl/jre/testing/TestUtils.java",
-    ] + glob([
-        "com/google/j2cl/jre/java/io/*.java",
-        "com/google/j2cl/jre/java/math/*.java",
-        "com/google/j2cl/jre/java/nio/charset/*.java",
-        "com/google/j2cl/jre/java/security/*.java",
-        "com/google/j2cl/jre/java/sql/*.java",
-    ]),
+    srcs = glob(
+        ["**/*.java"],
+        exclude = JS_ONLY_SRCS + [
+            "com/google/j2cl/jre/AllTests.java",
+            "com/google/j2cl/jre/EmulJava9Suite.java",
+            "com/google/j2cl/jre/java9/**/*.java",
+        ],
+    ),
+    javacopts = ERROR_PRONE_SUPPRESSIONS,
     deps = [
         "//jre/java:javaemul_internal_annotations-j2kt-native",
+        "//third_party:jsinterop-annotations-j2kt-native",
+        "//third_party:jspecify_annotations-j2kt-native",
         "//third_party:junit-j2kt-native",
     ],
 )
 
-# This runs all test for emul in JVM, this way we can make sure that our tests
-# assert the right behaviour for the JRE emulation.
-java_test(
-    name = "AllEmulTest_Java",
-    size = "small",
-    srcs = SRCS,
-    javacopts = [
-        "-Xep:DoNotCall:OFF",
-        "-Xep:IdentityBinaryExpression:OFF",
-        "-Xep:EqualsIncompatibleType:OFF",
-        "-Xep:SelfComparison:OFF",
-        "-Xep:SelfEquality:OFF",
-        "-Xep:SelfEquals:OFF",
-        "-Xep:ReturnValueIgnored:OFF",
-        "-XepOpt:CheckReturnValue:CheckAllConstructors=false",  # b/226969262
-    ],
-    test_class = "com.google.j2cl.jre.AllTests",
-    deps = [
-        "//jre/java:javaemul_internal_annotations",
-        "//third_party:gwt-jsinterop-annotations",
-        "//third_party:junit",
-    ],
-)
-
+# A test entry point for running JRE tests in open source.
+# To run the test for all platforms:
+#   bazel test //jre/javatests:OpenSourceJre
+# To debug a failing web test target, bazel run <target>_debug. e.g.
+#   bazel run //jre/javatests:OpenSourceJre-j2cl_debug
 j2cl_multi_test(
-    name = "BigDecimal",
-    enable_kt_native = True,
-    shard_count = 5,
-    test_class = "com.google.j2cl.jre.BigDecimalSuite",
+    name = "OpenSourceJre",
+    # Please change the tested class here.
+    test_class = "com.google.j2cl.jre.java.lang.StringTest",
     deps = [":emul_tests_lib"],
-)
-
-j2cl_multi_test(
-    name = "BigInteger",
-    enable_kt_native = True,
-    shard_count = 8,
-    test_class = "com.google.j2cl.jre.BigIntegerSuite",
-    deps = [":emul_tests_lib"],
-)
-
-j2cl_multi_test(
-    name = "Collections",
-    shard_count = 16,
-    test_class = "com.google.j2cl.jre.CollectionsSuite",
-    deps = [":emul_tests_lib"],
-)
-
-j2cl_multi_test(
-    name = "Concurrent",
-    shard_count = 5,
-    test_class = "com.google.j2cl.jre.ConcurrentSuite",
-    deps = [":emul_tests_lib"],
-)
-
-j2cl_multi_test(
-    name = "Emul",
-    enable_kt_native = True,
-    shard_count = 8,
-    test_class = "com.google.j2cl.jre.EmulSuite",
-    deps = [":emul_tests_lib"],
-)
-
-j2cl_multi_test(
-    name = "EmulJava8",
-    shard_count = 8,
-    test_class = "com.google.j2cl.jre.EmulJava8Suite",
-    deps = [":emul_tests_lib"],
-)
-
-j2cl_multi_test(
-    name = "Lang",
-    shard_count = 8,
-    test_class = "com.google.j2cl.jre.LangSuite",
-    deps = [":emul_tests_lib"],
-)
-
-j2cl_multi_test(
-    name = "DateTimeSuite",
-    enable_kt_native = True,
-    test_class = "com.google.j2cl.jre.DateTimeSuite",
-    deps = [":emul_tests_lib"],
-)
-
-j2cl_library(
-    name = "js_tests_lib",
-    testonly = 1,
-    srcs = JS_ONLY_SRCS,
-    generate_build_test = False,
-    deps = [
-        "//third_party:gwt-jsinterop-annotations-j2cl",
-        "//third_party:junit-j2cl",
-    ],
-)
-
-j2cl_multi_test(
-    name = "JsSuite",
-    enable_wasm = False,
-    test_class = "com.google.j2cl.jre.JsSuite",
-    deps = [":js_tests_lib"],
-)
-
-# A smoke check that verifies es5 transpiled test works
-j2cl_test(
-    name = "ConcurrentSuite_es5",
-    browsers = ["//testing/web/browsers:chrome-linux"],
-    generate_build_test = False,
-    jvm_flags = ["-Djsrunner.net.transpileMode=always"],
-    shard_count = 5,
-    test_class = "com.google.j2cl.jre.ConcurrentSuite",
-    runtime_deps = [
-        ":emul_tests_lib",
-        "//third_party/java/junit:junit-j2cl",
-    ],
-)
-
-build_test(
-    name = "conformance_test",
-    tags = ["j2cl"],
-    targets = [
-        ":conformance_binary",
-        ":conformance_binary_head",
-        ":conformance_binary_whitespace_only",
-    ],
-)
-
-COMFORMANCE_CHECK_FLAGS = VERBOSE_WARNING_FLAGS_STRICT + [
-    "--conformance_config=conformance_proto.txt",
-    "--jscomp_error=conformanceViolations",
-    "--jscomp_error=unusedLocalVariables",
-    # TODO(michaelthomas): Enable once all errors are fixed. Yes, seriously.
-    # "--jscomp_error=reportUnknownTypes",
-]
-
-closure_js_binary(
-    name = "conformance_binary",
-    defs = COMFORMANCE_CHECK_FLAGS,
-    extra_inputs = ["conformance_proto.txt"],
-    deps = ["//:jre"],
-)
-
-closure_js_binary(
-    name = "conformance_binary_head",
-    compiler = "//javascript/tools/jscompiler:head",
-    defs = COMFORMANCE_CHECK_FLAGS,
-    extra_inputs = ["conformance_proto.txt"],
-    deps = ["//:jre"],
-)
-
-closure_js_binary(
-    name = "conformance_binary_whitespace_only",
-    compiler = "//javascript/tools/jscompiler:head",
-    defs = COMFORMANCE_CHECK_FLAGS + WHITESPACE_ONLY_FLAGS,
-    extra_inputs = ["conformance_proto.txt"],
-    deps = ["//:jre"],
 )
 
 closure_js_binary(
@@ -242,16 +110,29 @@ closure_js_binary(
     deps = ["//:jre"],
 )
 
-genrule(
-    name = "file_empty_check",
-    outs = ["file_empty_check.sh"],
-    cmd = "echo '[ ! -s $$1 ]' > $@",
+closure_js_binary(
+    name = "conformance_binary_whitespace_only_opensource",
+    compilation_level = "WHITESPACE_ONLY",
+    dependency_mode = "SORT_ONLY",
+    suppress_on_all_sources_in_transitive_closure = [
+        "analyzerChecks",
+        "deprecated",
+    ],
+    deps = ["//:jre"],
 )
 
 sh_test(
-    name = "opensource_output_empty_test",
+    name = "opensource_stderr_empty_test",
     srcs = ["file_empty_check.sh"],
     args = ["$(location conformance_binary_opensource-stderr.txt)"],
     data = ["conformance_binary_opensource-stderr.txt"],
+    tags = ["j2cl"],
+)
+
+sh_test(
+    name = "whitespace_only_opensource_stderr_empty_test",
+    srcs = ["file_empty_check.sh"],
+    args = ["$(location conformance_binary_whitespace_only_opensource-stderr.txt)"],
+    data = ["conformance_binary_whitespace_only_opensource-stderr.txt"],
     tags = ["j2cl"],
 )

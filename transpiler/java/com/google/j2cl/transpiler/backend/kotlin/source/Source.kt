@@ -15,6 +15,8 @@
  */
 package com.google.j2cl.transpiler.backend.kotlin.source
 
+import com.google.j2cl.common.SourcePosition
+import com.google.j2cl.transpiler.ast.MemberDescriptor
 import com.google.j2cl.transpiler.backend.common.SourceBuilder
 
 /** Composable piece of source code. */
@@ -40,7 +42,7 @@ private constructor(
    * source.
    */
   operator fun plus(source: Source) =
-    emptyUnless(isNotEmpty() || source.isNotEmpty()) {
+    emptyIf(isEmpty() && source.isEmpty()) {
       Source { sourceBuilder ->
         sourceBuilder.append(this)
         sourceBuilder.append(source)
@@ -56,6 +58,21 @@ private constructor(
    */
   inline fun ifNotEmpty(fn: (Source) -> Source) = if (isEmpty()) this else fn(this)
 
+  /** Returns source with additional source position information. */
+  fun withMapping(sourcePosition: SourcePosition): Source = withMapping { emitter ->
+    emitWithMapping(sourcePosition, emitter)
+  }
+
+  /** Returns source with additional source position information for the given member. */
+  fun withMapping(memberDescriptor: MemberDescriptor): Source = withMapping { emmiter ->
+    emitWithMemberMapping(memberDescriptor, emmiter)
+  }
+
+  private fun withMapping(emitFn: SourceBuilder.(() -> Unit) -> Unit): Source =
+    nonEmptyAppendFn?.let { appendFn ->
+      Source { sourceBuilder -> emitFn(sourceBuilder) { appendFn(sourceBuilder) } }
+    } ?: Source(null)
+
   companion object {
     val EMPTY = Source(null)
     val COMMA = source(",")
@@ -64,6 +81,7 @@ private constructor(
     val NEW_LINE = source("\n")
     val SEMICOLON = source(";")
     val SPACE = source(" ")
+    val STAR = source("*")
     val DOUBLE_QUOTE = source("\"")
     val LEFT_PARENTHESIS = source("(")
     val RIGHT_PARENTHESIS = source(")")
@@ -73,10 +91,18 @@ private constructor(
     val RIGHT_CURLY_BRACKET = source("}")
     val LEFT_SQUARE_BRACKET = source("[")
     val RIGHT_SQUARE_BRACKET = source("]")
+    val NUMBER_SIGN = source("#")
+    val HYPHEN_MINUS = source("-")
 
     /** Returns a source containing the given string. */
     fun source(string: String) =
-      emptyUnless(string.isNotEmpty()) { Source { sourceBuilder -> sourceBuilder.append(string) } }
+      emptyIf(string.isEmpty()) { Source { sourceBuilder -> sourceBuilder.append(string) } }
+
+    /**
+     * Returns empty source if the condition is satisfied, otherwise source returned from the given
+     * function.
+     */
+    inline fun emptyIf(condition: Boolean, fn: () -> Source) = if (condition) EMPTY else fn()
 
     /**
      * Returns source returned from the given function if the condition is satisfied, otherwise
@@ -86,7 +112,7 @@ private constructor(
 
     /** Join given sources using given separator, skipping empty ones. */
     fun join(sources: Iterable<Source>, separator: String = "") =
-      emptyUnless(sources.any(Source::isNotEmpty)) {
+      emptyIf(sources.all(Source::isEmpty)) {
         Source { sourceBuilder ->
           var first = true
           for (source in sources) {
@@ -127,7 +153,7 @@ private constructor(
       spaceSeparated(LEFT_CURLY_BRACKET, source, RIGHT_CURLY_BRACKET)
 
     fun indented(source: Source) =
-      emptyUnless(source.isNotEmpty()) {
+      emptyIf(source.isEmpty()) {
         Source { sourceBuilder ->
           sourceBuilder.indent()
           sourceBuilder.append(source)
@@ -177,11 +203,11 @@ private constructor(
 
     fun infix(lhs: Source, operator: Source, rhs: Source) = spaceSeparated(lhs, operator, rhs)
 
-    fun block(body: Source) =
-      if (body.isEmpty()) {
-        inCurlyBrackets(EMPTY)
-      } else {
-        inCurlyBrackets(inNewLine(body))
+    fun block(body: Source, skipEmptyBlock: Boolean = false) =
+      when {
+        body.isNotEmpty() -> inCurlyBrackets(inNewLine(body))
+        !skipEmptyBlock -> inCurlyBrackets(EMPTY)
+        else -> EMPTY
       }
 
     fun block(firstLine: Source, body: Source) =

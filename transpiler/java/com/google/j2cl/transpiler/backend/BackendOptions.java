@@ -38,9 +38,9 @@ public interface BackendOptions {
 
   ImmutableList<EntryPointPattern> getWasmEntryPointPatterns();
 
-  boolean getWasmRemoveAssertStatement();
+  boolean getEnableWasmCustomDescriptors();
 
-  boolean getWasmEnableNonNativeJsEnum();
+  boolean getEnableWasmCustomDescriptorsJsInterop();
 
   boolean getOptimizeAutoValue();
 
@@ -48,7 +48,12 @@ public interface BackendOptions {
 
   boolean getEmitReadableSourceMap();
 
+  @Nullable
+  String getSourceMappingPathPrefix();
+
   boolean getGenerateKytheIndexingMetadata();
 
   boolean isNullMarkedSupported();
+
+  String getObjCNamePrefix();
 }

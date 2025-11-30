@@ -70,8 +70,8 @@ public class NormalizeForStatements extends NormalizationPass {
           @Override
           public Node rewriteLabeledStatement(LabeledStatement labeledStatement) {
             Statement statement = labeledStatement.getStatement();
-            return statement instanceof ForStatement
-                ? rewriteLabeledForStatement(labeledStatement.getLabel(), (ForStatement) statement)
+            return statement instanceof ForStatement forStatement
+                ? rewriteLabeledForStatement(labeledStatement.getLabel(), forStatement)
                 : labeledStatement;
           }
         });
@@ -140,9 +140,8 @@ public class NormalizeForStatements extends NormalizationPass {
             new AbstractRewriter() {
               @Override
               public Node rewriteContinueStatement(ContinueStatement continueStatement) {
-                return continueStatement.getLabelReference().getTarget() == continueLabel
-                    ? BreakStatement.newBuilder()
-                        .setSourcePosition(continueStatement.getSourcePosition())
+                return continueStatement.targetsLabel(continueLabel)
+                    ? BreakStatement.Builder.from(continueStatement)
                         .setLabelReference(breakLabel.createReference())
                         .build()
                     : continueStatement;

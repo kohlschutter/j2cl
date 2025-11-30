@@ -15,14 +15,24 @@
  */
 package com.google.j2cl.transpiler.backend.kotlin.ast
 
-import com.google.j2cl.transpiler.backend.kotlin.common.minOrNull
-
 /** Kotlin visibility. */
 enum class Visibility {
   PUBLIC,
   PROTECTED,
   INTERNAL,
-  PRIVATE
+  PRIVATE;
+
+  val isPublic
+    get() = this === PUBLIC
+
+  val isProtected
+    get() = this === PROTECTED
+
+  val isInternal
+    get() = this === INTERNAL
+
+  val isPrivate
+    get() = this === PRIVATE
 }
 
 /** Returns visibility with the widest scope of [visibilities] or null if none were given. */

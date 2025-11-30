@@ -16,64 +16,71 @@
 package com.google.j2cl.transpiler.backend.kotlin
 
 import com.google.j2cl.transpiler.ast.ArrayTypeDescriptor
-import com.google.j2cl.transpiler.ast.AstUtils
 import com.google.j2cl.transpiler.ast.CompilationUnit
 import com.google.j2cl.transpiler.ast.DeclaredTypeDescriptor
-import com.google.j2cl.transpiler.ast.Field
 import com.google.j2cl.transpiler.ast.FieldDescriptor
+import com.google.j2cl.transpiler.ast.KtInfo.computePropertyName
 import com.google.j2cl.transpiler.ast.MemberDescriptor
 import com.google.j2cl.transpiler.ast.PrimitiveTypeDescriptor
 import com.google.j2cl.transpiler.ast.PrimitiveTypes
 import com.google.j2cl.transpiler.ast.Type
 import com.google.j2cl.transpiler.ast.TypeDeclaration
 import com.google.j2cl.transpiler.ast.TypeDescriptor
-import com.google.j2cl.transpiler.ast.Visibility
-import com.google.j2cl.transpiler.backend.kotlin.ast.Member
+import com.google.j2cl.transpiler.backend.kotlin.common.letIf
 
-/** A set of local names used in this type. */
-internal val Type.localNamesSet: Set<String>
-  get() =
-    ktMembers
-      .mapNotNull { member ->
-        when (member) {
-          is Member.WithCompanionObject -> null
-          is Member.WithJavaMember -> (member.javaMember as? Field)?.descriptor?.ktName
-          is Member.WithType -> member.type.declaration.ktSimpleName
-        }
-      }
-      .toSet()
+internal val MemberDescriptor.ktName: String
+  get() = explicitKtName ?: name!!.letIf(isKtProperty) { computePropertyName(it) }
+
+/** Map entry from simple name to qualified name. */
+internal val TypeDeclaration.nameMapEntry: Pair<String, String>
+  get() = ktSimpleName to ktQualifiedName
+
+/** A map of member names used in this type. */
+internal val TypeDeclaration.memberTypeNameMap: Map<String, String>
+  get() = memberTypeDeclarations.mapNotNull { it.nameMapEntry }.let { mapOf(*it.toTypedArray()) }
+
+/** A map of local member names used in this type. */
+internal val TypeDeclaration.localTypeNameMap: Map<String, String>
+  get() = superTypesMemberNameMap.plus(memberTypeNameMap).plus(nameMapEntry)
+
+/** A map of local names from super type members. */
+internal val TypeDeclaration.superTypesMemberNameMap: Map<String, String>
+  get() = superTypeDeclaration?.run { superTypesMemberNameMap.plus(memberTypeNameMap) } ?: mapOf()
+
+/** A map of local names used in this type. */
+internal val Type.localTypeNameMap: Map<String, String>
+  get() = declaration.localTypeNameMap
+
+/** A set of field names used in this type. */
+internal val Type.localFieldNames: Set<String>
+  get() = fields.map { it.descriptor.ktName }.toSet()
 
 /** A set of top-level qualified name strings in this compilation unit. */
-internal val CompilationUnit.topLevelQualifiedNamesSet: Set<String>
-  get() = types.map { it.declaration }.filter { !it.isKtNative }.map { it.ktQualifiedName }.toSet()
-
-/** Kotlin mangled name for this member descriptor. */
-internal val MemberDescriptor.ktMangledName: String
-  get() = if (AstUtils.isJsEnumCustomValueField(this)) name!! else ktName + ktNameSuffix
-
-/** Kotlin name suffix for this member descriptor. */
-private val MemberDescriptor.ktNameSuffix: String
+internal val CompilationUnit.localTypeNames: Map<String, String>
   get() =
-    when (visibility!!) {
-      Visibility.PUBLIC -> ktPropertyNameSuffix
-      Visibility.PROTECTED -> ktPropertyNameSuffix
-      Visibility.PACKAGE_PRIVATE ->
-        "_pp_${enclosingTypeDescriptor.typeDeclaration.packageName?.replace('.', '_') ?: ""}"
-      Visibility.PRIVATE ->
-        "_private_${enclosingTypeDescriptor.typeDeclaration.privateMemberSuffix}"
-    }
+    types
+      .map { it.declaration }
+      .filter { !it.isKtNative }
+      .map { it.ktSimpleName to it.ktQualifiedName }
+      .let { mapOf(*it.toTypedArray()) }
 
 /** Kotlin property name suffix for this member descriptor. */
-private val MemberDescriptor.ktPropertyNameSuffix: String
+internal val MemberDescriptor.ktPropertyNameSuffix: String
   get() = if (this is FieldDescriptor && hasConflictingKtProperty) "_ktPropertyConflict" else ""
+
+internal val MemberDescriptor.ktPackageProtectedNameSuffix: String
+  get() = enclosingTypeDescriptor.typeDeclaration.packageName?.replace('.', '_') ?: ""
+
+internal val MemberDescriptor.ktPrivateNameSuffix: String
+  get() = enclosingTypeDescriptor.typeDeclaration.privateMemberSuffix
 
 /** Whether this field descriptor has property with conflicting name in Kotlin. */
 private val FieldDescriptor.hasConflictingKtProperty: Boolean
   get() = enclosingTypeDescriptor.polymorphicMethods.any { it.isKtProperty && it.ktName == ktName }
 
 /** A suffix for private members in this type declaration. */
-private val TypeDeclaration.privateMemberSuffix: String
-  get() = if (isInterface) mangledName else "$classHierarchyDepth"
+internal val TypeDeclaration.privateMemberSuffix: String
+  get() = if (isInterface) mangledName else "$typeHierarchyDepth"
 
 /** Original qualified name of this type declaration. */
 private val TypeDeclaration.originalQualifiedName: String

@@ -15,11 +15,11 @@
  */
 package com.google.j2cl.jre.testing;
 
+import static org.junit.Assert.assertTrue;
+
 import javaemul.internal.annotations.Wasm;
 
-/**
- * Utility functions needed by various tests.
- */
+/** Utility functions needed by various tests. */
 public class TestUtils {
 
   public static int getJdkVersion() {
@@ -41,7 +41,7 @@ public class TestUtils {
 
   private static int getMajorVersion(String versionString) {
     String[] split = versionString.split("\\.");
-    assert split.length >= 1;
+    assertTrue(split.length >= 1);
     return versionString.startsWith("1.")
         ? /* Java <9 format, e.g. 1.7.0 */ Integer.parseInt(split[1])
         : /* Java 9+ format, e.g. 9.1.0 */ Integer.parseInt(split[0]);

@@ -1,27 +1,14 @@
 """This module contains j2cl_js_provider helpers."""
 
 load(
-    "@io_bazel_rules_closure//closure:defs.bzl",
+    "@rules_closure//closure:defs.bzl",
     "CLOSURE_JS_TOOLCHAIN_ATTRS",
+    "ClosureJsLibraryInfo",
     "closure_js_binary",
     "closure_js_test",
     "create_closure_js_library",
     "web_library",
 )
-
-def create_js_lib_struct(j2cl_info, extra_providers = []):
-    return struct(
-        providers = [j2cl_info] + extra_providers,
-        closure_js_library = j2cl_info._private_.js_info.closure_js_library,
-        exports = j2cl_info._private_.js_info.exports,
-    )
-
-def create_wasm_js_lib_struct(js_info, extra_providers = []):
-    return struct(
-        providers = extra_providers,
-        closure_js_library = js_info.closure_js_library,
-        exports = js_info.exports,
-    )
 
 def j2cl_js_provider(ctx, srcs = [], deps = [], exports = [], artifact_suffix = ""):
     """ Creates a js provider from provided sources, deps and exports. """
@@ -29,12 +16,13 @@ def j2cl_js_provider(ctx, srcs = [], deps = [], exports = [], artifact_suffix = 
     default_j2cl_suppresses = [
         "analyzerChecks",
         "underscore",
+        "strictDependencies",
         "superfluousSuppress",
         "JSC_UNKNOWN_EXPR_TYPE",
     ]
     suppresses = default_j2cl_suppresses + getattr(ctx.attr, "js_suppress", [])
 
-    js = create_closure_js_library(
+    return create_closure_js_library(
         ctx,
         srcs,
         deps,
@@ -42,11 +30,6 @@ def j2cl_js_provider(ctx, srcs = [], deps = [], exports = [], artifact_suffix = 
         suppresses,
         convention = "GOOGLE",
         artifact_suffix = artifact_suffix,
-    )
-
-    return struct(
-        closure_js_library = js.closure_js_library,
-        exports = js.exports,
     )
 
 def js_devserver(
@@ -82,15 +65,13 @@ def js_devserver(
         ],
     )
 
-js_binary = closure_js_binary
+JsInfo = ClosureJsLibraryInfo
 
 J2CL_JS_TOOLCHAIN_ATTRS = CLOSURE_JS_TOOLCHAIN_ATTRS
 
 J2CL_JS_ATTRS = {
     "js_suppress": attr.string_list(),
 }
-
-JS_PROVIDER_NAME = "closure_js_library"
 
 J2CL_OPTIMIZED_DEFS = [
     "--define=goog.DEBUG=false",
@@ -104,11 +85,12 @@ def j2cl_web_test(
         name,
         src,
         deps,
-        browsers,
+        compile,
         data,
         test_class,
         tags,
         default_browser = None,
+        browsers = [],
         **args):  # @unused
     # TODO(b/259118921): support multiple testsuites.
     fail_multiple_testsuites = """
@@ -132,9 +114,10 @@ def j2cl_web_test(
             testsuite_file_name,
         ],
         cmd = "\n".join([
-            "unzip -q -o $(locations %s) *.js -d zip_out/" % src,
-            "cd zip_out/",
-            "mkdir -p ../$(RULEDIR)",
+            "TMP=$$(mktemp -d)",
+            "WD=$$(pwd)",
+            "unzip -q -o $(locations %s) *.js -d $$TMP" % src,
+            "cd $$TMP",
             "if [ $$(find . -name *.js | wc -l) -ne 1 ]; then",
             "  echo \"%s\"" % fail_multiple_testsuites,
             "  exit 1",
@@ -144,7 +127,8 @@ def j2cl_web_test(
             "  echo \"%s\"" % fail_suiteclass,
             "  exit 1",
             "fi",
-            "mv \"$$testsuite\" ../$@;",
+            "mv \"$$testsuite\" $$WD/$@;",
+            "rm -rf $$TMP",
         ]),
         testonly = 1,
     )
@@ -152,10 +136,17 @@ def j2cl_web_test(
     if default_browser and not browsers:
         browsers = [default_browser]
 
+    # If no browsers are specified, force compilation of the test.
+    # No browser means Phantomjs and Phantomjs doesn't work in bundle mode.
+    # This is hacky but the least disrubtive way to start honoring the flag.
+    if not browsers:
+        compile = True
+
     closure_js_test(
         name = name,
         srcs = [":%s" % testsuite_file_name],
         deps = deps,
+        compilation_level = "ADVANCED" if compile else "BUNDLE",
         browsers = browsers,
         data = data,
         testonly = 1,

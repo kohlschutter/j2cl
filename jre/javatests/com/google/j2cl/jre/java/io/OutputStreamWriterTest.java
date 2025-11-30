@@ -60,7 +60,7 @@ public class OutputStreamWriterTest extends TestCase {
 
   public void testNullOutputStream() throws UnsupportedEncodingException {
     try {
-      new OutputStreamWriter(/* out = */ null, encodingUTF8Charset);
+      new OutputStreamWriter(/* out= */ null, encodingUTF8Charset);
       fail("should have thrown NullPointerException");
     } catch (NullPointerException expected) {
     }
@@ -150,5 +150,13 @@ public class OutputStreamWriterTest extends TestCase {
     writer.write(chars);
     writer.close();
     assertTrue(Arrays.equals(new byte[] {'?', '?'}, baos.toByteArray()));
+  }
+
+  public void testWriteHighAndLowSurrogateSeparately() throws IOException {
+    char[] chars = {'\ud83c', '\udf09'};
+    writer.write(chars, 0, 1);
+    writer.write(chars, 1, 1);
+    writer.close();
+    assertEquals("\ud83c\udf09", new String(baos.toByteArray(), encodingUTF8Charset));
   }
 }

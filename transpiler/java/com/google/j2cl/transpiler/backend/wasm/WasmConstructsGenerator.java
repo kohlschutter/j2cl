@@ -17,9 +17,11 @@ package com.google.j2cl.transpiler.backend.wasm;
 
 import static com.google.common.base.Predicates.not;
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.j2cl.transpiler.backend.wasm.WasmGenerationEnvironment.getWasmInfo;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.j2cl.common.StringUtils;
 import com.google.j2cl.transpiler.ast.AbstractVisitor;
@@ -44,21 +46,27 @@ import com.google.j2cl.transpiler.backend.common.SourceBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 /** Generates all the syntactic .wat constructs for wasm. */
 public class WasmConstructsGenerator {
 
   private final SourceBuilder builder;
-  private WasmGenerationEnvironment environment;
+  private final WasmGenerationEnvironment environment;
+  private final String sourceMappingPathPrefix;
 
-  public WasmConstructsGenerator(WasmGenerationEnvironment environment, SourceBuilder builder) {
+  public WasmConstructsGenerator(
+      WasmGenerationEnvironment environment,
+      SourceBuilder builder,
+      String sourceMappingPathPrefix) {
     this.environment = environment;
     this.builder = builder;
+    this.sourceMappingPathPrefix = sourceMappingPathPrefix;
   }
 
   void emitDataSegments(Library library) {
@@ -115,16 +123,26 @@ public class WasmConstructsGenerator {
     return sb.toString();
   }
 
-  /** Emits all wasm type definitions into a single rec group. */
-  void emitLibraryRecGroup(Library library, List<ArrayTypeDescriptor> usedNativeArrayTypes) {
+  /** Emits all wasm type definitions. */
+  void emitLibraryTypes(Library library, List<ArrayTypeDescriptor> usedWasmArrayTypes) {
+    builder.newLine();
+    // Emit primitive wasm arrays outside the rec group, since the i16 wasm array is used for
+    // string operations and binaryen expects a particular type of array. Having it in the rec
+    // group would mean that the i16 array used by string operations is not the same as the
+    // one in the rec group.
+    usedWasmArrayTypes.stream()
+        .filter(ArrayTypeDescriptor::isPrimitiveArray)
+        .forEach(this::emitWasmArrayType);
     builder.newLine();
     builder.append("(rec");
     builder.indent();
 
     emitDynamicDispatchMethodTypes();
     emitItableSupportTypes();
-    emitNativeArrayTypes(usedNativeArrayTypes);
     emitForEachType(library, this::renderMonolithicTypeStructs, "type definition");
+    usedWasmArrayTypes.stream()
+        .filter(Predicates.not(ArrayTypeDescriptor::isPrimitiveArray))
+        .forEach(this::emitWasmArrayType);
 
     builder.unindent();
     builder.newLine();
@@ -133,19 +151,20 @@ public class WasmConstructsGenerator {
 
   private void emitItableSupportTypes() {
     builder.newLine();
-    // The itable is a struct that contains only interface vtables. Interfaces are assigned a slot
+    // The itable is a struct that contains only interface vtables. Interfaces are assigned an index
     // on this struct based on the classes that implement them.
-    builder.append("(type $itable (sub (struct ");
-    for (int slot = 0; slot < environment.getNumberOfInterfaceSlots(); slot++) {
+    builder.append("(type $itable (sub (struct");
+    builder.indent();
+    for (int index = 0; index < environment.getItableSize(); index++) {
       builder.newLine();
-      builder.append(
-          format("(field %s (ref null struct))", environment.getInterfaceSlotFieldName(slot)));
+      builder.append("(field (ref null struct))");
     }
+    builder.unindent();
     builder.newLine();
     builder.append(")))");
   }
 
-  void emitGlobals(Library library) {
+  public void emitGlobals(Library library) {
     emitStaticFieldGlobals(library);
   }
 
@@ -212,20 +231,14 @@ public class WasmConstructsGenerator {
     }
   }
 
-  void emitExceptionTag() {
+  public void emitExceptionTag() {
     // Declare a tag that will be used for Java exceptions. The tag has a single parameter that is
     // the Throwable object being thrown by the throw instruction.
     // The throw instruction will refer to this tag and will expect a single element in the stack
     // with the type $java.lang.Throwable.
     // TODO(b/277970998): Decide how to handle this hard coded import w.r.t. import generation.
     builder.newLine();
-    builder.append(
-        "(import \"imports\" \"j2wasm.ExceptionUtils.tag\" (tag $exception.event (param"
-            + " externref)))");
-    // Add an export that uses the tag to workarund binaryen assuming the tag is never instantiated.
-    builder.append(
-        "(func $keep_tag_alive_hack (export \"_tag_hack_\") (param $param externref)  "
-            + "(throw $exception.event (local.get $param)))");
+    builder.append("(import \"WebAssembly\" \"JSTag\" (tag $exception.event (param externref)))");
   }
 
   private void renderMonolithicTypeStructs(Type type) {
@@ -237,21 +250,20 @@ public class WasmConstructsGenerator {
   }
 
   private void renderTypeStructs(Type type, boolean isModular) {
-    if (type.isNative()
-        || type.getDeclaration().getWasmInfo() != null
-        || AstUtils.isNonNativeJsEnum(type.getTypeDescriptor())) {
+    if (type.isNative() || getWasmInfo(type.getDeclaration()) != null) {
       return;
     }
-    if (type.isInterface()) {
-      // Interfaces at runtime are treated as java.lang.Object.
-      renderInterfaceVtableStruct(type);
-    } else {
+
+    if (!type.isInterface()) {
       renderTypeStruct(type);
-      renderClassVtableStruct(type);
       if (!isModular) {
         renderClassItableStruct(type);
       }
     }
+
+    // Custom descriptors refer to the type struct, so must be rendered afterwards. The forward
+    // reference from the type struct to the descriptor is allowed.
+    renderTypeVtableStruct(type);
   }
 
   private void renderClassItableStruct(Type type) {
@@ -259,34 +271,29 @@ public class WasmConstructsGenerator {
     if (!typeDeclaration.implementsInterfaces()) {
       return;
     }
-    emitItableType(typeDeclaration, getItableSlots(typeDeclaration));
+    emitItableType(typeDeclaration, getInterfacesByItableIndex(typeDeclaration));
   }
 
-  /** Renders the struct for the vtable of a class. */
-  private void renderClassVtableStruct(Type type) {
+  /**
+   * Renders the struct for the vtable of a class or interface.
+   *
+   * <p>Vtables for interfaces include all methods from their superinterfaces. Calls to interface
+   * methods will point to the subinterface, if possible.
+   */
+  private void renderTypeVtableStruct(Type type) {
     WasmTypeLayout wasmTypeLayout = environment.getWasmTypeLayout(type.getDeclaration());
     renderVtableStruct(type, wasmTypeLayout.getAllPolymorphicMethods());
   }
 
-  /**
-   * Renders the struct for the vtable of an interface.
-   *
-   * <p>There is a vtable for each interface, and it consists of fields only for the methods
-   * declared in that interface (not including methods declared in their supers). Calls to interface
-   * methods will always point to an interface that declared them.
-   */
-  private void renderInterfaceVtableStruct(Type type) {
-    // TODO(b/186472671): centralize all concepts related to layout in WasmTypeLayout, including
-    // interface vtables and slot assignments.
-    renderVtableStruct(
-        type,
-        type.getDeclaration().getDeclaredMethodDescriptors().stream()
-            .filter(MethodDescriptor::isPolymorphic)
-            .collect(Collectors.toList()));
-  }
-
   private void renderVtableStruct(Type type, Collection<MethodDescriptor> methods) {
-    emitWasmStruct(type, environment::getWasmVtableTypeName, () -> renderVtableEntries(methods));
+    emitWasmStruct(
+        type,
+        environment::getWasmVtableTypeName,
+        // Interface vtables are not custom descriptors.
+        /* descriptorClause= */ type.isInterface()
+            ? null
+            : format("describes %s ", environment.getWasmTypeName(type.getTypeDescriptor())),
+        () -> renderVtableEntries(methods));
   }
 
   private void renderVtableEntries(Collection<MethodDescriptor> methodDescriptors) {
@@ -304,11 +311,12 @@ public class WasmConstructsGenerator {
   }
 
   private void emitStaticFieldGlobals(Type type) {
-    if (AstUtils.isNonNativeJsEnum(type.getTypeDescriptor())) {
+    var fields = type.getStaticFields();
+    if (fields.isEmpty()) {
       return;
     }
     emitBeginCodeComment(type, "static fields");
-    for (Field field : type.getStaticFields()) {
+    for (Field field : fields) {
       builder.newLine();
       builder.append("(global " + environment.getFieldName(field));
 
@@ -338,29 +346,32 @@ public class WasmConstructsGenerator {
     emitEndCodeComment(type, "static fields");
   }
 
+  void renderImportedMethods(Type type) {
+    type.getMethods().stream().filter(environment::isJsImport).forEach(this::renderMethod);
+  }
+
   void renderTypeMethods(Type type) {
-    if (AstUtils.isNonNativeJsEnum(type.getTypeDescriptor())) {
-      return;
-    }
     type.getMethods().stream()
-        .filter(method -> !method.isAbstract() || method.isNative())
-        .filter(m -> m.getDescriptor().getWasmInfo() == null)
+        .filter(Predicate.not(environment::isJsImport))
         .forEach(this::renderMethod);
   }
 
-  void renderMethod(Method method) {
+
+  public void renderMethod(Method method) {
     MethodDescriptor methodDescriptor = method.getDescriptor();
+    if ((methodDescriptor.isAbstract() && !methodDescriptor.isNative())
+        || getWasmInfo(methodDescriptor) != null) {
+      // Abstract methods don't generate any code, except if they are native; neither do methods
+      // that have @Wasm annotation.
+      return;
+    }
+
     // TODO(b/264676817): Consider refactoring to have MethodDescriptor.isNative return true for
     // native constructors, or exposing isNativeConstructor from MethodDescriptor.
     boolean isNativeConstructor =
         methodDescriptor.getEnclosingTypeDescriptor().isNative()
             && methodDescriptor.isConstructor();
     JsMethodImport jsMethodImport = environment.getJsMethodImport(methodDescriptor);
-    if (jsMethodImport == null && isNativeConstructor) {
-      // TODO(b/279187295): These are implicit constructors of native types that don't really exist,
-      // remove this check once they are removed from the AST.
-      return;
-    }
     builder.newLine();
     builder.newLine();
     builder.append(";;; " + method.getReadableDescription());
@@ -385,13 +396,7 @@ public class WasmConstructsGenerator {
     // Emit parameters
     builder.indent();
     // Add the implicit "this" parameter to instance methods and constructors.
-    // Note that constructors and private methods can declare the parameter type to be the
-    // enclosing type because they are not overridden but normal instance methods have to
-    // declare the parameter more generically as java.lang.Object, since all the overrides need
-    // to have matching signatures.
-    if (methodDescriptor.isClassDynamicDispatch()
-        && !methodDescriptor.isNative()
-        && !methodDescriptor.isJsOverlay()) {
+    if (isReceiverCastNeeded(methodDescriptor)) {
       builder.newLine();
       builder.append(format("(type %s)", environment.getFunctionTypeName(methodDescriptor)));
       builder.newLine();
@@ -434,7 +439,8 @@ public class WasmConstructsGenerator {
 
     // Emit a source mapping at the entry of a method so that when stepping into a method
     // the debugger shows the right source line.
-    StatementTranspiler.renderSourceMappingComment(method.getSourcePosition(), builder);
+    StatementTranspiler.renderSourceMappingComment(
+        sourceMappingPathPrefix, method.getSourcePosition(), builder);
 
     // Emit locals.
     for (Variable variable : collectLocals(method)) {
@@ -448,7 +454,7 @@ public class WasmConstructsGenerator {
     }
     // Introduce the actual $this variable for polymorphic methods and cast the parameter to
     // the right type.
-    if (methodDescriptor.isClassDynamicDispatch() && !methodDescriptor.isJsOverlay()) {
+    if (isReceiverCastNeeded(methodDescriptor)) {
       builder.newLine();
       builder.append(format("(local $this %s)", environment.getWasmType(enclosingTypeDescriptor)));
       builder.newLine();
@@ -475,6 +481,23 @@ public class WasmConstructsGenerator {
     }
   }
 
+  /**
+   * Returns true if the method declares its receiver as `Object` and needs to cast it to the
+   * appropriate type.
+   *
+   * <p>Note that constructors and private methods, that are also passed a receiver, can use the
+   * enclosing type directly as they are are not overriding a supertype method and don't need to
+   * match the signature.
+   */
+  private static boolean isReceiverCastNeeded(MethodDescriptor methodDescriptor) {
+    return methodDescriptor.isPolymorphic()
+        // Native, overlays and default methods (declared in the interface) only end up being called
+        // via a static dispatch, hence they can use the more specific receiver type.
+        && !methodDescriptor.isNative()
+        && !methodDescriptor.isJsOverlay()
+        && !methodDescriptor.isDefaultMethod();
+  }
+
   private static List<Variable> collectLocals(Method method) {
     List<Variable> locals = new ArrayList<>();
     method
@@ -490,16 +513,26 @@ public class WasmConstructsGenerator {
   }
 
   private void renderTypeStruct(Type type) {
-    emitWasmStruct(type, environment::getWasmTypeName, () -> renderTypeFields(type));
+    emitWasmStruct(
+        type,
+        /* structNamer= */ environment::getWasmTypeName,
+        /* descriptorClause= */ format(
+            "descriptor %s ", environment.getWasmVtableTypeName(type.getTypeDescriptor())),
+        () -> renderTypeFields(type));
   }
 
   private void renderTypeFields(Type type) {
-    // The first field is always the vtable for class dynamic dispatch.
-    builder.newLine();
-    builder.append(
-        format(
-            "(field $vtable (ref %s))",
-            environment.getWasmVtableTypeName(type.getTypeDescriptor())));
+    // Optionally emit a vtable field for class dynamic dispatch.
+    // If custom descriptors are enabled, the vtable is the descriptor for the struct and not
+    // emitted here as a field.
+    if (!environment.isCustomDescriptorsEnabled()) {
+      builder.newLine();
+      builder.append(
+          format(
+              "(field $vtable (ref %s))",
+              environment.getWasmVtableTypeName(type.getTypeDescriptor())));
+    }
+
     // The second field is always the itable for interface method dispatch.
     builder.newLine();
     builder.append(
@@ -528,6 +561,11 @@ public class WasmConstructsGenerator {
     // TODO(b/183994530): Initialize dynamic dispatch tables lazily.
     builder.append(";;; Initialize dynamic dispatch tables.");
 
+    emitEmptyItableGlobal();
+    emitClassDispatchTables(library, /* emitItableInitialization= */ true);
+  }
+
+  public void emitEmptyItableGlobal() {
     // Emit an empty itable that will be used for types that don't implement any interface.
     builder.newLine();
     builder.append("(global $itable.empty (ref $itable)");
@@ -537,7 +575,9 @@ public class WasmConstructsGenerator {
     builder.unindent();
     builder.newLine();
     builder.append(")");
+  }
 
+  void emitClassDispatchTables(Library library, boolean emitItableInitialization) {
     // Populate all vtables.
     library
         .streamTypes()
@@ -545,28 +585,30 @@ public class WasmConstructsGenerator {
         .filter(not(Type::isNative))
         .map(Type::getDeclaration)
         .filter(not(TypeDeclaration::isAbstract))
-        .filter(type -> type.getWasmInfo() == null)
-        .filter(not(AstUtils::isNonNativeJsEnum))
-        .forEach(this::emitDispatchTablesInitialization);
+        .filter(type -> getWasmInfo(type) == null)
+        .forEach(
+            t -> {
+              emitVtablesInitialization(t);
+              if (emitItableInitialization) {
+                emitItableInitialization(t);
+              }
+            });
     builder.newLine();
   }
 
-  private void emitDispatchTablesInitialization(TypeDeclaration typeDeclaration) {
-    emitClassVtableInitialization(typeDeclaration);
-    emitItableInitialization(typeDeclaration);
-  }
-
   /** Emits the code to initialize the class vtable structure for {@code typeDeclaration}. */
-  private void emitClassVtableInitialization(TypeDeclaration typeDeclaration) {
+  private void emitVtablesInitialization(TypeDeclaration typeDeclaration) {
     WasmTypeLayout wasmTypeLayout = environment.getWasmTypeLayout(typeDeclaration);
 
     emitBeginCodeComment(typeDeclaration, "vtable.init");
     builder.newLine();
-    //  Create the class vtable for this type (which is either a class or an enum) and store it
+    // Create the class vtable for this type (which is either a class or an enum) and store it
     // in a global variable to be able to use it to initialize instance of this class.
     builder.append(
         format(
-            "(global %s (ref %s)",
+            environment.isCustomDescriptorsEnabled()
+                ? "(global %s (ref (exact %s))"
+                : "(global %s (ref %s)",
             environment.getWasmVtableGlobalName(typeDeclaration),
             environment.getWasmVtableTypeName(typeDeclaration)));
     builder.indent();
@@ -574,26 +616,20 @@ public class WasmConstructsGenerator {
     builder.unindent();
     builder.newLine();
     builder.append(")");
-    emitEndCodeComment(typeDeclaration, "vtable.init");
-  }
 
-  /** Emits the code to initialize the Itable array for {@code typeDeclaration}. */
-  private void emitItableInitialization(TypeDeclaration typeDeclaration) {
-    if (!typeDeclaration.implementsInterfaces()) {
-      return;
-    }
-    emitBeginCodeComment(typeDeclaration, "itable.init");
-
-    // Create the struct of interface vtables of the required size and store it in a global variable
-    // to be able to use it when objects of this class are instantiated.
-    builder.newLine();
-    // Emit globals for each interface vtable
-    WasmTypeLayout wasmTypeLayout = environment.getWasmTypeLayout(typeDeclaration);
-    TypeDeclaration[] itableSlots = getItableSlots(typeDeclaration);
-    stream(itableSlots)
-        .filter(Objects::nonNull)
+    Set<TypeDeclaration> emittedInterfaces = new HashSet<>();
+    typeDeclaration.getAllSuperInterfaces().stream()
+        // Ordered by greatest hierarchy depth to ensure that leaf interfaces are emitted first.
+        // Subinterface vtables implement the superinterface vtable, making the superinterface
+        // vtable redundant and can just reference the previously generated vtable.
+        .sorted(Comparator.comparing(TypeDeclaration::getTypeHierarchyDepth).reversed())
         .forEach(
             i -> {
+              if (!emittedInterfaces.add(i)) {
+                // A vtable instance for this interface was already emitted.
+                return;
+              }
+
               builder.newLine();
               builder.append(
                   format(
@@ -601,92 +637,50 @@ public class WasmConstructsGenerator {
                       environment.getWasmInterfaceVtableGlobalName(i, typeDeclaration),
                       environment.getWasmVtableTypeName(i)));
               builder.indent();
-              initializeInterfaceVtable(wasmTypeLayout, i);
+              WasmTypeLayout interfaceTypeLayout = environment.getWasmTypeLayout(i);
+              initializeInterfaceVtable(wasmTypeLayout, interfaceTypeLayout);
               builder.unindent();
               builder.newLine();
               builder.append(")");
+
+              // Also emit a reference to this vtable for all superinterfaces that have not already
+              // been handled.
+              initializeSuperInterfaceVtables(
+                  wasmTypeLayout, interfaceTypeLayout, emittedInterfaces);
             });
-    builder.newLine();
-    builder.append(
-        format(
-            "(global %s (ref %s)",
-            environment.getWasmItableGlobalName(typeDeclaration),
-            environment.getWasmItableTypeName(typeDeclaration)));
-    builder.indent();
-    builder.newLine();
-    builder.append(format("(struct.new %s", environment.getWasmItableTypeName(typeDeclaration)));
-    builder.indent();
-    stream(itableSlots)
-        .forEach(
-            i -> {
-              builder.newLine();
-              if (i == null) {
-                builder.append(" (ref.null struct)");
-                return;
-              }
-              builder.append(
-                  format(
-                      " (global.get %s)",
-                      environment.getWasmInterfaceVtableGlobalName(i, typeDeclaration)));
-            });
-    builder.unindent();
-    builder.newLine();
-    builder.append(")");
-    builder.unindent();
-    builder.newLine();
-    builder.append(")");
-    emitEndCodeComment(typeDeclaration, "itable.init");
-  }
 
-  private TypeDeclaration[] getItableSlots(TypeDeclaration typeDeclaration) {
-    ImmutableList<TypeDeclaration> superInterfaces =
-        typeDeclaration.getAllSuperTypesIncludingSelf().stream()
-            .filter(TypeDeclaration::isInterface)
-            .collect(toImmutableList());
-
-    // Compute the itable for this type.
-    int numSlots = environment.getNumberOfInterfaceSlots();
-    TypeDeclaration[] itableSlots = new TypeDeclaration[numSlots];
-    superInterfaces.forEach(
-        superInterface ->
-            itableSlots[environment.getInterfaceSlot(superInterface)] = superInterface);
-    return itableSlots;
-  }
-
-  /** Emits a specialized itable type for this type to allow for better optimizations. */
-  private void emitItableType(TypeDeclaration typeDeclaration, TypeDeclaration[] itableSlots) {
-    // Create the specialized struct for the itable for this type. A specialized itable type will
-    // be a subtype of the specialized itable type for its superclass. Note that the struct fields
-    // get incrementally specialized in this struct in the subclasses as the interfaces are
-    // implemented by them.
-    builder.newLine();
-    builder.append(
-        format(
-            "(type %s (sub %s (struct",
-            environment.getWasmItableTypeName(typeDeclaration),
-            environment.getWasmItableTypeName(typeDeclaration.getSuperTypeDeclaration())));
-    for (int slot = 0; slot < environment.getNumberOfInterfaceSlots(); slot++) {
-      builder.newLine();
-      builder.append(format("(field %s ", environment.getInterfaceSlotFieldName(slot)));
-      if (itableSlots[slot] == null) {
-        // This type does not use the struct, so it is kept at the generic struct type.
-        builder.append("(ref null struct))");
-      } else {
-        builder.append(format("(ref %s))", environment.getWasmVtableTypeName(itableSlots[slot])));
-      }
-    }
-    builder.newLine();
-    builder.append(")))");
+    emitEndCodeComment(typeDeclaration, "vtable.init");
   }
 
   private void initializeInterfaceVtable(
-      WasmTypeLayout wasmTypeLayout, TypeDeclaration interfaceDeclaration) {
+      WasmTypeLayout wasmTypeLayout, WasmTypeLayout interfaceTypeLayout) {
     ImmutableList<MethodDescriptor> interfaceMethodImplementations =
-        interfaceDeclaration.getDeclaredMethodDescriptors().stream()
-            .filter(MethodDescriptor::isPolymorphic)
+        interfaceTypeLayout.getAllPolymorphicMethodsByMangledName().values().stream()
             .map(wasmTypeLayout::getImplementationMethod)
             .collect(toImmutableList());
-    emitVtableInitialization(interfaceDeclaration, interfaceMethodImplementations);
+    emitVtableInitialization(
+        interfaceTypeLayout.getTypeDeclaration(), interfaceMethodImplementations);
+  }
+
+  private void initializeSuperInterfaceVtables(
+      WasmTypeLayout wasmTypeLayout,
+      WasmTypeLayout interfaceTypeLayout,
+      Set<TypeDeclaration> alreadyEmittedInterfaces) {
+    WasmTypeLayout superInterfaceTypeLayout = interfaceTypeLayout.getWasmSupertypeLayout();
+    while (superInterfaceTypeLayout != null
+        && alreadyEmittedInterfaces.add(superInterfaceTypeLayout.getTypeDeclaration())) {
+      builder.newLine();
+      builder.append(
+          format(
+              "(global %s (ref %s) (global.get %s))",
+              environment.getWasmInterfaceVtableGlobalName(
+                  superInterfaceTypeLayout.getTypeDeclaration(),
+                  wasmTypeLayout.getTypeDeclaration()),
+              environment.getWasmVtableTypeName(interfaceTypeLayout.getTypeDeclaration()),
+              environment.getWasmInterfaceVtableGlobalName(
+                  interfaceTypeLayout.getTypeDeclaration(), wasmTypeLayout.getTypeDeclaration())));
+      superInterfaceTypeLayout = superInterfaceTypeLayout.getWasmSupertypeLayout();
+    }
   }
 
   /**
@@ -715,14 +709,164 @@ public class WasmConstructsGenerator {
     builder.append(")");
   }
 
-  /** Emits a Wasm struct using nominal inheritance. */
+  /** Emits the code to initialize the Itable array for {@code typeDeclaration}. */
+  private void emitItableInitialization(TypeDeclaration typeDeclaration) {
+    if (!typeDeclaration.implementsInterfaces()) {
+      return;
+    }
+    emitBeginCodeComment(typeDeclaration, "itable.init");
+
+    // Create the struct of interface vtables of the required size and store it in a global variable
+    // to be able to use it when objects of this class are instantiated.
+    TypeDeclaration[] interfacesByItableIndex = getInterfacesByItableIndex(typeDeclaration);
+    // Emit globals for each interface vtable
+
+    builder.newLine();
+    builder.append(
+        format(
+            "(global %s (ref %s)",
+            environment.getWasmItableGlobalName(typeDeclaration),
+            environment.getWasmItableTypeName(typeDeclaration)));
+    builder.indent();
+    builder.newLine();
+    builder.append(format("(struct.new %s", environment.getWasmItableTypeName(typeDeclaration)));
+    builder.indent();
+    stream(interfacesByItableIndex)
+        .forEach(
+            i -> {
+              builder.newLine();
+              if (i == null) {
+                builder.append(" (ref.null struct)");
+                return;
+              }
+              builder.append(
+                  format(
+                      " (global.get %s)",
+                      environment.getWasmInterfaceVtableGlobalName(i, typeDeclaration)));
+            });
+    builder.unindent();
+    builder.newLine();
+    builder.append(")");
+    builder.unindent();
+    builder.newLine();
+    builder.append(")");
+    emitEndCodeComment(typeDeclaration, "itable.init");
+  }
+
+  private TypeDeclaration[] getInterfacesByItableIndex(TypeDeclaration typeDeclaration) {
+    Set<TypeDeclaration> superInterfaces = typeDeclaration.getAllSuperInterfaces();
+
+    // Compute the itable for this type.
+    int numSlots = environment.getItableSize();
+    TypeDeclaration[] interfacesByItableIndex = new TypeDeclaration[numSlots];
+    for (TypeDeclaration superInterface : superInterfaces) {
+      int itableIndex = environment.getItableIndexForInterface(superInterface);
+      // Interfaces in an inheritance chain might share the same slot (as determined by
+      // ItableAllocator), so we must check that the current index is not occupied yet or, if it is,
+      // to replace it with a more specific, child interface only.
+      if (interfacesByItableIndex[itableIndex] == null
+          || superInterface
+              .getAllSuperInterfaces()
+              .contains(interfacesByItableIndex[itableIndex])) {
+        interfacesByItableIndex[itableIndex] = superInterface;
+      }
+    }
+    return interfacesByItableIndex;
+  }
+
+  /** Emits a specialized itable type for this type to allow for better optimizations. */
+  private void emitItableType(
+      TypeDeclaration typeDeclaration, TypeDeclaration[] interfacesByItableIndex) {
+    // Create the specialized struct for the itable for this type. A specialized itable type will
+    // be a subtype of the specialized itable type for its superclass. Note that the struct fields
+    // get incrementally specialized in this struct in the subclasses as the interfaces are
+    // implemented by them.
+    builder.newLine();
+    builder.append(
+        format(
+            "(type %s (sub %s (struct",
+            environment.getWasmItableTypeName(typeDeclaration),
+            environment.getWasmItableTypeName(typeDeclaration.getSuperTypeDeclaration())));
+    builder.indent();
+    for (int index = 0; index < environment.getItableSize(); index++) {
+      builder.newLine();
+      if (interfacesByItableIndex[index] == null) {
+        // This type does not use the struct, so it is kept at the generic struct type.
+        builder.append("(field (ref null struct))");
+      } else {
+        builder.append(
+            format(
+                "(field (ref %s))",
+                environment.getWasmVtableTypeName(interfacesByItableIndex[index])));
+      }
+    }
+    builder.unindent();
+    builder.newLine();
+    builder.append(")))");
+  }
+
+  public void emitItableInterfaceGetters(Library library) {
+    library
+        .streamTypes()
+        .filter(Type::isInterface)
+        .map(Type::getDeclaration)
+        .forEach(this::emitItableInterfaceGetter);
+  }
+
+  private void emitItableInterfaceGetter(TypeDeclaration typeDeclaration) {
+    int fieldIndex = environment.getItableIndexForInterface(typeDeclaration);
+    emitItableInterfaceGetter(
+        environment.getWasmItableInterfaceGetter(typeDeclaration),
+        fieldIndex == -1 ? null : String.valueOf(fieldIndex));
+  }
+
+  public void emitItableInterfaceGetter(String methodName, String fieldName) {
+    builder.newLine();
+    builder.append(
+        format(
+            "(func %s (param $object (ref null $java.lang.Object)) (result (ref null struct)) ",
+            methodName));
+    builder.indent();
+    builder.newLine();
+    if (fieldName == null) {
+      // There is no need to assign a field to interfaces that are not implemented by any class. In
+      // that case just return null to comply with the semantics of casts and instanceofs.
+      builder.append("(ref.null struct)");
+    } else {
+      builder.append(
+          format(
+              "(struct.get $itable %s (struct.get $java.lang.Object $itable (local.get $object)))",
+              fieldName));
+    }
+    builder.unindent();
+    builder.newLine();
+    builder.append(")");
+  }
+
+  /**
+   * Emits a Wasm struct using nominal inheritance with an optional descriptor or describes clause.
+   */
   private void emitWasmStruct(
-      Type type, Function<DeclaredTypeDescriptor, String> structNamer, Runnable fieldsRenderer) {
-    boolean hasSuperType = type.getSuperTypeDescriptor() != null;
+      Type type,
+      Function<DeclaredTypeDescriptor, String> structNamer,
+      String descriptorClause,
+      Runnable fieldsRenderer) {
+    if (!environment.isCustomDescriptorsEnabled()) {
+      descriptorClause = null;
+    }
+
+    WasmTypeLayout wasmType = environment.getWasmTypeLayout(type.getDeclaration());
+    boolean hasSuperType = wasmType.getWasmSupertypeLayout() != null;
     builder.newLine();
     builder.append(String.format("(type %s (sub ", structNamer.apply(type.getTypeDescriptor())));
     if (hasSuperType) {
-      builder.append(format("%s ", structNamer.apply(type.getSuperTypeDescriptor())));
+      builder.append(
+          format("%s ", structNamer.apply(wasmType.getWasmSupertypeLayout().getTypeDescriptor())));
+    }
+    if (descriptorClause != null) {
+      builder.append("(");
+      builder.append(descriptorClause);
+      builder.append(") ");
     }
     builder.append("(struct");
     builder.indent();
@@ -736,13 +880,7 @@ public class WasmConstructsGenerator {
     builder.append(")");
   }
 
-  void emitNativeArrayTypes(List<ArrayTypeDescriptor> arrayTypes) {
-    emitBeginCodeComment("Native Array types");
-    arrayTypes.forEach(this::emitNativeArrayType);
-    emitEndCodeComment("Native Array types");
-  }
-
-  private void emitNativeArrayType(ArrayTypeDescriptor arrayTypeDescriptor) {
+  void emitWasmArrayType(ArrayTypeDescriptor arrayTypeDescriptor) {
     String wasmArrayTypeName = environment.getWasmTypeName(arrayTypeDescriptor);
     builder.newLine();
     builder.append(
@@ -758,7 +896,7 @@ public class WasmConstructsGenerator {
     emitEndCodeComment("Empty array singletons");
   }
 
-  private void emitEmptyArraySingleton(ArrayTypeDescriptor arrayTypeDescriptor) {
+  void emitEmptyArraySingleton(ArrayTypeDescriptor arrayTypeDescriptor) {
     String wasmArrayTypeName = environment.getWasmTypeName(arrayTypeDescriptor);
     // Emit a global empty array singleton to avoid allocating empty arrays. */
     builder.newLine();
@@ -783,7 +921,7 @@ public class WasmConstructsGenerator {
     library
         .streamTypes()
         // Emit the types supertypes first.
-        .sorted(Comparator.comparing(t -> t.getDeclaration().getClassHierarchyDepth()))
+        .sorted(Comparator.comparing(t -> t.getDeclaration().getTypeHierarchyDepth()))
         .forEach(
             type -> {
               emitBeginCodeComment(type, comment);

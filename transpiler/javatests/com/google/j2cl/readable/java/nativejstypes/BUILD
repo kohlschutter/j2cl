@@ -13,9 +13,10 @@ package(
 j2kt_jvm_library(
     name = "readable-j2kt-jvm",
     srcs = glob(["*.java"]),
+    j2kt_j2objc_interop_enabled = False,
     deps = [
         "//jre/java:javaemul_internal_annotations-j2kt-jvm",
-        "//third_party:gwt-jsinterop-annotations-j2kt-jvm",
+        "//third_party:jsinterop-annotations-j2kt-jvm",
         "//third_party:jspecify_annotations-j2kt-jvm",
         "//third_party:jsr305_annotations-j2kt-jvm",
     ],
@@ -38,7 +39,7 @@ j2wasm_library(
     ],
     deps = [
         "//jre/java:javaemul_internal_annotations-j2wasm",
-        "//third_party:gwt-jsinterop-annotations-j2wasm",
+        "//third_party:jsinterop-annotations-j2wasm",
         "//third_party:jspecify_annotations-j2wasm",
         "//third_party:jsr305_annotations-j2wasm",
     ],
@@ -56,7 +57,7 @@ readable_example(
     generate_wasm_imports = True,
     deps = [
         "//jre/java:javaemul_internal_annotations-j2cl",
-        "//third_party:gwt-jsinterop-annotations-j2cl",
+        "//third_party:jsinterop-annotations-j2cl",
         "//third_party:jspecify_annotations-j2cl",
         "//third_party:jsr305_annotations-j2cl",
     ],

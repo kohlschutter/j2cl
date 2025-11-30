@@ -1,4 +1,4 @@
-load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_library")
+load("@rules_closure//closure:defs.bzl", "closure_js_library")
 load("//build_defs:rules.bzl", "j2cl_library")
 load(
     "//transpiler/javatests/com/google/j2cl/integration:integration_test.bzl",
@@ -23,12 +23,11 @@ j2cl_library(
     generate_j2kt_native_library = False,
     deps = [
         ":native_types-j2cl",
-        "//third_party:gwt-jsinterop-annotations-j2cl",
+        "//third_party:jsinterop-annotations-j2cl",
     ],
 )
 
 integration_test(
-    name = "renamejsmethodsinnativejstype",
     # Src's JUST the Main class and gets Foo as a dependency. Do not
     # change this since this is part of what the test is verifying.
     srcs = [

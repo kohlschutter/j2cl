@@ -1,3 +1,5 @@
+load("@rules_java//java:defs.bzl", "java_library")
+
 package(
     default_applicable_licenses = ["//:j2cl_license"],
     default_visibility = ["//transpiler:__subpackages__"],
@@ -7,6 +9,7 @@ package(
 java_library(
     name = "closure",
     srcs = glob(["*.java"]),
+    javacopts = ["-Xep:BetaApi:OFF"],
     deps = [
         "//third_party:gson",
         "//third_party:guava",

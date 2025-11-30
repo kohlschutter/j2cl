@@ -1,55 +1,52 @@
- ;;; Code for interfacedevirtualize.InterfaceDevirtualize [type definition]
- (type $interfacedevirtualize.InterfaceDevirtualize (sub $java.lang.Object (struct
-  (field $vtable (ref $interfacedevirtualize.InterfaceDevirtualize.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $interfacedevirtualize.InterfaceDevirtualize.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_compare0__java_lang_Comparable__java_lang_Object__int (ref $function.m_compare0__java_lang_Comparable__java_lang_Object__int))
-  (field $m_compare1__java_lang_Comparable__java_lang_Object__int (ref $function.m_compare1__java_lang_Comparable__java_lang_Object__int))
-  (field $m_compare2__java_lang_Comparable__java_lang_Double__int (ref $function.m_compare2__java_lang_Comparable__java_lang_Double__int))
-  (field $m_compare2__java_lang_Comparable__java_lang_Boolean__int (ref $function.m_compare2__java_lang_Comparable__java_lang_Boolean__int))
-  (field $m_compare2__java_lang_Comparable__java_lang_Integer__int (ref $function.m_compare2__java_lang_Comparable__java_lang_Integer__int))
-  (field $m_compare3__java_lang_Double__java_lang_Double__int (ref $function.m_compare3__java_lang_Double__java_lang_Double__int))
-  (field $m_compare3__java_lang_Boolean__java_lang_Boolean__int (ref $function.m_compare3__java_lang_Boolean__java_lang_Boolean__int))
-  (field $m_compare3__java_lang_Integer__java_lang_Integer__int (ref $function.m_compare3__java_lang_Integer__java_lang_Integer__int))
-  ))
- )
+;;; Code for interfacedevirtualize.InterfaceDevirtualize [type definition]
+(type $interfacedevirtualize.InterfaceDevirtualize (sub $java.lang.Object (struct
+ (field $vtable (ref $interfacedevirtualize.InterfaceDevirtualize.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $interfacedevirtualize.InterfaceDevirtualize.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_compare0__java_lang_Comparable__java_lang_Object__int (ref $function.m_compare0__java_lang_Comparable__java_lang_Object__int))
+ (field $m_compare1__java_lang_Comparable__java_lang_Object__int (ref $function.m_compare1__java_lang_Comparable__java_lang_Object__int))
+ (field $m_compare2__java_lang_Comparable__java_lang_Boolean__int (ref $function.m_compare2__java_lang_Comparable__java_lang_Boolean__int))
+ (field $m_compare2__java_lang_Comparable__java_lang_Double__int (ref $function.m_compare2__java_lang_Comparable__java_lang_Double__int))
+ (field $m_compare2__java_lang_Comparable__java_lang_Integer__int (ref $function.m_compare2__java_lang_Comparable__java_lang_Integer__int))
+ (field $m_compare3__java_lang_Boolean__java_lang_Boolean__int (ref $function.m_compare3__java_lang_Boolean__java_lang_Boolean__int))
+ (field $m_compare3__java_lang_Double__java_lang_Double__int (ref $function.m_compare3__java_lang_Double__java_lang_Double__int))
+ (field $m_compare3__java_lang_Integer__java_lang_Integer__int (ref $function.m_compare3__java_lang_Integer__java_lang_Integer__int))
+ ))
+)
+
+;;; Code for interfacedevirtualize.InterfaceDevirtualize [imports]
+
+;;; Code for interfacedevirtualize.InterfaceDevirtualize [static fields]
+(global $$class-initialized@interfacedevirtualize.InterfaceDevirtualize (mut i32)
+ (i32.const 0)
+)
+(global $$class@interfacedevirtualize.InterfaceDevirtualize (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
 
 ;;; Code for interfacedevirtualize.InterfaceDevirtualize [vtable.init]
 (global $interfacedevirtualize.InterfaceDevirtualize.vtable (ref $interfacedevirtualize.InterfaceDevirtualize.vtable)
  (struct.new $interfacedevirtualize.InterfaceDevirtualize.vtable
   (ref.func $$getClassImpl__java_lang_Class@interfacedevirtualize.InterfaceDevirtualize)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_compare0__java_lang_Comparable__java_lang_Object__int@interfacedevirtualize.InterfaceDevirtualize)
   (ref.func $m_compare1__java_lang_Comparable__java_lang_Object__int@interfacedevirtualize.InterfaceDevirtualize)
-  (ref.func $m_compare2__java_lang_Comparable__java_lang_Double__int@interfacedevirtualize.InterfaceDevirtualize)
   (ref.func $m_compare2__java_lang_Comparable__java_lang_Boolean__int@interfacedevirtualize.InterfaceDevirtualize)
+  (ref.func $m_compare2__java_lang_Comparable__java_lang_Double__int@interfacedevirtualize.InterfaceDevirtualize)
   (ref.func $m_compare2__java_lang_Comparable__java_lang_Integer__int@interfacedevirtualize.InterfaceDevirtualize)
-  (ref.func $m_compare3__java_lang_Double__java_lang_Double__int@interfacedevirtualize.InterfaceDevirtualize)
   (ref.func $m_compare3__java_lang_Boolean__java_lang_Boolean__int@interfacedevirtualize.InterfaceDevirtualize)
+  (ref.func $m_compare3__java_lang_Double__java_lang_Double__int@interfacedevirtualize.InterfaceDevirtualize)
   (ref.func $m_compare3__java_lang_Integer__java_lang_Integer__int@interfacedevirtualize.InterfaceDevirtualize)
  )
-)
-
-;;; Code for interfacedevirtualize.InterfaceDevirtualize [static fields]
-(global $f_$initialized__interfacedevirtualize_InterfaceDevirtualize (mut i32)
- (i32.const 0)
-)
-(global $f_$class__interfacedevirtualize_InterfaceDevirtualize (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|interfacedev...|__interfacedevirtualize_InterfaceDevirtualize (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
 )
 
 ;;; Code for interfacedevirtualize.InterfaceDevirtualize [methods]
@@ -57,16 +54,16 @@
 ;;; InterfaceDevirtualize InterfaceDevirtualize.$create()
 (func $$create__@interfacedevirtualize.InterfaceDevirtualize
  (result (ref null $interfacedevirtualize.InterfaceDevirtualize))
- ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
  (local $$instance (ref null $interfacedevirtualize.InterfaceDevirtualize))
  (block
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
-  (call $$clinit__void@interfacedevirtualize.InterfaceDevirtualize )
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
-  (local.set $$instance (struct.new $interfacedevirtualize.InterfaceDevirtualize (ref.as_non_null (global.get $interfacedevirtualize.InterfaceDevirtualize.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
+  (call $$clinit__void_<once>_@interfacedevirtualize.InterfaceDevirtualize )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
+  (local.set $$instance (struct.new $interfacedevirtualize.InterfaceDevirtualize (global.get $interfacedevirtualize.InterfaceDevirtualize.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
   (call $$ctor__void_$p_interfacedevirtualize_InterfaceDevirtualize@interfacedevirtualize.InterfaceDevirtualize (ref.as_non_null (local.get $$instance)))
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
   (return (local.get $$instance))
  )
 )
@@ -74,9 +71,9 @@
 ;;; void InterfaceDevirtualize.$ctor()
 (func $$ctor__void_$p_interfacedevirtualize_InterfaceDevirtualize@interfacedevirtualize.InterfaceDevirtualize
  (param $this (ref null $interfacedevirtualize.InterfaceDevirtualize))
- ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
  (block
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -88,12 +85,12 @@
  (param $c (ref null $java.lang.Object))
  (param $t (ref null $java.lang.Object))
  (result i32)
- ;;@ interfacedevirtualize/InterfaceDevirtualize.java:19:17
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:19:17
  (local $this (ref null $interfacedevirtualize.InterfaceDevirtualize))
  (local.set $this (ref.cast (ref $interfacedevirtualize.InterfaceDevirtualize) (local.get $this.untyped)))
  (block
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:20:4
-  (return (call_ref $function.m_compareTo__java_lang_Object__int (ref.as_non_null (local.get $c))(local.get $t)(struct.get $java.lang.Comparable.vtable $m_compareTo__java_lang_Object__int (ref.cast (ref $java.lang.Comparable.vtable) (struct.get $itable $slot1 (struct.get $java.lang.Object $itable (local.get $c)))))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:20:4
+  (return (call_ref $function.m_compareTo__java_lang_Object__int (ref.as_non_null (local.get $c))(local.get $t)(struct.get $java.lang.Comparable.vtable $m_compareTo__java_lang_Object__int (ref.cast (ref $java.lang.Comparable.vtable) (call $get.itable.$java.lang.Comparable (local.get $c))))))
  )
 )
 (elem declare func $m_compare0__java_lang_Comparable__java_lang_Object__int@interfacedevirtualize.InterfaceDevirtualize)
@@ -105,12 +102,12 @@
  (param $c (ref null $java.lang.Object))
  (param $o (ref null $java.lang.Object))
  (result i32)
- ;;@ interfacedevirtualize/InterfaceDevirtualize.java:24:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:24:13
  (local $this (ref null $interfacedevirtualize.InterfaceDevirtualize))
  (local.set $this (ref.cast (ref $interfacedevirtualize.InterfaceDevirtualize) (local.get $this.untyped)))
  (block
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:25:4
-  (return (call_ref $function.m_compareTo__java_lang_Object__int (ref.as_non_null (local.get $c))(local.get $o)(struct.get $java.lang.Comparable.vtable $m_compareTo__java_lang_Object__int (ref.cast (ref $java.lang.Comparable.vtable) (struct.get $itable $slot1 (struct.get $java.lang.Object $itable (local.get $c)))))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:25:4
+  (return (call_ref $function.m_compareTo__java_lang_Object__int (ref.as_non_null (local.get $c))(local.get $o)(struct.get $java.lang.Comparable.vtable $m_compareTo__java_lang_Object__int (ref.cast (ref $java.lang.Comparable.vtable) (call $get.itable.$java.lang.Comparable (local.get $c))))))
  )
 )
 (elem declare func $m_compare1__java_lang_Comparable__java_lang_Object__int@interfacedevirtualize.InterfaceDevirtualize)
@@ -122,12 +119,12 @@
  (param $c (ref null $java.lang.Object))
  (param $d (ref null $java.lang.Double))
  (result i32)
- ;;@ interfacedevirtualize/InterfaceDevirtualize.java:28:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:28:13
  (local $this (ref null $interfacedevirtualize.InterfaceDevirtualize))
  (local.set $this (ref.cast (ref $interfacedevirtualize.InterfaceDevirtualize) (local.get $this.untyped)))
  (block
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:29:4
-  (return (call_ref $function.m_compareTo__java_lang_Object__int (ref.as_non_null (local.get $c))(local.get $d)(struct.get $java.lang.Comparable.vtable $m_compareTo__java_lang_Object__int (ref.cast (ref $java.lang.Comparable.vtable) (struct.get $itable $slot1 (struct.get $java.lang.Object $itable (local.get $c)))))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:29:4
+  (return (call_ref $function.m_compareTo__java_lang_Object__int (ref.as_non_null (local.get $c))(local.get $d)(struct.get $java.lang.Comparable.vtable $m_compareTo__java_lang_Object__int (ref.cast (ref $java.lang.Comparable.vtable) (call $get.itable.$java.lang.Comparable (local.get $c))))))
  )
 )
 (elem declare func $m_compare2__java_lang_Comparable__java_lang_Double__int@interfacedevirtualize.InterfaceDevirtualize)
@@ -139,12 +136,12 @@
  (param $d1 (ref null $java.lang.Double))
  (param $d2 (ref null $java.lang.Double))
  (result i32)
- ;;@ interfacedevirtualize/InterfaceDevirtualize.java:32:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:32:13
  (local $this (ref null $interfacedevirtualize.InterfaceDevirtualize))
  (local.set $this (ref.cast (ref $interfacedevirtualize.InterfaceDevirtualize) (local.get $this.untyped)))
  (block
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:33:4
-  (return (call_ref $function.m_compareTo__java_lang_Double__int (ref.as_non_null (local.get $d1))(local.get $d2)(struct.get $java.lang.Double.vtable $m_compareTo__java_lang_Double__int (struct.get $java.lang.Double $vtable(local.get $d1)))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:33:4
+  (return (call $m_compareTo__java_lang_Double__int@java.lang.Double (ref.as_non_null (local.get $d1))(local.get $d2)))
  )
 )
 (elem declare func $m_compare3__java_lang_Double__java_lang_Double__int@interfacedevirtualize.InterfaceDevirtualize)
@@ -156,12 +153,12 @@
  (param $c (ref null $java.lang.Object))
  (param $d (ref null $java.lang.Boolean))
  (result i32)
- ;;@ interfacedevirtualize/InterfaceDevirtualize.java:36:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:36:13
  (local $this (ref null $interfacedevirtualize.InterfaceDevirtualize))
  (local.set $this (ref.cast (ref $interfacedevirtualize.InterfaceDevirtualize) (local.get $this.untyped)))
  (block
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:37:4
-  (return (call_ref $function.m_compareTo__java_lang_Object__int (ref.as_non_null (local.get $c))(local.get $d)(struct.get $java.lang.Comparable.vtable $m_compareTo__java_lang_Object__int (ref.cast (ref $java.lang.Comparable.vtable) (struct.get $itable $slot1 (struct.get $java.lang.Object $itable (local.get $c)))))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:37:4
+  (return (call_ref $function.m_compareTo__java_lang_Object__int (ref.as_non_null (local.get $c))(local.get $d)(struct.get $java.lang.Comparable.vtable $m_compareTo__java_lang_Object__int (ref.cast (ref $java.lang.Comparable.vtable) (call $get.itable.$java.lang.Comparable (local.get $c))))))
  )
 )
 (elem declare func $m_compare2__java_lang_Comparable__java_lang_Boolean__int@interfacedevirtualize.InterfaceDevirtualize)
@@ -173,12 +170,12 @@
  (param $d1 (ref null $java.lang.Boolean))
  (param $d2 (ref null $java.lang.Boolean))
  (result i32)
- ;;@ interfacedevirtualize/InterfaceDevirtualize.java:40:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:40:13
  (local $this (ref null $interfacedevirtualize.InterfaceDevirtualize))
  (local.set $this (ref.cast (ref $interfacedevirtualize.InterfaceDevirtualize) (local.get $this.untyped)))
  (block
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:41:4
-  (return (call_ref $function.m_compareTo__java_lang_Boolean__int (ref.as_non_null (local.get $d1))(local.get $d2)(struct.get $java.lang.Boolean.vtable $m_compareTo__java_lang_Boolean__int (struct.get $java.lang.Boolean $vtable(local.get $d1)))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:41:4
+  (return (call $m_compareTo__java_lang_Boolean__int@java.lang.Boolean (ref.as_non_null (local.get $d1))(local.get $d2)))
  )
 )
 (elem declare func $m_compare3__java_lang_Boolean__java_lang_Boolean__int@interfacedevirtualize.InterfaceDevirtualize)
@@ -190,12 +187,12 @@
  (param $c (ref null $java.lang.Object))
  (param $d (ref null $java.lang.Integer))
  (result i32)
- ;;@ interfacedevirtualize/InterfaceDevirtualize.java:44:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:44:13
  (local $this (ref null $interfacedevirtualize.InterfaceDevirtualize))
  (local.set $this (ref.cast (ref $interfacedevirtualize.InterfaceDevirtualize) (local.get $this.untyped)))
  (block
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:45:4
-  (return (call_ref $function.m_compareTo__java_lang_Object__int (ref.as_non_null (local.get $c))(local.get $d)(struct.get $java.lang.Comparable.vtable $m_compareTo__java_lang_Object__int (ref.cast (ref $java.lang.Comparable.vtable) (struct.get $itable $slot1 (struct.get $java.lang.Object $itable (local.get $c)))))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:45:4
+  (return (call_ref $function.m_compareTo__java_lang_Object__int (ref.as_non_null (local.get $c))(local.get $d)(struct.get $java.lang.Comparable.vtable $m_compareTo__java_lang_Object__int (ref.cast (ref $java.lang.Comparable.vtable) (call $get.itable.$java.lang.Comparable (local.get $c))))))
  )
 )
 (elem declare func $m_compare2__java_lang_Comparable__java_lang_Integer__int@interfacedevirtualize.InterfaceDevirtualize)
@@ -207,44 +204,45 @@
  (param $d1 (ref null $java.lang.Integer))
  (param $d2 (ref null $java.lang.Integer))
  (result i32)
- ;;@ interfacedevirtualize/InterfaceDevirtualize.java:48:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:48:13
  (local $this (ref null $interfacedevirtualize.InterfaceDevirtualize))
  (local.set $this (ref.cast (ref $interfacedevirtualize.InterfaceDevirtualize) (local.get $this.untyped)))
  (block
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:49:4
-  (return (call_ref $function.m_compareTo__java_lang_Integer__int (ref.as_non_null (local.get $d1))(local.get $d2)(struct.get $java.lang.Integer.vtable $m_compareTo__java_lang_Integer__int (struct.get $java.lang.Integer $vtable(local.get $d1)))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:49:4
+  (return (call $m_compareTo__java_lang_Integer__int@java.lang.Integer (ref.as_non_null (local.get $d1))(local.get $d2)))
  )
 )
 (elem declare func $m_compare3__java_lang_Integer__java_lang_Integer__int@interfacedevirtualize.InterfaceDevirtualize)
 
 ;;; void InterfaceDevirtualize.$clinit()
-(func $$clinit__void@interfacedevirtualize.InterfaceDevirtualize
- ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
+(func $$clinit__void_<once>_@interfacedevirtualize.InterfaceDevirtualize
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
  (block
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
-  (if (global.get $f_$initialized__interfacedevirtualize_InterfaceDevirtualize)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
+  (if (global.get $$class-initialized@interfacedevirtualize.InterfaceDevirtualize)
    (then
-    ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
     (return )
    )
   )
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
-  (global.set $f_$initialized__interfacedevirtualize_InterfaceDevirtualize (i32.const 1))
-  ;;@ interfacedevirtualize/InterfaceDevirtualize.java:18:13
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
+  (global.set $$class-initialized@interfacedevirtualize.InterfaceDevirtualize (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/interfacedevirtualize/readable-j2wasm.js/interfacedevirtualize/InterfaceDevirtualize.java:18:13
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> InterfaceDevirtualize.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@interfacedevirtualize.InterfaceDevirtualize
+(func $$getClassMetadata__java_lang_Class_<once>_@interfacedevirtualize.InterfaceDevirtualize
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__interfacedevirtualize_InterfaceDevirtualize))
+  (if (i32.eqz (ref.is_null (global.get $$class@interfacedevirtualize.InterfaceDevirtualize)))
    (then
-    (global.set $f_$class__interfacedevirtualize_InterfaceDevirtualize (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|interfacedev...|__java_lang_String (ref.func $$getString_|interfacedev...|__java_lang_String@interfacedevirtualize.InterfaceDevirtualize) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@interfacedevirtualize.InterfaceDevirtualize))
    )
   )
-  (return (global.get $f_$class__interfacedevirtualize_InterfaceDevirtualize))
+  (global.set $$class@interfacedevirtualize.InterfaceDevirtualize (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|interfacedev...|__java_lang_String_<once>_@interfacedevirtualize.InterfaceDevirtualize )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@interfacedevirtualize.InterfaceDevirtualize))
  )
 )
 
@@ -256,20 +254,7 @@
  (local $this (ref null $interfacedevirtualize.InterfaceDevirtualize))
  (local.set $this (ref.cast (ref $interfacedevirtualize.InterfaceDevirtualize) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@interfacedevirtualize.InterfaceDevirtualize) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@interfacedevirtualize.InterfaceDevirtualize ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@interfacedevirtualize.InterfaceDevirtualize)
-
-;;; String InterfaceDevirtualize.$getString_|interfacedev...|()
-(func $$getString_|interfacedev...|__java_lang_String@interfacedevirtualize.InterfaceDevirtualize
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|interfacedev...|__interfacedevirtualize_InterfaceDevirtualize))
-   (then
-    (global.set $f_$string_|interfacedev...|__interfacedevirtualize_InterfaceDevirtualize (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "interfacedevirtualize.InterfaceDevirtualize")))
-   )
-  )
-  (return (global.get $f_$string_|interfacedev...|__interfacedevirtualize_InterfaceDevirtualize))
- )
-)

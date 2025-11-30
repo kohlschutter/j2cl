@@ -8,9 +8,4 @@ package(
     licenses = ["notice"],
 )
 
-integration_test(
-    name = "casts",
-    srcs = glob(["*.java"]),
-    # TODO(b/202428351): Generics support
-    enable_kt = False,
-)
+integration_test(srcs = glob(["*.java"]))

@@ -22,6 +22,7 @@ import com.google.j2cl.common.SourcePosition;
 import com.google.j2cl.common.visitor.Processor;
 import com.google.j2cl.common.visitor.Visitable;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /** Base class for expressions. */
 @Visitable
@@ -33,6 +34,10 @@ public abstract class Expression extends Node implements Cloneable<Expression> {
   /** Returns the declared type for the expression if it is different from the inferred type. */
   public TypeDescriptor getDeclaredTypeDescriptor() {
     return getTypeDescriptor();
+  }
+
+  public boolean isAlwaysNull() {
+    return false;
   }
 
   /**
@@ -80,6 +85,15 @@ public abstract class Expression extends Node implements Cloneable<Expression> {
   }
 
   /**
+   * Return the compile-time constant as a literal if it is compile-time constant expression, {@code
+   * null} otherwise.
+   */
+  @Nullable
+  public Literal getConstantValue() {
+    return null;
+  }
+
+  /**
    * Returns true if the expression can be used in the left hand side of an assignment. {@see JLS
    * 15.26}
    */
@@ -87,9 +101,19 @@ public abstract class Expression extends Node implements Cloneable<Expression> {
     return false;
   }
 
+  /** Returns true if the expression represent the boolean `true` constant value. */
+  public boolean isBooleanTrue() {
+    return false;
+  }
+
+  /** Returns true if the expression represent the boolean `false` constant value. */
+  public boolean isBooleanFalse() {
+    return false;
+  }
+
   /** Returns whether value of this expression can be null. */
   public boolean canBeNull() {
-    return getTypeDescriptor().canBeNull();
+    return getTypeDescriptor().canBeNull() || getDeclaredTypeDescriptor().canBeNull();
   }
 
   /** Creates an ExpressionStatement with this expression as its code */
@@ -237,20 +261,12 @@ public abstract class Expression extends Node implements Cloneable<Expression> {
 
   /** Returns whether the expression needs parenthesis if it is emitted as the left operand. */
   public final boolean requiresParensOnLeft(Expression expression) {
-    if (getPrecedence().getValue() > expression.getPrecedence().getValue()) {
-      return true;
-    }
-    return getPrecedence().getAssociativity() != Associativity.LEFT
-        && getPrecedence() == expression.getPrecedence();
+    return getPrecedence().requiresParensOnLeft(expression.getPrecedence());
   }
 
   /** Returns whether the expression needs parenthesis if it is emitted as the right operand. */
   public final boolean requiresParensOnRight(Expression expression) {
-    if (getPrecedence().getValue() > expression.getPrecedence().getValue()) {
-      return true;
-    }
-    return getPrecedence().getAssociativity() != Associativity.RIGHT
-        && getPrecedence() == expression.getPrecedence();
+    return getPrecedence().requiresParensOnRight(expression.getPrecedence());
   }
 
   /**
@@ -280,7 +296,7 @@ public abstract class Expression extends Node implements Cloneable<Expression> {
   /**
    * Precedence and associativity of expressions.
    *
-   * <p>Details of Java precednce can be found in <a
+   * <p>Details of Java precedence can be found in <a
    * href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.7">JLS 15.7 -
    * 15.26</a>
    */
@@ -292,6 +308,7 @@ public abstract class Expression extends Node implements Cloneable<Expression> {
     POSTFIX(18, Expression.Associativity.NONE),
     PREFIX(17, Expression.Associativity.RIGHT),
     CAST(16, Expression.Associativity.RIGHT),
+    AS_OPERATOR(16, Expression.Associativity.LEFT),
     MULTIPLICATIVE(15, Expression.Associativity.LEFT),
     ADDITIVE(14, Expression.Associativity.LEFT),
     SHIFT_OPERATOR(13, Expression.Associativity.LEFT),
@@ -303,7 +320,9 @@ public abstract class Expression extends Node implements Cloneable<Expression> {
     LOGICAL_AND(7, Expression.Associativity.LEFT),
     LOGICAL_OR(6, Expression.Associativity.LEFT),
     CONDITIONAL(4, Expression.Associativity.RIGHT),
-    ASSIGNMENT(3, Expression.Associativity.RIGHT);
+    ASSIGNMENT(3, Expression.Associativity.RIGHT),
+    COMMA(2, Associativity.LEFT),
+    LOWEST(1, Associativity.NONE);
 
     Precedence(int value, Expression.Associativity associativity) {
       this.value = value;
@@ -319,6 +338,20 @@ public abstract class Expression extends Node implements Cloneable<Expression> {
 
     public Expression.Associativity getAssociativity() {
       return associativity;
+    }
+
+    public final boolean requiresParensOnLeft(Precedence precedence) {
+      if (getValue() > precedence.getValue()) {
+        return true;
+      }
+      return getAssociativity() != Associativity.LEFT && this == precedence;
+    }
+
+    public final boolean requiresParensOnRight(Precedence precedence) {
+      if (getValue() > precedence.getValue()) {
+        return true;
+      }
+      return getAssociativity() != Associativity.RIGHT && this == precedence;
     }
   }
 

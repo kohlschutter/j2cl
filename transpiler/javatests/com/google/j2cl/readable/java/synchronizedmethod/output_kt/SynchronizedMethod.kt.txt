@@ -1,63 +1,89 @@
 // Generated from "synchronizedmethod/SynchronizedMethod.java"
-@file:OptIn(ExperimentalObjCName::class)
 @file:Suppress(
  "ALWAYS_NULL",
  "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
- "REPEATED_BOUND",
  "SENSELESS_COMPARISON",
  "UNCHECKED_CAST",
  "UNNECESSARY_LATEINIT",
  "UNNECESSARY_NOT_NULL_ASSERTION",
  "UNREACHABLE_CODE",
+ "UNUSED_ANONYMOUS_PARAMETER",
  "UNUSED_PARAMETER",
  "UNUSED_VARIABLE",
  "USELESS_CAST",
  "VARIABLE_IN_SINGLETON_WITHOUT_THREAD_LOCAL",
- "VARIABLE_WITH_REDUNDANT_INITIALIZER")
+ "VARIABLE_WITH_REDUNDANT_INITIALIZER",
+ "INCOMPATIBLE_OBJC_NAME_OVERRIDE",
+ "REDUNDANT_ELSE_IN_WHEN",
+ "ACCIDENTAL_OVERRIDE")
 
 package synchronizedmethod
 
 import javaemul.lang.*
+import javaemul.lang.J2ktMonitor
+import kotlin.Boolean
 import kotlin.Int
-import kotlin.OptIn
+import kotlin.String
 import kotlin.Suppress
-import kotlin.experimental.ExperimentalObjCName
-import kotlin.jvm.JvmField
+import kotlin.Unit
 import kotlin.jvm.JvmStatic
 import kotlin.jvm.javaObjectType
-import kotlin.native.ObjCName
+import kotlin.run
 import kotlin.synchronized
 
-@ObjCName("J2ktSynchronizedmethodSynchronizedMethod", exact = true)
-open class SynchronizedMethod {
- @JvmField
- internal var a_private_2: Int = 0
+open class SynchronizedMethod: J2ktMonitor() {
+ private var a: Int = 0
 
- @JvmField
- internal var b_private_2: Int = 0
+ private var b: Int = 0
 
- @ObjCName("method")
- open fun method() {
-  synchronized(this) {
-   this.a_private_2 = this.a_private_2 + 1
-   this.b_private_2 = this.b_private_2 - 1
+ open fun testNonStatic() {
+  synchronized<Unit>(this) {
+   this.a = this.a + 1
+   this.b = this.b - 1
   }
  }
 
- @ObjCName("J2ktSynchronizedmethodSynchronizedMethodCompanion", exact = true)
- companion object {
-  @JvmField
-  internal var sa_private_2: Int = 0
+ open fun testReturn(bool: Boolean): Int {
+  synchronized<Unit>(this) {
+   if (bool) {
+    return run {
+     val ___value: Int = this.a
+     this.a = this.a + 1
+     ___value
+    }
+   }
+   return run {
+    val ___value_1: Int = this.b
+    this.b = this.b - 1
+    ___value_1
+   }
+  }
+ }
 
-  @JvmField
-  internal var sb_private_2: Int = 0
+ open fun testIfStatementWithNonVoidBodyWithoutElse(b1: Boolean, b2: Boolean) {
+  synchronized<Unit>(this) {
+   if (b1) {
+    this.apply("foo")
+   } else if (b2) {
+    this.apply("bar")
+   }
+  }
+ }
+
+ private fun apply(string: String?): String? {
+  return string
+ }
+
+ companion object {
+  private var sa: Int = 0
+
+  private var sb: Int = 0
 
   @JvmStatic
-  @ObjCName("staticMethod")
-  fun staticMethod() {
-   synchronized(SynchronizedMethod::class.javaObjectType) {
-    SynchronizedMethod.sa_private_2 = SynchronizedMethod.sa_private_2 + 1
-    SynchronizedMethod.sb_private_2 = SynchronizedMethod.sb_private_2 - 1
+  fun testStatic() {
+   synchronized<Unit>(SynchronizedMethod::class.javaObjectType) {
+    SynchronizedMethod.sa = SynchronizedMethod.sa + 1
+    SynchronizedMethod.sb = SynchronizedMethod.sb - 1
    }
   }
  }

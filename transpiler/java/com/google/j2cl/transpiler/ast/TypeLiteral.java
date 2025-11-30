@@ -17,15 +17,16 @@ package com.google.j2cl.transpiler.ast;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.ImmutableList;
 import com.google.j2cl.common.SourcePosition;
 import com.google.j2cl.common.visitor.Processor;
 import com.google.j2cl.common.visitor.Visitable;
 
 /** Type literal node. */
 @Visitable
-public class TypeLiteral extends Literal implements HasSourcePosition {
+public final class TypeLiteral extends Literal implements HasSourcePosition {
 
-  private final TypeDescriptor referencedTypeDescriptor;
+  @Visitable TypeDescriptor referencedTypeDescriptor;
   private final SourcePosition sourcePosition;
 
   public TypeLiteral(SourcePosition sourcePosition, TypeDescriptor referencedTypeDescriptor) {
@@ -39,12 +40,20 @@ public class TypeLiteral extends Literal implements HasSourcePosition {
 
   @Override
   public TypeDescriptor getTypeDescriptor() {
-    return TypeDescriptors.get().javaLangClass.toNonNullable();
+    return TypeDescriptors.get()
+        .javaLangClass
+        .toNonNullable()
+        .withTypeArguments(ImmutableList.of(getReferencedTypeDescriptor().toNonNullable()));
   }
 
   @Override
   public SourcePosition getSourcePosition() {
     return sourcePosition;
+  }
+
+  @Override
+  public boolean isCompileTimeConstant() {
+    return false;
   }
 
   @Override
@@ -54,8 +63,17 @@ public class TypeLiteral extends Literal implements HasSourcePosition {
 
   @Override
   public TypeLiteral clone() {
-    // Type literals are value types do not need to actually clone.
-    return this;
+    return new TypeLiteral(sourcePosition, referencedTypeDescriptor);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return this == o;
+  }
+
+  @Override
+  public int hashCode() {
+    return referencedTypeDescriptor.hashCode();
   }
 
   @Override

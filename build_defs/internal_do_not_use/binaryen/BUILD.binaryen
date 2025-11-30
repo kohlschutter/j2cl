@@ -35,6 +35,7 @@ BINARYEN_LIB_SRCS = glob(
         "src/support/suffix_tree.cpp",
         "src/support/suffix_tree_node.cpp",
         "src/passes/hash-stringify-walker.cpp",
+        "src/passes/Outlining.cpp",
     ],
 ) + [
     ":WasmIntrinsics.cpp",
@@ -53,25 +54,16 @@ BINARYEN_LIB_HDRS = glob(
     ],
 ) + [":src/config.h"]
 
+BINARYEN_LIB_DEFINES = [
+    "SKIP_OUTLINING",
+]
+
 cc_library(
     name = "binaryen_lib",
     srcs = BINARYEN_LIB_SRCS,
     hdrs = BINARYEN_LIB_HDRS,
     copts = BINARYEN_COPTS,
-    defines = ["USE_STANDARD_GC_ENCODINGS"],
-    includes = ["src"],
-    textual_hdrs = glob([
-        "src/**/*.inc",
-        "src/**/*.def",
-    ]),
-)
-
-cc_library(
-    name = "binaryen_lib-legacy",
-    srcs = BINARYEN_LIB_SRCS,
-    hdrs = BINARYEN_LIB_HDRS,
-    copts = BINARYEN_COPTS,
-    defines = ["USE_LEGACY_GC_ENCODINGS"],
+    defines = ["USE_STANDARD_GC_ENCODINGS"] + BINARYEN_LIB_DEFINES,
     includes = ["src"],
     textual_hdrs = glob([
         "src/**/*.inc",
@@ -90,7 +82,6 @@ cc_binary(
         "src/tools/fuzzing/parameters.h",
         "src/tools/fuzzing/random.cpp",
         "src/tools/fuzzing/random.h",
-        "src/tools/js-wrapper.h",
         "src/tools/optimization-options.h",
         "src/tools/spec-wrapper.h",
         "src/tools/tool-options.h",
@@ -103,35 +94,10 @@ cc_binary(
     deps = [":binaryen_lib"],
 )
 
-cc_binary(
-    name = "wasm-opt-legacy",
-    srcs = [
-        "src/tools/execution-results.h",
-        "src/tools/fuzzing.h",
-        "src/tools/fuzzing/fuzzing.cpp",
-        "src/tools/fuzzing/heap-types.cpp",
-        "src/tools/fuzzing/heap-types.h",
-        "src/tools/fuzzing/parameters.h",
-        "src/tools/fuzzing/random.cpp",
-        "src/tools/fuzzing/random.h",
-        "src/tools/js-wrapper.h",
-        "src/tools/optimization-options.h",
-        "src/tools/spec-wrapper.h",
-        "src/tools/tool-options.h",
-        "src/tools/wasm-opt.cpp",
-        "src/tools/wasm2c-wrapper.h",
-    ],
-    copts = BINARYEN_COPTS,
-    linkopts = BINARYEN_LINKOPTS,
-    includes = ["src/tools"],
-    deps = [":binaryen_lib-legacy"],
-)
-
 py_binary(
     name = "generate_intrinsics",
     srcs = ["generate_intrinsics.py"],
     python_version = "PY3",
-    deps = ["@com_google_absl_py//absl:app"],
 )
 
 genrule(

@@ -9,7 +9,10 @@ package(
 )
 
 integration_test(
-    name = "interfaces",
     srcs = glob(["**/*.java"]),
-    enable_kt = False,
+    enable_nullability = True,
+    deps = [
+        "//third_party:j2objc_annotations",
+        "//third_party:jspecify_annotations",
+    ],
 )

@@ -19,7 +19,6 @@ import com.google.j2cl.transpiler.backend.kotlin.source.Source
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.emptyLineSeparated
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.inAngleBrackets
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.inDoubleQuotes
-import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.infix
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.join
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.newLineSeparated
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.source
@@ -27,13 +26,7 @@ import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.spaceSe
 
 fun comment(source: Source): Source = spaceSeparated(source("//"), source)
 
-fun semicolonEnded(source: Source): Source = source + Source.SEMICOLON
-
-fun assignment(lhs: Source, rhs: Source): Source = infix(lhs, "=", rhs)
-
-fun parameter(name: Source, value: Source): Source = join(name, Source.COLON, value)
-
-fun pointer(source: Source) = source + source("*")
+fun Source.plusSemicolon(): Source = plus(Source.SEMICOLON)
 
 fun macroDeclaration(source: Source) = join(source("#"), source)
 
@@ -47,13 +40,13 @@ fun defineAlias(alias: Source, target: Source) = macroDefine(spaceSeparated(alia
 fun dependenciesSource(dependencies: Iterable<Dependency>): Source =
   emptyLineSeparated(
     importsSource(dependencies.imports()),
-    forwardDeclarationsSource(dependencies.forwardDeclarations())
+    forwardDeclarationsSource(dependencies.forwardDeclarations()),
   )
 
 fun importsSource(imports: List<Import>): Source =
   emptyLineSeparated(
     newLineSeparated(imports.filter { !it.isLocal }.sortedBy { it.path }.map { it.source }),
-    newLineSeparated(imports.filter { it.isLocal }.sortedBy { it.path }.map { it.source })
+    newLineSeparated(imports.filter { it.isLocal }.sortedBy { it.path }.map { it.source }),
   )
 
 fun forwardDeclarationsSource(forwardDeclarations: List<ForwardDeclaration>): Source =
@@ -67,7 +60,7 @@ fun forwardDeclarationsSource(forwardDeclarations: List<ForwardDeclaration>): So
   )
 
 val ForwardDeclaration.source: Source
-  get() = semicolonEnded(spaceSeparated(kind.source, source(name)))
+  get() = spaceSeparated(kind.source, source(name)).plusSemicolon()
 
 val ForwardDeclaration.Kind.source: Source
   get() =
@@ -88,7 +81,7 @@ val Import.source: Source
         } else {
           inAngleBrackets(it)
         }
-      }
+      },
     )
 
 val Renderer<Source>.sourceWithDependencies: Source

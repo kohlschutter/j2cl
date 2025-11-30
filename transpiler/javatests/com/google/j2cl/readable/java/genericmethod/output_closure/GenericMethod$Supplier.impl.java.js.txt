@@ -11,7 +11,7 @@ let $LambdaAdaptor = goog.forwardDeclare('genericmethod.GenericMethod.Supplier.$
 class Supplier {
  /** @abstract @nodts @return {V} */
  m_get__java_lang_Object() {}
- /** @nodts @template V @return {Supplier<V>} */
+ /** @nodts @template V @return {!Supplier<V>} */
  static $adapt(/** ?function():V */ fn) {
   Supplier.$clinit();
   return /**@type {!$LambdaAdaptor<V>}*/ (new $LambdaAdaptor(fn));
@@ -36,7 +36,7 @@ class Supplier {
  }
 }
 Supplier.$markImplementor(/**@type {Function}*/ (Supplier));
-$Util.$setClassMetadataForInterface(Supplier, 'genericmethod.GenericMethod$Supplier');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (Supplier), 'genericmethod.GenericMethod$Supplier');
 
 exports = Supplier;
 

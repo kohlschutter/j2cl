@@ -28,7 +28,7 @@ import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 
 public class Main {
-  public static void main(String[] args) {
+  public static void main(String... args) {
     testClass();
     testInterface();
     testPrimitive();
@@ -150,7 +150,10 @@ public class Main {
   }
 
   private static void assertClassName(String name, String canonicalName, String simpleName) {
-    assertTrue("Name should have the pattern XXX_Class$obf_1XXX", name.contains("Class$obf_10"));
+    assertTrue(
+        "Name should have the pattern Class$obf_XXX_# or Class$obf_####, but did not match: "
+            + name,
+        name.matches("^Class\\$obf_(.*_\\d+|[1-9]\\d{3,})$"));
     assertTrue(name.endsWith(simpleName));
     assertEquals(name, canonicalName);
   }

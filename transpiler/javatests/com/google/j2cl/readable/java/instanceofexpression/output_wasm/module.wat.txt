@@ -1,56 +1,64 @@
- ;;; Code for instanceofexpression.InstanceofExpressions [type definition]
- (type $instanceofexpression.InstanceofExpressions (sub $java.lang.Object (struct
-  (field $vtable (ref $instanceofexpression.InstanceofExpressions.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $instanceofexpression.InstanceofExpressions.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_testInstanceOfArray__void (ref $function.m_testInstanceOfArray__void))
-  (field $m_testInstanceofBoxedType__void (ref $function.m_testInstanceofBoxedType__void))
-  (field $m_testInstanceofClass__void (ref $function.m_testInstanceofClass__void))
-  (field $m_testInstanceofInterface__void (ref $function.m_testInstanceofInterface__void))
-  (field $m_testPrecedence__void (ref $function.m_testPrecedence__void))
-  ))
- )
+;;; Code for instanceofexpression.InstanceofExpressions [type definition]
+(type $instanceofexpression.InstanceofExpressions (sub $java.lang.Object (struct
+ (field $vtable (ref $instanceofexpression.InstanceofExpressions.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $instanceofexpression.InstanceofExpressions.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_testInstanceOfArray__void (ref $function.m_testInstanceOfArray__void))
+ (field $m_testInstanceofBoxedType__void (ref $function.m_testInstanceofBoxedType__void))
+ (field $m_testInstanceofClass__void (ref $function.m_testInstanceofClass__void))
+ (field $m_testInstanceofInterface__void (ref $function.m_testInstanceofInterface__void))
+ (field $m_testPrecedence__void (ref $function.m_testPrecedence__void))
+ ))
+)
 
- ;;; Code for instanceofexpression.InstanceofExpressions.1 [type definition]
- (type $instanceofexpression.InstanceofExpressions.1 (sub $java.lang.Object (struct
-  (field $vtable (ref $instanceofexpression.InstanceofExpressions.1.vtable))
-  (field $itable (ref $instanceofexpression.InstanceofExpressions.1.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  (field $$outer_this__instanceofexpression_InstanceofExpressions_1 (mut (ref null $instanceofexpression.InstanceofExpressions)))
-  ))
- )
- (type $instanceofexpression.InstanceofExpressions.1.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  ))
- )
- (type $instanceofexpression.InstanceofExpressions.1.itable (sub $itable (struct
- (field $slot0 (ref $java.io.Serializable.vtable))
- (field $slot1 (ref null struct))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for instanceofexpression.InstanceofExpressions.1 [type definition]
+(type $instanceofexpression.InstanceofExpressions.1 (sub $java.lang.Object (struct
+ (field $vtable (ref $instanceofexpression.InstanceofExpressions.1.vtable))
+ (field $itable (ref $instanceofexpression.InstanceofExpressions.1.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ (field $$outer_this@instanceofexpression.InstanceofExpressions.1 (mut (ref null $instanceofexpression.InstanceofExpressions)))
+ ))
+)
+(type $instanceofexpression.InstanceofExpressions.1.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ ))
+)
+
+;;; Code for instanceofexpression.InstanceofExpressions [imports]
+
+;;; Code for instanceofexpression.InstanceofExpressions.1 [imports]
+
+;;; Code for instanceofexpression.InstanceofExpressions [static fields]
+(global $$class-initialized@instanceofexpression.InstanceofExpressions (mut i32)
+ (i32.const 0)
+)
+(global $$class@instanceofexpression.InstanceofExpressions (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for instanceofexpression.InstanceofExpressions.1 [static fields]
+(global $$class-initialized@instanceofexpression.InstanceofExpressions.1 (mut i32)
+ (i32.const 0)
+)
+(global $$class@instanceofexpression.InstanceofExpressions.1 (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
 
 ;;; Code for instanceofexpression.InstanceofExpressions [vtable.init]
 (global $instanceofexpression.InstanceofExpressions.vtable (ref $instanceofexpression.InstanceofExpressions.vtable)
  (struct.new $instanceofexpression.InstanceofExpressions.vtable
   (ref.func $$getClassImpl__java_lang_Class@instanceofexpression.InstanceofExpressions)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_testInstanceOfArray__void@instanceofexpression.InstanceofExpressions)
@@ -66,56 +74,13 @@
  (struct.new $instanceofexpression.InstanceofExpressions.1.vtable
   (ref.func $$getClassImpl__java_lang_Class@instanceofexpression.InstanceofExpressions.1)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
  )
 )
-
-;;; Code for instanceofexpression.InstanceofExpressions.1 [itable.init]
-
 (global $java.io.Serializable.vtable@$instanceofexpression.InstanceofExpressions.1 (ref $java.io.Serializable.vtable)
  (struct.new $java.io.Serializable.vtable
  )
-)
-(global $instanceofexpression.InstanceofExpressions.1.itable (ref $instanceofexpression.InstanceofExpressions.1.itable)
- (struct.new $instanceofexpression.InstanceofExpressions.1.itable
-   (global.get $java.io.Serializable.vtable@$instanceofexpression.InstanceofExpressions.1)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
- )
-)
-
-;;; Code for instanceofexpression.InstanceofExpressions [static fields]
-(global $f_$initialized__instanceofexpression_InstanceofExpressions (mut i32)
- (i32.const 0)
-)
-(global $f_$class__instanceofexpression_InstanceofExpressions (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|foo|__instanceofexpression_InstanceofExpressions (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-(global $f_$string_|bar|__instanceofexpression_InstanceofExpressions (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-(global $f_$string_|instanceofex...|__instanceofexpression_InstanceofExpressions (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for instanceofexpression.InstanceofExpressions.1 [static fields]
-(global $f_$initialized__instanceofexpression_InstanceofExpressions_1 (mut i32)
- (i32.const 0)
-)
-(global $f_$class__instanceofexpression_InstanceofExpressions_1 (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|instanceofex...|__instanceofexpression_InstanceofExpressions_1 (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
 )
 
 ;;; Code for instanceofexpression.InstanceofExpressions [methods]
@@ -123,16 +88,26 @@
 ;;; InstanceofExpressions InstanceofExpressions.$create()
 (func $$create__@instanceofexpression.InstanceofExpressions
  (result (ref null $instanceofexpression.InstanceofExpressions))
- ;;@ instanceofexpression/InstanceofExpressions.java:20:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
+  (call $$clinit__void_<once>_@instanceofexpression.InstanceofExpressions )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
+  (return (call $$create_$private__@instanceofexpression.InstanceofExpressions ))
+ )
+)
+
+;;; InstanceofExpressions InstanceofExpressions.$create_$private()
+(func $$create_$private__@instanceofexpression.InstanceofExpressions
+ (result (ref null $instanceofexpression.InstanceofExpressions))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
  (local $$instance (ref null $instanceofexpression.InstanceofExpressions))
  (block
-  ;;@ instanceofexpression/InstanceofExpressions.java:20:13
-  (call $$clinit__void@instanceofexpression.InstanceofExpressions )
-  ;;@ instanceofexpression/InstanceofExpressions.java:20:13
-  (local.set $$instance (struct.new $instanceofexpression.InstanceofExpressions (ref.as_non_null (global.get $instanceofexpression.InstanceofExpressions.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:20:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
+  (local.set $$instance (struct.new $instanceofexpression.InstanceofExpressions (global.get $instanceofexpression.InstanceofExpressions.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
   (call $$ctor__void_$p_instanceofexpression_InstanceofExpressions@instanceofexpression.InstanceofExpressions (ref.as_non_null (local.get $$instance)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:20:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
   (return (local.get $$instance))
  )
 )
@@ -140,9 +115,9 @@
 ;;; void InstanceofExpressions.$ctor()
 (func $$ctor__void_$p_instanceofexpression_InstanceofExpressions@instanceofexpression.InstanceofExpressions
  (param $this (ref null $instanceofexpression.InstanceofExpressions))
- ;;@ instanceofexpression/InstanceofExpressions.java:20:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
  (block
-  ;;@ instanceofexpression/InstanceofExpressions.java:20:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -151,21 +126,21 @@
 (func $m_testInstanceofClass__void@instanceofexpression.InstanceofExpressions
  (type $function.m_testInstanceofClass__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ instanceofexpression/InstanceofExpressions.java:22:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:22:14
  (local $object (ref null $java.lang.Object))
  (local $b i32)
  (local $this (ref null $instanceofexpression.InstanceofExpressions))
  (local.set $this (ref.cast (ref $instanceofexpression.InstanceofExpressions) (local.get $this.untyped)))
  (block
-  ;;@ instanceofexpression/InstanceofExpressions.java:23:4
-  (local.set $object (call $$create__@instanceofexpression.InstanceofExpressions ))
-  ;;@ instanceofexpression/InstanceofExpressions.java:24:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:23:4
+  (local.set $object (call $$create_$private__@instanceofexpression.InstanceofExpressions ))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:24:4
   
-  ;;@ instanceofexpression/InstanceofExpressions.java:25:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:25:4
   (local.set $b (ref.test (ref $java.lang.Object) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:26:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:26:4
   (local.set $b (ref.test (ref $instanceofexpression.InstanceofExpressions) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:27:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:27:4
   (local.set $b (ref.test (ref $java.lang.String) (local.get $object)))
  )
 )
@@ -175,31 +150,31 @@
 (func $m_testInstanceofInterface__void@instanceofexpression.InstanceofExpressions
  (type $function.m_testInstanceofInterface__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ instanceofexpression/InstanceofExpressions.java:30:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:30:14
  (local $o (ref null $java.lang.Object))
  (local $b i32)
  (local $$expression (ref null $instanceofexpression.InstanceofExpressions.1))
  (local $this (ref null $instanceofexpression.InstanceofExpressions))
  (local.set $this (ref.cast (ref $instanceofexpression.InstanceofExpressions) (local.get $this.untyped)))
  (block
-  ;;@ instanceofexpression/InstanceofExpressions.java:31:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:31:4
   (local.set $o (call $$create__@java.lang.Object ))
-  ;;@ instanceofexpression/InstanceofExpressions.java:32:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:32:4
   
-  ;;@ instanceofexpression/InstanceofExpressions.java:33:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:33:4
   (local.set $b (if (result i32) (ref.is_null (local.get $o))
    (then (i32.const 0))
    (else 
-    (ref.test (ref $java.io.Serializable.vtable) (struct.get $itable $slot0 (struct.get $java.lang.Object $itable (local.get $o) )))
+    (ref.test (ref $java.io.Serializable.vtable) (call $get.itable.$java.io.Serializable (local.get $o) ))
    )
   ))
-  ;;@ instanceofexpression/InstanceofExpressions.java:34:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:4
   (local.set $b (block (result i32)
    (local.set $$expression (call $$create__instanceofexpression_InstanceofExpressions@instanceofexpression.InstanceofExpressions.1 (local.get $this)))
    (if (result i32) (ref.is_null (local.get $$expression))
     (then (i32.const 0))
     (else 
-     (ref.test (ref $java.io.Serializable.vtable) (struct.get $itable $slot0 (struct.get $java.lang.Object $itable (local.get $$expression) )))
+     (ref.test (ref $java.io.Serializable.vtable) (call $get.itable.$java.io.Serializable (local.get $$expression) ))
     )
    )
   ))
@@ -211,40 +186,40 @@
 (func $m_testInstanceofBoxedType__void@instanceofexpression.InstanceofExpressions
  (type $function.m_testInstanceofBoxedType__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ instanceofexpression/InstanceofExpressions.java:37:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:37:14
  (local $b (ref null $java.lang.Object))
  (local $a i32)
  (local $d (ref null $java.lang.Double))
  (local $this (ref null $instanceofexpression.InstanceofExpressions))
  (local.set $this (ref.cast (ref $instanceofexpression.InstanceofExpressions) (local.get $this.untyped)))
  (block
-  ;;@ instanceofexpression/InstanceofExpressions.java:38:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:38:4
   (local.set $b (call $$create__int@java.lang.Integer (i32.const 1)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:40:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:40:4
   (local.set $a (ref.test (ref $java.lang.Byte) (local.get $b)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:41:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:41:4
   (local.set $a (ref.test (ref $java.lang.Double) (local.get $b)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:42:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:42:4
   (local.set $a (ref.test (ref $java.lang.Float) (local.get $b)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:43:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:43:4
   (local.set $a (ref.test (ref $java.lang.Integer) (local.get $b)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:44:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:44:4
   (local.set $a (ref.test (ref $java.lang.Long) (local.get $b)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:45:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:45:4
   (local.set $a (ref.test (ref $java.lang.Short) (local.get $b)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:46:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:46:4
   (local.set $a (ref.test (ref $java.lang.Number) (local.get $b)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:47:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:47:4
   (local.set $a (ref.test (ref $java.lang.Character) (local.get $b)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:48:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:48:4
   (local.set $a (ref.test (ref $java.lang.Boolean) (local.get $b)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:50:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:50:4
   (local.set $d (ref.null $java.lang.Double))
-  ;;@ instanceofexpression/InstanceofExpressions.java:51:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:51:4
   (local.set $a (ref.test (ref $java.lang.Object) (local.get $d)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:52:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:52:4
   (local.set $a (ref.test (ref $java.lang.Number) (local.get $d)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:53:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:53:4
   (local.set $a (ref.test (ref $java.lang.Double) (local.get $d)))
  )
 )
@@ -254,7 +229,7 @@
 (func $m_testInstanceOfArray__void@instanceofexpression.InstanceofExpressions
  (type $function.m_testInstanceOfArray__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ instanceofexpression/InstanceofExpressions.java:56:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:56:14
  (local $object (ref null $java.lang.Object))
  (local $objectArray (ref null $javaemul.internal.WasmArray.OfObject))
  (local $objectDoubleArray (ref null $javaemul.internal.WasmArray.OfObject))
@@ -263,57 +238,57 @@
  (local $this (ref null $instanceofexpression.InstanceofExpressions))
  (local.set $this (ref.cast (ref $instanceofexpression.InstanceofExpressions) (local.get $this.untyped)))
  (block
-  ;;@ instanceofexpression/InstanceofExpressions.java:57:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:57:4
   (local.set $object (call $$create__@java.lang.Object ))
-  ;;@ instanceofexpression/InstanceofExpressions.java:58:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:58:4
   (local.set $objectArray (call $m_newWithLength__int__javaemul_internal_WasmArray_OfObject@javaemul.internal.WasmArray.OfObject (i32.const 0)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:59:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:59:4
   (local.set $objectDoubleArray (call $m_createMultiDimensional__arrayOf_int__int__arrayOf_java_lang_Object@javaemul.internal.WasmArray (call $m_newWithLiteral__arrayOf_int__javaemul_internal_WasmArray_OfInt@javaemul.internal.WasmArray.OfInt (array.new_data $int.array $arrayliteral@instanceofexpression.InstanceofExpressions-1 (i32.const 0) (i32.const 2)))(i32.const -1)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:60:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:60:4
   (local.set $stringArray (call $m_newWithLength__int__javaemul_internal_WasmArray_OfObject@javaemul.internal.WasmArray.OfObject (i32.const 0)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:62:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:62:4
   
-  ;;@ instanceofexpression/InstanceofExpressions.java:63:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:63:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:64:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:64:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:65:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:65:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:66:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:66:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:68:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:68:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $objectArray)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:69:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:69:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $objectArray)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:70:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:70:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $objectArray)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:71:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:71:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $objectArray)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:73:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:73:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $objectDoubleArray)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:74:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:74:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $objectDoubleArray)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:75:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:75:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $objectDoubleArray)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:77:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:77:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $stringArray)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:78:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:78:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfObject) (local.get $stringArray)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:80:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:80:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfByte) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:81:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:81:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfShort) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:82:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:82:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfInt) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:83:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:83:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfLong) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:84:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:84:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfFloat) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:85:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:85:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfDouble) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:86:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:86:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfChar) (local.get $object)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:87:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:87:4
   (local.set $a (ref.test (ref $javaemul.internal.WasmArray.OfBoolean) (local.get $object)))
  )
 )
@@ -323,45 +298,120 @@
 (func $m_testPrecedence__void@instanceofexpression.InstanceofExpressions
  (type $function.m_testPrecedence__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ instanceofexpression/InstanceofExpressions.java:90:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:90:14
  (local $b i32)
  (local $this (ref null $instanceofexpression.InstanceofExpressions))
  (local.set $this (ref.cast (ref $instanceofexpression.InstanceofExpressions) (local.get $this.untyped)))
  (block
-  ;;@ instanceofexpression/InstanceofExpressions.java:91:4
-  (local.set $b (ref.test (ref $java.lang.String) (if (result (ref null $java.lang.String)) (i32.const 0) (then (call $function.no.side.effects.$getString_|foo|__java_lang_String (ref.func $$getString_|foo|__java_lang_String@instanceofexpression.InstanceofExpressions) )) (else (call $function.no.side.effects.$getString_|bar|__java_lang_String (ref.func $$getString_|bar|__java_lang_String@instanceofexpression.InstanceofExpressions) )))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:91:4
+  (local.set $b (ref.test (ref $java.lang.String) (if (result (ref null $java.lang.String)) (i32.const 0) (then (call $$getString_|foo|__java_lang_String_<once>_@instanceofexpression.InstanceofExpressions )) (else (call $$getString_|bar|__java_lang_String_<once>_@instanceofexpression.InstanceofExpressions )))))
  )
 )
 (elem declare func $m_testPrecedence__void@instanceofexpression.InstanceofExpressions)
 
-;;; void InstanceofExpressions.$clinit()
-(func $$clinit__void@instanceofexpression.InstanceofExpressions
- ;;@ instanceofexpression/InstanceofExpressions.java:20:13
+;;; void InstanceofExpressions.testPatternMatch()
+(func $m_testPatternMatch__void_$p_instanceofexpression_InstanceofExpressions@instanceofexpression.InstanceofExpressions
+ (param $this (ref null $instanceofexpression.InstanceofExpressions))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:94:15
+ (local $exp (ref null $java.lang.Object))
+ (local $s (ref null $java.lang.String))
+ (local $exp_1 (ref null $java.lang.Object))
+ (local $i (ref null $java.lang.Integer))
+ (local $l i32)
+ (local $exp_2 (ref null $java.lang.Object))
+ (local $n (ref null $java.lang.Number))
+ (local $j i32)
+ (local $k i32)
  (block
-  ;;@ instanceofexpression/InstanceofExpressions.java:20:13
-  (if (global.get $f_$initialized__instanceofexpression_InstanceofExpressions)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:95:4
+  (if (if (result i32) (i32.eqz (block (result i32)
+    (local.set $exp (call $$create__@java.lang.Object ))
+    (local.set $s (if (result (ref null $java.lang.String)) (ref.test (ref $java.lang.String) (local.get $exp)) (then (ref.cast (ref null $java.lang.String) (local.get $exp))) (else (ref.null $java.lang.String))))
+    (i32.eqz (ref.is_null (local.get $s)))
+   )) (then (i32.const 1)) (else (i32.eq (call $m_length__int@java.lang.String (ref.as_non_null (local.get $s))) (i32.const 2))))
    (then
-    ;;@ instanceofexpression/InstanceofExpressions.java:20:13
+    (block
+     ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:99:6
+     (return )
+    )
+   )
+  )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:101:4
+  (if (if (result i32) (block (result i32)
+    (local.set $exp_1 (call $$create__@java.lang.Object ))
+    (local.set $i (if (result (ref null $java.lang.Integer)) (ref.test (ref $java.lang.Integer) (local.get $exp_1)) (then (ref.cast (ref null $java.lang.Integer) (local.get $exp_1))) (else (ref.null $java.lang.Integer))))
+    (i32.eqz (ref.is_null (local.get $i)))
+   ) (then (i32.eq (call $m_intValue__int@java.lang.Integer (ref.as_non_null (local.get $i))) (i32.const 2))) (else (i32.const 0)))
+   (then
+    (block
+     ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:105:6
+     (local.set $l (call $m_intValue__int@java.lang.Integer (ref.as_non_null (local.get $i))))
+    )
+   )
+  )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:107:4
+  (if (i32.eqz (block (result i32)
+    (local.set $exp_2 (call $$create__@java.lang.Object ))
+    (local.set $n (if (result (ref null $java.lang.Number)) (ref.test (ref $java.lang.Number) (local.get $exp_2)) (then (ref.cast (ref null $java.lang.Number) (local.get $exp_2))) (else (ref.null $java.lang.Number))))
+    (i32.eqz (ref.is_null (local.get $n)))
+   ))
+   (then
+    (block
+     ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:110:6
+     (local.set $j (call $m_length__int@java.lang.String (ref.as_non_null (local.get $s))))
+    )
+   )(else
+    (block
+     ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:112:6
+     (local.set $k (call_ref $function.m_byteValue__byte (ref.as_non_null (local.get $n))(struct.get $java.lang.Number.vtable $m_byteValue__byte (struct.get $java.lang.Number $vtable(local.get $n)))))
+    )
+   )
+  )
+ )
+)
+
+;;; void InstanceofExpressions.testReproCloneInstanceof()
+(func $m_testReproCloneInstanceof__void_$p_instanceofexpression_InstanceofExpressions@instanceofexpression.InstanceofExpressions
+ (param $this (ref null $instanceofexpression.InstanceofExpressions))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:116:15
+ (local $o (ref null $java.lang.Object))
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:117:4
+  (local.set $o (ref.null $java.lang.Object))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:118:4
+  (drop (call $$create__int@java.lang.Integer (if (result i32) (ref.test (ref $java.lang.String) (local.get $o)) (then (i32.const 1)) (else (i32.const 2)))))
+ )
+)
+
+;;; void InstanceofExpressions.$clinit()
+(func $$clinit__void_<once>_@instanceofexpression.InstanceofExpressions
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
+  (if (global.get $$class-initialized@instanceofexpression.InstanceofExpressions)
+   (then
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
     (return )
    )
   )
-  ;;@ instanceofexpression/InstanceofExpressions.java:20:13
-  (global.set $f_$initialized__instanceofexpression_InstanceofExpressions (i32.const 1))
-  ;;@ instanceofexpression/InstanceofExpressions.java:20:13
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
+  (global.set $$class-initialized@instanceofexpression.InstanceofExpressions (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:20:13
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> InstanceofExpressions.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@instanceofexpression.InstanceofExpressions
+(func $$getClassMetadata__java_lang_Class_<once>_@instanceofexpression.InstanceofExpressions
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__instanceofexpression_InstanceofExpressions))
+  (if (i32.eqz (ref.is_null (global.get $$class@instanceofexpression.InstanceofExpressions)))
    (then
-    (global.set $f_$class__instanceofexpression_InstanceofExpressions (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|instanceofex...|__java_lang_String (ref.func $$getString_|instanceofex...|__java_lang_String@instanceofexpression.InstanceofExpressions) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@instanceofexpression.InstanceofExpressions))
    )
   )
-  (return (global.get $f_$class__instanceofexpression_InstanceofExpressions))
+  (global.set $$class@instanceofexpression.InstanceofExpressions (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|instanceofex...|__java_lang_String_<once>_@instanceofexpression.InstanceofExpressions )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@instanceofexpression.InstanceofExpressions))
  )
 )
 
@@ -373,49 +423,10 @@
  (local $this (ref null $instanceofexpression.InstanceofExpressions))
  (local.set $this (ref.cast (ref $instanceofexpression.InstanceofExpressions) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@instanceofexpression.InstanceofExpressions) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@instanceofexpression.InstanceofExpressions ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@instanceofexpression.InstanceofExpressions)
-
-;;; String InstanceofExpressions.$getString_|foo|()
-(func $$getString_|foo|__java_lang_String@instanceofexpression.InstanceofExpressions
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|foo|__instanceofexpression_InstanceofExpressions))
-   (then
-    (global.set $f_$string_|foo|__instanceofexpression_InstanceofExpressions (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "foo")))
-   )
-  )
-  (return (global.get $f_$string_|foo|__instanceofexpression_InstanceofExpressions))
- )
-)
-
-;;; String InstanceofExpressions.$getString_|bar|()
-(func $$getString_|bar|__java_lang_String@instanceofexpression.InstanceofExpressions
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|bar|__instanceofexpression_InstanceofExpressions))
-   (then
-    (global.set $f_$string_|bar|__instanceofexpression_InstanceofExpressions (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "bar")))
-   )
-  )
-  (return (global.get $f_$string_|bar|__instanceofexpression_InstanceofExpressions))
- )
-)
-
-;;; String InstanceofExpressions.$getString_|instanceofex...|()
-(func $$getString_|instanceofex...|__java_lang_String@instanceofexpression.InstanceofExpressions
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|instanceofex...|__instanceofexpression_InstanceofExpressions))
-   (then
-    (global.set $f_$string_|instanceofex...|__instanceofexpression_InstanceofExpressions (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "instanceofexpression.InstanceofExpressions")))
-   )
-  )
-  (return (global.get $f_$string_|instanceofex...|__instanceofexpression_InstanceofExpressions))
- )
-)
 
 ;;; Code for instanceofexpression.InstanceofExpressions.1 [methods]
 
@@ -423,16 +434,16 @@
 (func $$create__instanceofexpression_InstanceofExpressions@instanceofexpression.InstanceofExpressions.1
  (param $$outer_this (ref null $instanceofexpression.InstanceofExpressions))
  (result (ref null $instanceofexpression.InstanceofExpressions.1))
- ;;@ instanceofexpression/InstanceofExpressions.java:34:27
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
  (local $$instance (ref null $instanceofexpression.InstanceofExpressions.1))
  (block
-  ;;@ instanceofexpression/InstanceofExpressions.java:34:27
-  (call $$clinit__void@instanceofexpression.InstanceofExpressions.1 )
-  ;;@ instanceofexpression/InstanceofExpressions.java:34:27
-  (local.set $$instance (struct.new $instanceofexpression.InstanceofExpressions.1 (ref.as_non_null (global.get $instanceofexpression.InstanceofExpressions.1.vtable)) (ref.as_non_null (global.get $instanceofexpression.InstanceofExpressions.1.itable)) (i32.const 0) (ref.null $instanceofexpression.InstanceofExpressions)))
-  ;;@ instanceofexpression/InstanceofExpressions.java:34:27
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
+  (call $$clinit__void_<once>_@instanceofexpression.InstanceofExpressions.1 )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
+  (local.set $$instance (struct.new $instanceofexpression.InstanceofExpressions.1 (global.get $instanceofexpression.InstanceofExpressions.1.vtable) (global.get $instanceofexpression.InstanceofExpressions.1.itable) (i32.const 0) (ref.null $instanceofexpression.InstanceofExpressions)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
   (call $$ctor__instanceofexpression_InstanceofExpressions__void_$p_instanceofexpression_InstanceofExpressions_1@instanceofexpression.InstanceofExpressions.1 (ref.as_non_null (local.get $$instance))(local.get $$outer_this))
-  ;;@ instanceofexpression/InstanceofExpressions.java:34:27
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
   (return (local.get $$instance))
  )
 )
@@ -441,43 +452,44 @@
 (func $$ctor__instanceofexpression_InstanceofExpressions__void_$p_instanceofexpression_InstanceofExpressions_1@instanceofexpression.InstanceofExpressions.1
  (param $this (ref null $instanceofexpression.InstanceofExpressions.1))
  (param $$outer_this (ref null $instanceofexpression.InstanceofExpressions))
- ;;@ instanceofexpression/InstanceofExpressions.java:34:27
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
  (block
-  ;;@ instanceofexpression/InstanceofExpressions.java:34:27
-  (struct.set $instanceofexpression.InstanceofExpressions.1 $$outer_this__instanceofexpression_InstanceofExpressions_1 (local.get $this) (local.get $$outer_this))
-  ;;@ instanceofexpression/InstanceofExpressions.java:34:27
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
+  (struct.set $instanceofexpression.InstanceofExpressions.1 $$outer_this@instanceofexpression.InstanceofExpressions.1 (local.get $this) (local.get $$outer_this))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
 
 ;;; void <anonymous> implements Serializable.$clinit()
-(func $$clinit__void@instanceofexpression.InstanceofExpressions.1
- ;;@ instanceofexpression/InstanceofExpressions.java:34:27
+(func $$clinit__void_<once>_@instanceofexpression.InstanceofExpressions.1
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
  (block
-  ;;@ instanceofexpression/InstanceofExpressions.java:34:27
-  (if (global.get $f_$initialized__instanceofexpression_InstanceofExpressions_1)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
+  (if (global.get $$class-initialized@instanceofexpression.InstanceofExpressions.1)
    (then
-    ;;@ instanceofexpression/InstanceofExpressions.java:34:27
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
     (return )
    )
   )
-  ;;@ instanceofexpression/InstanceofExpressions.java:34:27
-  (global.set $f_$initialized__instanceofexpression_InstanceofExpressions_1 (i32.const 1))
-  ;;@ instanceofexpression/InstanceofExpressions.java:34:27
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
+  (global.set $$class-initialized@instanceofexpression.InstanceofExpressions.1 (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/instanceofexpression/readable-j2wasm.js/instanceofexpression/InstanceofExpressions.java:34:8
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> <anonymous> implements Serializable.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@instanceofexpression.InstanceofExpressions.1
+(func $$getClassMetadata__java_lang_Class_<once>_@instanceofexpression.InstanceofExpressions.1
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__instanceofexpression_InstanceofExpressions_1))
+  (if (i32.eqz (ref.is_null (global.get $$class@instanceofexpression.InstanceofExpressions.1)))
    (then
-    (global.set $f_$class__instanceofexpression_InstanceofExpressions_1 (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|instanceofex...|__java_lang_String (ref.func $$getString_|instanceofex...|__java_lang_String@instanceofexpression.InstanceofExpressions.1) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@instanceofexpression.InstanceofExpressions.1))
    )
   )
-  (return (global.get $f_$class__instanceofexpression_InstanceofExpressions_1))
+  (global.set $$class@instanceofexpression.InstanceofExpressions.1 (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|instanceofex...|__java_lang_String_<once>_@instanceofexpression.InstanceofExpressions.1 )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@instanceofexpression.InstanceofExpressions.1))
  )
 )
 
@@ -489,20 +501,7 @@
  (local $this (ref null $instanceofexpression.InstanceofExpressions.1))
  (local.set $this (ref.cast (ref $instanceofexpression.InstanceofExpressions.1) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@instanceofexpression.InstanceofExpressions.1) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@instanceofexpression.InstanceofExpressions.1 ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@instanceofexpression.InstanceofExpressions.1)
-
-;;; String <anonymous> implements Serializable.$getString_|instanceofex...|()
-(func $$getString_|instanceofex...|__java_lang_String@instanceofexpression.InstanceofExpressions.1
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|instanceofex...|__instanceofexpression_InstanceofExpressions_1))
-   (then
-    (global.set $f_$string_|instanceofex...|__instanceofexpression_InstanceofExpressions_1 (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "instanceofexpression.InstanceofExpressions$1")))
-   )
-  )
-  (return (global.get $f_$string_|instanceofex...|__instanceofexpression_InstanceofExpressions_1))
- )
-)

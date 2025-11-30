@@ -19,127 +19,102 @@ import com.google.j2cl.common.InternalCompilerError
 import com.google.j2cl.transpiler.ast.ArrayTypeDescriptor
 import com.google.j2cl.transpiler.ast.DeclaredTypeDescriptor
 import com.google.j2cl.transpiler.ast.FieldDescriptor
+import com.google.j2cl.transpiler.ast.IntersectionTypeDescriptor
 import com.google.j2cl.transpiler.ast.Method
-import com.google.j2cl.transpiler.ast.MethodDescriptor
 import com.google.j2cl.transpiler.ast.PrimitiveTypeDescriptor
 import com.google.j2cl.transpiler.ast.PrimitiveTypes
 import com.google.j2cl.transpiler.ast.TypeDeclaration
 import com.google.j2cl.transpiler.ast.TypeDescriptor
 import com.google.j2cl.transpiler.ast.TypeDescriptors
 import com.google.j2cl.transpiler.ast.TypeVariable
+import com.google.j2cl.transpiler.ast.UnionTypeDescriptor
 import com.google.j2cl.transpiler.ast.Variable
-import com.google.j2cl.transpiler.ast.Visibility
 import com.google.j2cl.transpiler.backend.kotlin.ast.CompanionDeclaration
-import com.google.j2cl.transpiler.backend.kotlin.ast.CompanionObject
-import com.google.j2cl.transpiler.backend.kotlin.common.camelCaseStartsWith
+import com.google.j2cl.transpiler.backend.kotlin.ast.Visibility as KtVisibility
 import com.google.j2cl.transpiler.backend.kotlin.common.letIf
 import com.google.j2cl.transpiler.backend.kotlin.common.mapFirst
 import com.google.j2cl.transpiler.backend.kotlin.common.titleCased
 
 /** The names are mangled according to J2ObjC rules. */
-internal data class MethodObjCNames(val methodName: String, val parameterNames: List<String>)
+internal data class MethodObjCNames(val objCName: ObjCName, val parameterObjCNames: List<ObjCName>)
+
+/** ObjC name, together with its Swift counterpart. */
+internal data class ObjCName(val string: String, val swiftString: String? = null)
 
 internal val String.escapeObjCKeyword
   get() = letIf(objCKeywords.contains(this)) { it + "_" }
 
-internal fun String.escapeReservedObjCPrefixWith(newPrefix: String) =
-  letIf(objCReservedPrefixes.any { camelCaseStartsWith(it) }) { "$newPrefix$titleCased" }
-
-internal val String.escapeObjCProperty: String
-  get() = escapeObjCKeyword.escapeReservedObjCPrefixWith("do")
-
-internal val String.escapeObjCEnumProperty: String
-  get() = escapeObjCKeyword.escapeReservedObjCPrefixWith("the")
+internal val KtVisibility.needsObjCNameAnnotation
+  get() = isPublic || isProtected
 
 internal fun Method.toObjCNames(): MethodObjCNames? =
   when {
-    !descriptor.needsObjCNameAnnotations -> null
     descriptor.isConstructor -> toConstructorObjCNames()
     else -> toNonConstructorObjCNames()
   }
 
-private val MethodDescriptor.needsObjCNameAnnotations: Boolean
-  get() =
-    enclosingTypeDescriptor.typeDeclaration.let { enclosingTypeDeclaration ->
-      !enclosingTypeDeclaration.isLocal &&
-        !enclosingTypeDeclaration.isAnonymous &&
-        visibility.needsObjCNameAnnotation &&
-        !isKtOverride
-    }
-
-internal val FieldDescriptor.needsObjCNameAnnotations: Boolean
-  get() =
-    enclosingTypeDescriptor.typeDeclaration.let { enclosingTypeDeclaration ->
-      enclosingTypeDeclaration.visibility.needsObjCNameAnnotation &&
-        !enclosingTypeDeclaration.isLocal &&
-        !enclosingTypeDeclaration.isAnonymous &&
-        visibility.needsObjCNameAnnotation
-    }
-
-internal val TypeDeclaration.needsObjCNameAnnotation: Boolean
-  get() = visibility.needsObjCNameAnnotation && !isLocal && !isAnonymous
-
-internal val CompanionObject.needsObjCNameAnnotation
-  get() = enclosingTypeDeclaration.needsObjCNameAnnotation
-
-private val Visibility.needsObjCNameAnnotation
-  get() = this == Visibility.PUBLIC || this == Visibility.PROTECTED
-
-private fun Method.toConstructorObjCNames(): MethodObjCNames =
+internal fun Method.toConstructorObjCNames(): MethodObjCNames =
   descriptor.objectiveCName.let { objectiveCName ->
     MethodObjCNames(
-      "init",
-      if (objectiveCName != null) {
-        objectiveCName.objCMethodParameterNames.mapFirst {
-          val prefix = "initWith"
-          if (it.startsWith(prefix)) {
-            it.substring(prefix.length)
-          } else {
-            parameters.first().objCName
+      ObjCName(string = "init"),
+      if (
+          objectiveCName != null &&
+            (objectiveCName.contains(":") || objectiveCName.startsWith("initWith"))
+        ) {
+          objectiveCName.objCMethodParameterNames.mapFirst {
+            val prefix = "initWith"
+            if (it.startsWith(prefix)) {
+              it.substring(prefix.length)
+            } else {
+              parameters.first().objCName
+            }
+          }
+        } else {
+          parameters.mapIndexed { index, parameter ->
+            parameter.objCName.letIf(index != 0) { "with$it" }
           }
         }
-      } else {
-        parameters.mapIndexed { index, parameter ->
-          parameter.objCName.letIf(index != 0) { "with$it" }
-        }
-      }
+        .map { ObjCName(string = it) },
     )
   }
 
-private fun Method.toNonConstructorObjCNames(): MethodObjCNames =
+internal fun Method.toNonConstructorObjCNames(): MethodObjCNames =
   descriptor.objectiveCName.let { objectiveCName ->
-    if (objectiveCName == null || parameters.isEmpty()) {
+    if (objectiveCName == null || !objectiveCName.contains(":")) {
       MethodObjCNames(
-        objectiveCName ?: descriptor.ktName.escapeJ2ObjCKeyword,
-        parameters.map { "with${it.objCName}" }
+        ObjCName(
+          string = objectiveCName ?: descriptor.ktName.escapeJ2ObjCKeyword,
+          swiftString = swiftName,
+        ),
+        parameters.map {
+          ObjCName(string = it.objCParameterName, swiftString = swiftParameterName(it))
+        },
       )
     } else {
       val objCParameterNames = objectiveCName.objCMethodParameterNames
-      val firstObjCParameterName = objCParameterNames.firstOrNull()
-      if (firstObjCParameterName == null) {
-        MethodObjCNames(objectiveCName, objCParameterNames)
-      } else {
-        // Split string by index of last uppercase or in half arbitrarily. Does not
-        // handle single character objc name.
-        check(firstObjCParameterName.length > 1)
-        val splitIndex =
-          firstObjCParameterName.indexOfLast { it.isUpperCase() }.takeIf { it > 0 }
-            ?: (firstObjCParameterName.length / 2)
-        MethodObjCNames(
-          firstObjCParameterName.substring(0, splitIndex),
-          objCParameterNames.mapFirst { it.substring(splitIndex) }
-        )
-      }
+      val firstObjCParameterName = objCParameterNames.first()
+      // Split string by one of:
+      // - first occurrence of "With",
+      // - index of last uppercase character,
+      // - in half arbitrarily.
+      // Does not handle single character objc name.
+      check(firstObjCParameterName.length > 1)
+      val splitIndex =
+        null
+          ?: firstObjCParameterName.indexOf("With").takeIf { it > 0 }
+          ?: firstObjCParameterName.indexOfLast { it.isUpperCase() }.takeIf { it > 0 }
+          ?: firstObjCParameterName.length.div(2)
+      MethodObjCNames(
+        ObjCName(string = firstObjCParameterName.substring(0, splitIndex)),
+        objCParameterNames.mapFirst { it.substring(splitIndex) }.map { ObjCName(string = it) },
+      )
     }
   }
 
 private val String.objCMethodParameterNames: List<String>
   get() = letIf(lastOrNull() == ':') { dropLast(1) }.split(":")
 
-private const val OBJC_TYPE_NAME_PREFIX: String = "J2kt"
-
-internal val TypeDeclaration.objCName: String
-  get() = OBJC_TYPE_NAME_PREFIX + objCNameWithoutPrefix
+internal fun TypeDeclaration.objCName(prefix: String): String = prefix + objCNameWithoutPrefix
 
 internal val TypeDeclaration.objCNameWithoutPrefix: String
   get() = mappedObjCName ?: nonMappedObjCName
@@ -147,8 +122,8 @@ internal val TypeDeclaration.objCNameWithoutPrefix: String
 private val String.objCCompanionTypeName: String
   get() = this + "Companion"
 
-internal val CompanionDeclaration.objCName
-  get() = enclosingTypeDeclaration.objCName.objCCompanionTypeName
+internal fun CompanionDeclaration.objCName(prefix: String) =
+  enclosingTypeDeclaration.objCName(prefix).objCCompanionTypeName
 
 internal val CompanionDeclaration.objCNameWithoutPrefix
   get() = enclosingTypeDeclaration.objCNameWithoutPrefix.objCCompanionTypeName
@@ -189,7 +164,10 @@ private val TypeDeclaration.simpleObjCName: String
 private val TypeDeclaration.objCPackagePrefix: String
   get() = packageName?.objCPackagePrefix ?: ""
 
-private val String.objCPackagePrefix: String
+internal val String.objCPackagePrefix: String
+  get() = qualifiedNameToObjCName
+
+internal val String.qualifiedNameToObjCName: String
   get() = split('.').joinToString(separator = "") { it.titleCased.objCName }
 
 internal val String.objCName
@@ -203,7 +181,8 @@ internal fun TypeDescriptor.objCName(useId: Boolean): String =
     is ArrayTypeDescriptor -> arrayObjCName
     is DeclaredTypeDescriptor -> declaredObjCName(useId = useId)
     is TypeVariable -> variableObjCName(useId = useId)
-    else -> ID_OBJC_NAME
+    is IntersectionTypeDescriptor -> intersectionObjCName(useId = useId)
+    is UnionTypeDescriptor -> ID_OBJC_NAME
   }
 
 private val PrimitiveTypeDescriptor.primitiveObjCName: String
@@ -237,24 +216,35 @@ private val ArrayTypeDescriptor.dimensionsSuffix: String
 private fun TypeVariable.variableObjCName(useId: Boolean): String =
   upperBoundTypeDescriptor.objCName(useId = useId)
 
-private val Variable.objCName: String
+private fun IntersectionTypeDescriptor.intersectionObjCName(useId: Boolean): String =
+  firstType.objCName(useId = useId)
+
+internal val Variable.objCName: String
   get() = typeDescriptor.objCName(useId = true).titleCased
 
+internal val Variable.objCParameterName: String
+  get() = "with$objCName"
+
 internal val FieldDescriptor.objCName: String
-  get() = name!!.objCName.escapeJ2ObjCKeyword.letIf(!isEnumConstant) { it + "_" }
+  get() = name!!.objCName.escapeJ2ObjCKeyword.letIf(objCNameNeedsUnderscoreSuffix) { it + "_" }
+
+// Enum values and static final fields should follow naming convention and use SNAKE_CASE, so they
+// should not conflict with methods. Other fields require underscore suffix to avoid naming
+// conflict.
+private val FieldDescriptor.objCNameNeedsUnderscoreSuffix: Boolean
+  get() = !isEnumConstant && (!isStatic || !isFinal)
 
 internal fun MethodObjCNames.escapeObjCMethod(isConstructor: Boolean): MethodObjCNames =
   copy(
-    methodName =
-      methodName
-        .letIf(parameterNames.isEmpty()) { it.escapeObjCKeyword }
-        .letIf(!isConstructor) { it.escapeReservedObjCPrefixWith("do") },
-    parameterNames = parameterNames.letIf(isConstructor) { it.mapFirst { "With$it" } }
+    objCName =
+      ObjCName(
+        string = objCName.string.letIf(parameterObjCNames.isEmpty()) { it.escapeObjCKeyword }
+      ),
+    parameterObjCNames =
+      parameterObjCNames.letIf(isConstructor) {
+        it.mapFirst { ObjCName(string = "With${it.string}") }
+      },
   )
-
-// Taken from GitHub:
-// "JetBrains/kotlin-native/backend.native/compiler/ir/backend.native/src/org/jetbrains/kotlin/backend/konan/objcexport/ObjCExportNamer.kt"
-private val objCReservedPrefixes = setOf("alloc", "copy", "mutableCopy", "new", "init")
 
 // Taken from GitHub:
 // "JetBrains/kotlin-native/backend.native/compiler/ir/backend.native/src/org/jetbrains/kotlin/backend/konan/CAdapterGenerator.kt"
@@ -364,5 +354,5 @@ private val objCKeywords =
     "using",
     "virtual",
     "wchar_t",
-    "xor_eq"
+    "xor_eq",
   )

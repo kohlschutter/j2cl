@@ -18,30 +18,33 @@ package com.google.j2cl.jre.java.util;
 import java.util.Comparator;
 import java.util.NavigableSet;
 import java.util.Set;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-/**
- * Tests <code>TreeMap</code> with a <code>Comparator</code>.
- */
+/** Tests <code>TreeMap</code> with a <code>Comparator</code>. */
+@NullMarked
 public class TreeSetIntegerWithComparatorTest extends TreeSetIntegerTest {
   @Override
   protected NavigableSet<Integer> createNavigableSet() {
-    setComparator(new Comparator<Integer>() {
-      @Override
-      public int compare(Integer o1, Integer o2) {
-        if (o1 == null) {
-          return o2 == null ? 0 : -1;
-        }
-        if (o2 == null) {
-          return 1;
-        }
-        return o1.compareTo(o2);
-      }
-    });
+    setComparator(
+        new Comparator<Integer>() {
+          @Override
+          public int compare(Integer o1, Integer o2) {
+            if (o1 == null) {
+              return o2 == null ? 0 : -1;
+            }
+            if (o2 == null) {
+              return 1;
+            }
+            return o1.compareTo(o2);
+          }
+        });
     return super.createNavigableSet();
   }
 
   @Override
-  protected Set<Integer> makeEmptySet() {
-    return createNavigableSet();
+  protected Set<@Nullable Object> makeEmptySet() {
+    Object result = createNavigableSet();
+    return (Set<@Nullable Object>) result;
   }
 }

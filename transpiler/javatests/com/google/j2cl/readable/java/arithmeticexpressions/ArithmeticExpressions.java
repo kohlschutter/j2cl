@@ -15,7 +15,7 @@
  */
 package arithmeticexpressions;
 
-import org.jspecify.nullness.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ArithmeticExpressions {
   private static final float FLOAT_CONSTANT = 1.1f;
@@ -78,6 +78,15 @@ public class ArithmeticExpressions {
     char y = 'y';
     Long z = 121L;
     k = y == z;
+  }
+
+  public void testDoubleAssignments() {
+    double a = 1.0;
+    a += 2.0;
+    a -= 3.0;
+    a *= 4.0;
+    a /= 5.0;
+    a %= 6.0;
   }
 
   // Compount assignments in static fields

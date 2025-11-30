@@ -13,7 +13,8 @@ package(
 j2kt_jvm_library(
     name = "readable-j2kt-jvm",
     srcs = glob(["*.java"]),
-    deps = ["//third_party:gwt-jsinterop-annotations-j2kt-jvm"],
+    j2kt_j2objc_interop_enabled = False,
+    deps = ["//third_party:jsinterop-annotations-j2kt-jvm"],
 )
 
 readable_example(
@@ -24,5 +25,5 @@ readable_example(
     # Native JsType does not make sense for j2kt-native.
     build_kt_native_readables = False,
     generate_wasm_imports = True,
-    deps = ["//third_party:gwt-jsinterop-annotations-j2cl"],
+    deps = ["//third_party:jsinterop-annotations-j2cl"],
 )

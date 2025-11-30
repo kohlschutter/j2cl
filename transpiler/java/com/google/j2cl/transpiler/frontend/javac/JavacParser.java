@@ -15,26 +15,31 @@
  */
 package com.google.j2cl.transpiler.frontend.javac;
 
-import static java.util.stream.Collectors.toList;
+import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableMap.toImmutableMap;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.j2cl.common.Problems;
 import com.google.j2cl.common.Problems.FatalError;
 import com.google.j2cl.common.SourceUtils.FileInfo;
 import com.google.j2cl.transpiler.ast.CompilationUnit;
+import com.google.j2cl.transpiler.ast.Library;
 import com.google.j2cl.transpiler.ast.TypeDescriptors;
+import com.google.j2cl.transpiler.frontend.common.FrontendOptions;
 import standalone.com.sun.source.tree.CompilationUnitTree;
+import standalone.com.sun.source.tree.Tree;
 import standalone.com.sun.tools.javac.api.JavacTaskImpl;
 import standalone.com.sun.tools.javac.file.JavacFileManager;
+import standalone.com.sun.tools.javac.tree.JCTree;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
@@ -50,28 +55,19 @@ import javax.tools.ToolProvider;
  */
 public class JavacParser {
   private final Problems problems;
-  private final ImmutableList<String> classpathEntries;
 
-  /** Create and initialize a JavacParser based on passed parameters. */
-  public JavacParser(List<String> classpathEntries, Problems problems) {
-
-    this.classpathEntries = ImmutableList.copyOf(classpathEntries);
+  public JavacParser(Problems problems) {
     this.problems = problems;
   }
 
   /** Returns a map from file paths to compilation units after Javac parsing. */
   @Nullable
-  public List<CompilationUnit> parseFiles(
-      List<FileInfo> filePaths, boolean useTargetPath, ImmutableList<String> forbiddenAnnotations) {
-
-    if (filePaths.isEmpty()) {
-      return ImmutableList.of();
-    }
-
+  public Library parseFiles(FrontendOptions options) {
     // The map must be ordered because it will be iterated over later and if it was not ordered then
     // our output would be unstable
     final Map<String, String> targetPathBySourcePath =
-        filePaths.stream().collect(Collectors.toMap(FileInfo::sourcePath, FileInfo::targetPath));
+        options.getSources().stream()
+            .collect(toImmutableMap(FileInfo::sourcePath, FileInfo::targetPath));
 
     try {
       JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -79,71 +75,94 @@ public class JavacParser {
       JavacFileManager fileManager =
           (JavacFileManager)
               compiler.getStandardFileManager(diagnostics, null, StandardCharsets.UTF_8);
-      List<File> searchpath = classpathEntries.stream().map(File::new).collect(toList());
-      fileManager.setLocation(StandardLocation.PLATFORM_CLASS_PATH, searchpath);
-      fileManager.setLocation(StandardLocation.CLASS_PATH, searchpath);
+      var searchpath = options.getClasspaths().stream().collect(toImmutableList());
+      fileManager.setLocationFromPaths(StandardLocation.PLATFORM_CLASS_PATH, searchpath);
+      fileManager.setLocationFromPaths(StandardLocation.CLASS_PATH, searchpath);
+      if (options.getSystem() != null) {
+        fileManager.setLocationFromPaths(
+            StandardLocation.SYSTEM_MODULES, ImmutableList.of(options.getSystem()));
+      }
       JavacTaskImpl task =
           (JavacTaskImpl)
               compiler.getTask(
                   null,
                   fileManager,
                   diagnostics,
-                  // TODO(b/143213486): Figure out how to make the pipeline work with the module
-                  // system.
-                  ImmutableList.of(
-                      "--patch-module",
-                      "java.base=.",
-                      // Allow JRE classes are allowed to depend on the jsinterop annotations
-                      "--add-reads",
-                      "java.base=ALL-UNNAMED"),
+                  getJavacOptions(options),
                   null,
                   fileManager.getJavaFileObjectsFromFiles(
-                      targetPathBySourcePath.keySet().stream().map(File::new).collect(toList())));
+                      targetPathBySourcePath.keySet().stream()
+                          .map(File::new)
+                          .collect(toImmutableList())));
       List<CompilationUnitTree> javacCompilationUnits = Lists.newArrayList(task.parse());
       task.analyze();
-      if (hasErrors(diagnostics, javacCompilationUnits, forbiddenAnnotations)) {
-        return ImmutableList.of();
-      }
+      reportErrors(diagnostics, javacCompilationUnits, options.getForbiddenAnnotations());
+      problems.abortIfHasErrors();
 
       JavaEnvironment javaEnvironment =
           new JavaEnvironment(task.getContext(), TypeDescriptors.getWellKnownTypeNames());
+      CompilationUnitBuilder compilationUnitBuilder = new CompilationUnitBuilder(javaEnvironment);
 
-      return CompilationUnitBuilder.build(javacCompilationUnits, javaEnvironment);
+      ImmutableList.Builder<CompilationUnit> compilationUnits = ImmutableList.builder();
+      for (var cu : javacCompilationUnits) {
+        compilationUnits.add(compilationUnitBuilder.buildCompilationUnit(cu));
+        problems.abortIfCancelled();
+      }
+      return Library.newBuilder().setCompilationUnits(compilationUnits.build()).build();
     } catch (IOException e) {
-      problems.fatal(FatalError.valueOf(e.getMessage()));
+      problems.fatal(FatalError.CANNOT_OPEN_FILE, e.getMessage());
       return null;
     }
   }
 
-  private boolean hasErrors(
+  private static ImmutableList<String> getJavacOptions(FrontendOptions options) {
+    return ImmutableList.<String>builder()
+        // Allow JRE classes to depend on internal annotations (in the unnamed module). This is
+        // needed for both JRE and non-JRE compilation; some JRE methods are annotated with
+        // internal annotations which are then read by some backends.
+        .add("--add-reads")
+        .add("java.base=ALL-UNNAMED")
+        .addAll(options.getJavacOptions())
+        .build();
+  }
+
+  private void reportErrors(
       DiagnosticCollector<JavaFileObject> diagnosticCollector,
       List<CompilationUnitTree> javacCompilationUnits,
       ImmutableList<String> forbiddenAnnotations) {
-    boolean hasErrors = false;
-    // Here we check for instances of @GwtIncompatible in the ast. If that is the case, we throw an
-    // error since these should have been stripped by the build system already.
-    for (String forbiddenAnnotation : forbiddenAnnotations) {
-      Set<String> filesWithGwtIncompatible =
-          AnnotatedNodeCollector.filesWithAnnotation(javacCompilationUnits, forbiddenAnnotation);
-      if (!filesWithGwtIncompatible.isEmpty()) {
-        // TODO(rluble): retrieve the line number where the annotation is found.
-        problems.fatal(
-            -1,
-            filesWithGwtIncompatible.iterator().next(),
-            FatalError.INCOMPATIBLE_ANNOTATION_FOUND_IN_COMPILE,
-            forbiddenAnnotation);
+    // Here we check for instances of forbidden annotations in the ast. If that is the case, we
+    // throw an error since these should have been stripped by the build system already.
+    for (var compilationUnit : javacCompilationUnits) {
+      AnnotatedNodeCollector annotatedNodeCollector =
+          new AnnotatedNodeCollector(forbiddenAnnotations, /* stopTraversalOnMatch= */ false);
+      annotatedNodeCollector.visitCompilationUnit(compilationUnit, null);
+      for (var forbiddenAnnotation : forbiddenAnnotations) {
+        ImmutableSet<Tree> nodesWithForbiddenAnnotations =
+            annotatedNodeCollector.getNodesWithAnnotation(forbiddenAnnotation);
+        if (!nodesWithForbiddenAnnotations.isEmpty()) {
+          JCTree sampleNode = ((JCTree) Iterables.getFirst(nodesWithForbiddenAnnotations, null));
+          problems.fatal(
+              (int) (compilationUnit.getLineMap().getLineNumber(sampleNode.getStartPosition()) - 1),
+              compilationUnit.getSourceFile().getName(),
+              FatalError.INCOMPATIBLE_ANNOTATION_FOUND_IN_COMPILE,
+              forbiddenAnnotation);
+        }
       }
     }
+
     for (Diagnostic<? extends JavaFileObject> diagnostic : diagnosticCollector.getDiagnostics()) {
       if (diagnostic.getKind() == Kind.ERROR) {
-        problems.error(
-            (int) diagnostic.getLineNumber(),
-            diagnostic.getSource().getName(),
-            "%s",
-            diagnostic.getMessage(Locale.US));
-        hasErrors = true;
+        String errorMessage = diagnostic.getMessage(Locale.US);
+        if (diagnostic.getSource() != null) {
+          problems.error(
+              (int) diagnostic.getLineNumber(),
+              diagnostic.getSource().getName(),
+              "%s",
+              errorMessage);
+        } else {
+          problems.error("%s", errorMessage);
+        }
       }
     }
-    return hasErrors;
   }
 }

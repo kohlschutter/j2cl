@@ -1,4 +1,4 @@
-load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library")
+load("@rules_java//java:defs.bzl", "java_library")
 
 package(
     default_applicable_licenses = ["//:j2cl_license"],
@@ -6,11 +6,13 @@ package(
     licenses = ["notice"],
 )
 
-kt_jvm_library(
+# Temporary placeholder.
+java_library(
     name = "kotlin",
-    srcs = glob(["*.kt"]),
+    srcs = glob(["*.java"]),
     deps = [
         "//transpiler/java/com/google/j2cl/common",
         "//transpiler/java/com/google/j2cl/transpiler/ast",
+        "//transpiler/java/com/google/j2cl/transpiler/frontend/common",
     ],
 )

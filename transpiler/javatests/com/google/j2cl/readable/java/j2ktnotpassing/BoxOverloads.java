@@ -15,9 +15,10 @@
  */
 package j2ktnotpassing;
 
-import org.jspecify.nullness.NullMarked;
-import org.jspecify.nullness.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+// TODO(b/279936148): Remove when fixed.
 @NullMarked
 public class BoxOverloads {
   public static void boxedOverload(double d) {}

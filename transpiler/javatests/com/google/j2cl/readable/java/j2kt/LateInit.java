@@ -15,8 +15,8 @@
  */
 package j2kt;
 
-import org.jspecify.nullness.NullMarked;
-import org.jspecify.nullness.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public class LateInit<T> {
@@ -40,6 +40,15 @@ public class LateInit<T> {
 
   @SuppressWarnings("nullness:initialization.field.uninitialized")
   private T genericField;
+
+  @SuppressWarnings("nullness:initialization.field.uninitialized")
+  private class Inner {
+    private String unmarkedInnerField;
+
+    private class InnerInner {
+      private String unmarkedInnerInnerField;
+    }
+  }
 
   public LateInit(T genericValue) {
     init(genericValue);

@@ -15,11 +15,17 @@
  */
 package com.google.j2cl.transpiler.ast;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.memoized.Memoized;
+import com.google.common.collect.ImmutableList;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.j2cl.common.ThreadLocalInterner;
+import com.google.j2cl.common.visitor.Processor;
+import com.google.j2cl.common.visitor.Visitable;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -27,8 +33,17 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 
 /** A (by signature) reference to a field. */
+@Visitable
 @AutoValue
 public abstract class FieldDescriptor extends MemberDescriptor {
+
+  // TODO(b/317164851): Remove hack that makes jsinfo ignored for non-native types in Wasm.
+  private static final ThreadLocal<Boolean> ignoreNonNativeJsInfo =
+      ThreadLocal.withInitial(() -> false);
+
+  public static void setIgnoreNonNativeJsInfo() {
+    ignoreNonNativeJsInfo.set(true);
+  }
 
   public abstract TypeDescriptor getTypeDescriptor();
 
@@ -42,30 +57,24 @@ public abstract class FieldDescriptor extends MemberDescriptor {
   public abstract boolean isEnumConstant();
 
   @Override
-  public abstract boolean isDeprecated();
-
-  @Override
   public abstract FieldOrigin getOrigin();
 
   /** Whether this field originates in the source code or is synthetic. */
   public enum FieldOrigin implements MemberDescriptor.Origin {
-    SOURCE("f_"),
-    SYNTHETIC_OUTER_FIELD("$outer_"),
-    SYNTHETIC_CAPTURE_FIELD("$captured_"),
-    SYNTHETIC_BACKING_FIELD("$static_"),
-    SYNTHETIC_ORDINAL_FIELD("$ordinal_"),
-    SYNTHETIC_INSTANCE_OF_SUPPORT_FIELD(""),
+    SOURCE,
+    SYNTHETIC_OUTER_FIELD,
+    SYNTHETIC_CAPTURE_FIELD,
+    SYNTHETIC_BACKING_FIELD,
+    SYNTHETIC_ORDINAL_FIELD,
+    SYNTHETIC_INSTANCE_OF_SUPPORT_FIELD,
     ;
-
-    private final String prefix;
-
-    FieldOrigin(String prefix) {
-      this.prefix = prefix;
-    }
 
     @Override
     public String getPrefix() {
-      return prefix;
+      return switch (this) {
+        case SOURCE -> "f_"; // User written methods and bridges need to be mangled the same way.
+        default -> ""; // Don't prefix the rest, they all start with "$"
+      };
     }
 
     @Override
@@ -106,12 +115,12 @@ public abstract class FieldDescriptor extends MemberDescriptor {
   // the details.
   abstract FieldDescriptor getDeclarationDescriptorOrNullIfSelf();
 
-  @Override
   @Memoized
   public FieldDescriptor toRawMemberDescriptor() {
     return toBuilder()
         .setEnclosingTypeDescriptor(getEnclosingTypeDescriptor().toRawTypeDescriptor())
         .setTypeDescriptor(getTypeDescriptor().toRawTypeDescriptor())
+        .setDeclarationDescriptor(getDeclarationDescriptor())
         .build();
   }
 
@@ -125,6 +134,7 @@ public abstract class FieldDescriptor extends MemberDescriptor {
         || getOrigin() == FieldOrigin.SYNTHETIC_OUTER_FIELD;
   }
 
+  @Override
   public boolean isJsProperty() {
     return getJsInfo().getJsMemberType() == JsMemberType.PROPERTY;
   }
@@ -166,6 +176,20 @@ public abstract class FieldDescriptor extends MemberDescriptor {
     return computePropertyMangledName();
   }
 
+  @Memoized
+  public Literal getEnumOrdinalValue() {
+    checkState(isEnumConstant());
+    if (!isDeclaration()) {
+      return getDeclarationDescriptor().getEnumOrdinalValue();
+    }
+
+    return checkNotNull(
+        getEnclosingTypeDescriptor()
+            .getTypeDeclaration()
+            .getOrdinalValueByEnumFieldName()
+            .get(getName()));
+  }
+
   @Override
   public FieldDescriptor specializeTypeVariables(
       Map<TypeVariable, TypeDescriptor> applySpecializedTypeArgumentByTypeParameters) {
@@ -181,6 +205,8 @@ public abstract class FieldDescriptor extends MemberDescriptor {
     }
 
     return FieldDescriptor.Builder.from(this)
+        // Ensure that declaration descriptor is set to original since we are modifying the types.
+        .setDeclarationDescriptor(getDeclarationDescriptor())
         .setTypeDescriptor(
             getTypeDescriptor().specializeTypeVariables(replacingTypeDescriptorByTypeVariable))
         .build();
@@ -203,12 +229,11 @@ public abstract class FieldDescriptor extends MemberDescriptor {
         .setVisibility(Visibility.PUBLIC)
         .setOriginalJsInfo(JsInfo.NONE)
         .setOriginalKtInfo(KtInfo.NONE)
+        .setAnnotations(ImmutableList.of())
         .setCompileTimeConstant(false)
         .setStatic(false)
         .setFinal(false)
         .setSynthetic(false)
-        .setUnusableByJsSuppressed(false)
-        .setDeprecated(false)
         .setEnumConstant(false)
         .setOrigin(FieldOrigin.SOURCE);
   }
@@ -217,6 +242,11 @@ public abstract class FieldDescriptor extends MemberDescriptor {
   @Override
   public String getReadableDescription() {
     return String.format("%s.%s", getEnclosingTypeDescriptor().getReadableDescription(), getName());
+  }
+
+  @Override
+  MemberDescriptor acceptInternal(Processor processor) {
+    return Visitor_FieldDescriptor.visit(processor, this);
   }
 
   /** A Builder for FieldDescriptors. */
@@ -249,12 +279,11 @@ public abstract class FieldDescriptor extends MemberDescriptor {
 
     public abstract Builder setOriginalKtInfo(KtInfo ktInfo);
 
-    public abstract Builder setUnusableByJsSuppressed(boolean isUnusableByJsSuppressed);
-
-    public abstract Builder setDeprecated(boolean isDeprecated);
+    public abstract Builder setAnnotations(List<Annotation> annotations);
 
     public abstract Builder setOrigin(FieldOrigin fieldOrigin);
 
+    @CanIgnoreReturnValue
     public Builder setDeclarationDescriptor(FieldDescriptor declarationFieldDescriptor) {
       return setDeclarationDescriptorOrNullIfSelf(declarationFieldDescriptor);
     }
@@ -270,11 +299,27 @@ public abstract class FieldDescriptor extends MemberDescriptor {
 
     abstract boolean isCompileTimeConstant();
 
+    abstract DeclaredTypeDescriptor getEnclosingTypeDescriptor();
+
+    @Nullable
+    abstract FieldDescriptor getDeclarationDescriptorOrNullIfSelf();
+
     abstract FieldDescriptor autoBuild();
 
     public FieldDescriptor build() {
       checkState(getName().isPresent());
       checkState(getConstantValue() == null || isCompileTimeConstant());
+
+      boolean isNative = getEnclosingTypeDescriptor().isNative();
+      if (!isNative && ignoreNonNativeJsInfo.get()) {
+        setOriginalJsInfo(JsInfo.NONE);
+      }
+
+      if (getDeclarationDescriptorOrNullIfSelf() == null) {
+        // Use a canonical version of the enclosing type descriptor in field declarations.
+        setEnclosingTypeDescriptor(getEnclosingTypeDescriptor().getDeclarationDescriptor());
+      }
+
       FieldDescriptor fieldDescriptor = autoBuild();
 
       return interner.intern(fieldDescriptor);

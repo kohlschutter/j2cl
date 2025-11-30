@@ -60,7 +60,7 @@ internal data class CompilationUnitRenderer(val nameRenderer: NameRenderer) {
     emptyLineSeparated(packageSource(compilationUnit), importRenderer.importsSource)
 
   private fun typesSource(compilationUnit: CompilationUnit): Source =
-    emptyLineSeparated(compilationUnit.types.map(::typeSource))
+    emptyLineSeparated(compilationUnit.types.flatMap(::typeSources))
 
   private fun fileCommentSource(compilationUnit: CompilationUnit) =
     source("// Generated from \"${compilationUnit.packageRelativePath}\"")
@@ -86,19 +86,22 @@ internal data class CompilationUnitRenderer(val nameRenderer: NameRenderer) {
         listOf(
             "ALWAYS_NULL",
             "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
-            "REPEATED_BOUND",
             "SENSELESS_COMPARISON",
             "UNCHECKED_CAST",
             "UNNECESSARY_LATEINIT",
             "UNNECESSARY_NOT_NULL_ASSERTION",
             "UNREACHABLE_CODE",
+            "UNUSED_ANONYMOUS_PARAMETER",
             "UNUSED_PARAMETER",
             "UNUSED_VARIABLE",
             "USELESS_CAST",
             "VARIABLE_IN_SINGLETON_WITHOUT_THREAD_LOCAL",
-            "VARIABLE_WITH_REDUNDANT_INITIALIZER"
+            "VARIABLE_WITH_REDUNDANT_INITIALIZER",
+            "INCOMPATIBLE_OBJC_NAME_OVERRIDE", // Needed for b/440308508
+            "REDUNDANT_ELSE_IN_WHEN",
+            "ACCIDENTAL_OVERRIDE", // Needed for: https://youtrack.jetbrains.com/issue/KT-12993
           )
-          .map { literal(it) }
+          .map { literal(it) },
       )
 
   private fun packageSource(compilationUnit: CompilationUnit): Source =
@@ -107,5 +110,8 @@ internal data class CompilationUnitRenderer(val nameRenderer: NameRenderer) {
       ?.let { spaceSeparated(PACKAGE_KEYWORD, qualifiedIdentifierSource(it)) }
       .orEmpty()
 
-  private fun typeSource(type: Type): Source = TypeRenderer(nameRenderer).typeSource(type)
+  private fun typeSources(type: Type): Sequence<Source> =
+    TypeRenderer(nameRenderer).run {
+      sequenceOf(typeSource(type), companionSupplierInterfaceSource(type))
+    }
 }

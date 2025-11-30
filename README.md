@@ -4,7 +4,7 @@ See the [here](https://github.com/google/j2cl/compare/master...kohlschutter:j2cl
 
 ## Ignore text below, see here for [jacline](https://github.com/kohlschutter/jacline)'s main repository.
 
-# [J2CL](http://j2cl.io)  &middot; [![Build Status](https://github.com/google/j2cl/actions/workflows/ci.yaml/badge.svg)](https://github.com/google/j2cl/actions/workflows/ci.yaml)
+# [J2CL](http://j2cl.io) &middot; ![Latest Release](https://img.shields.io/github/v/release/google/j2cl) &middot; [![Build Status](https://github.com/google/j2cl/actions/workflows/ci.yaml/badge.svg)](https://github.com/google/j2cl/actions/workflows/ci.yaml)
 
 Seamless Java in JavaScript applications that tightly optimizes with
 [Closure Compiler](https://github.com/google/closure-compiler)
@@ -43,6 +43,7 @@ Guides
 - [JsInterop Cookbook](docs/jsinterop-by-example.md)
 - [J2CL Best Practices](docs/best-practices.md)
 - [Emulation Limitations](docs/limitations.md)
+- [Data Types and Semantics](docs/semantics.md)
 - [Bazel Tutorial](https://docs.bazel.build/versions/master/tutorial/java.html)
 - [Bazel Best Practices](https://docs.bazel.build/versions/master/best-practices.html)
 

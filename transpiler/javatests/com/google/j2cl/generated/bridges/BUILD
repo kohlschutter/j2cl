@@ -12,9 +12,12 @@ package(
             "TestCases%s.srcjar" % i,
             "TestShard%s.java" % i,
         ],
-        javacopts = ["-nowarn"],
+        javacopts = [
+            "-nowarn",
+            "-Xep:UseCorrectAssertInTests:OFF",
+        ],
         deps = [
-            "//third_party:gwt-jsinterop-annotations-j2cl",
+            "//third_party:jsinterop-annotations-j2cl",
             "//third_party:junit-j2cl",
         ],
     )

@@ -4,6 +4,7 @@ const $Util = goog.require('nativebootstrap.Util$impl');
 
 let $LambdaAdaptor = goog.forwardDeclare('bridgejsmethod.Main.I.$LambdaAdaptor$impl');
 let Number = goog.forwardDeclare('java.lang.Number$impl');
+let $Long = goog.forwardDeclare('nativebootstrap.Long$impl');
 
 /**
  * @interface
@@ -12,7 +13,7 @@ let Number = goog.forwardDeclare('java.lang.Number$impl');
 class I {
  /** @abstract @return {T} */
  mNumber(/** T */ t) {}
- /** @nodts @template T @return {I<T>} */
+ /** @nodts @template T @return {!I<T>} */
  static $adapt(/** ?function(T):T */ fn) {
   I.$clinit();
   return /**@type {!$LambdaAdaptor<T>}*/ (new $LambdaAdaptor(fn));
@@ -37,7 +38,7 @@ class I {
  }
 }
 I.$markImplementor(/**@type {Function}*/ (I));
-$Util.$setClassMetadataForInterface(I, 'bridgejsmethod.Main$I');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (I), 'bridgejsmethod.Main$I');
 
 exports = I;
 

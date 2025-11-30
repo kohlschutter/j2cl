@@ -17,6 +17,7 @@ package com.google.j2cl.transpiler.passes;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.j2cl.transpiler.ast.AstUtils.isAnnotatedWithWasm;
 
 import com.google.j2cl.transpiler.ast.AbstractRewriter;
 import com.google.j2cl.transpiler.ast.ArrayAccess;
@@ -124,9 +125,10 @@ public class ImplementArraysAsClasses extends NormalizationPass {
 
           @Override
           public Expression rewriteArrayLiteral(ArrayLiteral arrayLiteral) {
-            return new ArrayLiteral(
-                markArrayTypeDescriptorAsNative(arrayLiteral.getTypeDescriptor()),
-                arrayLiteral.getValueExpressions());
+            return arrayLiteral.toBuilder()
+                .setTypeDescriptor(
+                    markArrayTypeDescriptorAsNative(arrayLiteral.getTypeDescriptor()))
+                .build();
           }
 
           @Override
@@ -161,14 +163,14 @@ public class ImplementArraysAsClasses extends NormalizationPass {
           }
 
           private boolean isNativeMethodParameter() {
-            return getParent() instanceof Method
-                && ((Method) getParent()).getDescriptor().getWasmInfo() != null;
+            return getParent() instanceof Method method
+                && isAnnotatedWithWasm(method.getDescriptor());
           }
         });
   }
 
   /**
-   * Rewrites array operations to go throught the appropriate Java array abstraction type.
+   * Rewrites array operations to go through the appropriate Java array abstraction type.
    *
    * <p>For array length, accesses the field {@code WasmArray.length}. For accesses to an array
    * element, it accesses the element through the native array field of the abstraction class, e.g.
@@ -202,7 +204,7 @@ public class ImplementArraysAsClasses extends NormalizationPass {
           @Override
           public MethodCall rewriteMethodCall(MethodCall methodCall) {
             MethodDescriptor target = methodCall.getTarget();
-            if (target.getWasmInfo() == null) {
+            if (!isAnnotatedWithWasm(target)) {
               return methodCall;
             }
             if (target.getParameterTypeDescriptors().stream().noneMatch(this::isNonNativeArray)) {
@@ -223,8 +225,7 @@ public class ImplementArraysAsClasses extends NormalizationPass {
           }
 
           private boolean isNonNativeArray(TypeDescriptor descriptor) {
-            return descriptor instanceof ArrayTypeDescriptor
-                && !((ArrayTypeDescriptor) descriptor).isNativeWasmArray();
+            return descriptor instanceof ArrayTypeDescriptor && !descriptor.isNativeWasmArray();
           }
 
           private boolean needsNativeArray(MethodCall call, Expression expression) {
@@ -237,7 +238,7 @@ public class ImplementArraysAsClasses extends NormalizationPass {
   }
 
   /**
-   * Converts all array instatiations (NewArray and ArrayLiteral) to a call to the corresponding
+   * Converts all array instantiations (NewArray and ArrayLiteral) to a call to the corresponding
    * WasmArray class constructor to create the Java array abstraction of the proper type.
    *
    * <p>At this point all arrays initialized with more than one explicit dimension have been already
@@ -259,7 +260,7 @@ public class ImplementArraysAsClasses extends NormalizationPass {
             return MethodCall.Builder.from(
                     TypeDescriptors.getWasmArrayType(newArray.getTypeDescriptor())
                         .getMethodDescriptor("newWithLength", PrimitiveTypes.INT))
-                .setArguments(newArray.getDimensionExpressions().get(0))
+                .setArguments(newArray.getDimensionExpressions().getFirst())
                 .build();
           }
 
@@ -279,7 +280,7 @@ public class ImplementArraysAsClasses extends NormalizationPass {
                     TypeDescriptors.getWasmArrayType(arrayTypeDescriptor)
                         .getMethodDescriptor("newWithLiteral", nativeArrayTypeDescriptor))
                 .setArguments(
-                    new ArrayLiteral(nativeArrayTypeDescriptor, arrayLiteral.getValueExpressions()))
+                    arrayLiteral.toBuilder().setTypeDescriptor(nativeArrayTypeDescriptor).build())
                 .build();
           }
         });

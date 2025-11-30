@@ -11,7 +11,7 @@ let $LambdaAdaptor = goog.forwardDeclare('typewildcards.TypeWildCards.IntegerSup
 class IntegerSupplier {
  /** @abstract @nodts @return {Integer} */
  m_get__java_lang_Integer() {}
- /** @nodts @return {IntegerSupplier} */
+ /** @nodts @return {!IntegerSupplier} */
  static $adapt(/** ?function():Integer */ fn) {
   IntegerSupplier.$clinit();
   return new $LambdaAdaptor(fn);
@@ -36,7 +36,7 @@ class IntegerSupplier {
  }
 }
 IntegerSupplier.$markImplementor(/**@type {Function}*/ (IntegerSupplier));
-$Util.$setClassMetadataForInterface(IntegerSupplier, 'typewildcards.TypeWildCards$IntegerSupplier');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (IntegerSupplier), 'typewildcards.TypeWildCards$IntegerSupplier');
 
 exports = IntegerSupplier;
 

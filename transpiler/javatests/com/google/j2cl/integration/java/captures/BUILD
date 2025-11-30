@@ -9,8 +9,5 @@ package(
 )
 
 integration_test(
-    name = "localclasswithcaptures",
     srcs = glob(["*.java"]),
-    # TODO(b/202427872): Nested classes
-    enable_kt = False,
 )

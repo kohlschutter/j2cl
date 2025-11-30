@@ -72,6 +72,13 @@ public class NormalizeMethodParametersJ2kt extends NormalizationPass {
         new AbstractRewriter() {
           @Override
           public Node rewriteMethod(Method method) {
+            // skip methods implemented in Javascript
+            if (method.getDescriptor().isNative()
+                || (method.getDescriptor().isJsConstructor()
+                    && method.getDescriptor().getEnclosingTypeDescriptor().isNative())) {
+              return method;
+            }
+
             // Redeclare vararg parameter if needed.
             RewriteItem varargRewriteItem = getVarargRewriteItem(method);
             if (varargRewriteItem != null) {
@@ -111,6 +118,11 @@ public class NormalizeMethodParametersJ2kt extends NormalizationPass {
           @Override
           public Node rewriteCatchClause(CatchClause catchClause) {
             Variable exceptionVariable = catchClause.getExceptionVariable();
+
+            TypeDescriptor exceptionTypeDescriptor = exceptionVariable.getTypeDescriptor();
+            exceptionVariable.setTypeDescriptor(
+                exceptionVariable.getTypeDescriptor().toNonNullable());
+
             if (exceptionVariable.isFinal()) {
               return catchClause;
             }
@@ -119,7 +131,8 @@ public class NormalizeMethodParametersJ2kt extends NormalizationPass {
                 .setBody(
                     redeclareItems(
                         catchClause.getBody(),
-                        ImmutableList.of(new RewriteItem(exceptionVariable))))
+                        ImmutableList.of(
+                            new RewriteItem(exceptionVariable, exceptionTypeDescriptor))))
                 .build();
           }
 
@@ -225,10 +238,8 @@ public class NormalizeMethodParametersJ2kt extends NormalizationPass {
 
     // At this point, component type descriptor is assumed to be "out X".
     TypeDescriptor rewrittenTypeDescriptor =
-        ArrayTypeDescriptor.Builder.from(arrayTypeDescriptor)
-            .setComponentTypeDescriptor(
-                ((TypeVariable) componentTypeDescriptor).getUpperBoundTypeDescriptor())
-            .build();
+        arrayTypeDescriptor.withComponentTypeDescriptor(
+            ((TypeVariable) componentTypeDescriptor).getUpperBoundTypeDescriptor());
 
     return new RewriteItem(varargVariable, rewrittenTypeDescriptor);
   }

@@ -1,0 +1,27 @@
+goog.module('defaultparams.DefaultParamsKt');
+
+goog.require('defaultparams.ChildClass');
+goog.require('defaultparams.DefaultParamInterface');
+goog.require('defaultparams.DefaultParams');
+goog.require('defaultparams.DefaultParamsKt.$1');
+goog.require('defaultparams.DefaultParamsKt.$1LocalClass');
+goog.require('defaultparams.FooImpl');
+goog.require('defaultparams.FooImplWithDefaultOverride');
+goog.require('defaultparams.GenericSubclass');
+goog.require('defaultparams.IFoo');
+goog.require('defaultparams.OuterClass');
+goog.require('defaultparams.OuterClass.InnerClass');
+goog.require('defaultparams.Subclass');
+goog.require('java.lang.Integer');
+goog.require('java.lang.Object');
+goog.require('java.lang.String');
+goog.require('kotlin.jvm.functions.Function0');
+goog.require('kotlin.jvm.internal.DefaultConstructorMarker');
+goog.require('nativebootstrap.Equality');
+goog.require('nativebootstrap.Util');
+goog.require('vmbootstrap.Arrays');
+goog.require('vmbootstrap.Casts');
+goog.require('vmbootstrap.primitives.$int');
+
+const DefaultParamsKt = goog.require('defaultparams.DefaultParamsKt$impl');
+exports = DefaultParamsKt;

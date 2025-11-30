@@ -53,13 +53,16 @@ def j2cl_generate_jsunit_suite(name, test_class, deps, tags = []):
         name = name + "_lib",
         srcs = [test_input],
         deps = deps + [
-            Label("//:jsinterop-annotations-j2cl"),
             Label("//build_defs/internal_do_not_use:internal_junit_annotations"),
             Label("//build_defs/internal_do_not_use:internal_junit_runtime"),
             Label("//build_defs/internal_do_not_use:closure_testcase"),
         ],
         testonly = 1,
-        javacopts = ["-AtestPlatform=CLOSURE"],
+        javacopts = [
+            "-AtestPlatform=CLOSURE",
+            # Disable error prone checks since this is a generated code.
+            "-Xep:PackageLocation:OFF",
+        ],
         tags = tags,
         generate_build_test = False,
     )
@@ -78,10 +81,13 @@ def j2cl_generate_jsunit_suite(name, test_class, deps, tags = []):
         name = name,
         outs = [name + ".js.zip"],
         cmd = "\n".join([
-            "unzip -q $(location %s) *.testsuite *.json -d zip_out/" % out_jar,
-            "cd zip_out/",
+            "TMP=$$(mktemp -d)",
+            "WD=$$(pwd)",
+            "unzip -q $(location %s) *.testsuite *.json -d $$TMP" % out_jar,
+            "cd $$TMP",
             "for f in $$(find . -name *.testsuite); do mv $$f $${f/.testsuite/.js}; done",
-            "zip -q -r ../$@ .",
+            "zip -q -r $$WD/$@ .",
+            "rm -rf $$TMP",
         ]),
         testonly = 1,
         tags = ["manual", "notap"],

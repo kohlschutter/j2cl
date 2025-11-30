@@ -20,11 +20,10 @@ import com.google.j2cl.common.visitor.Visitable;
 
 /** Boolean literal node. */
 @Visitable
-public class BooleanLiteral extends Literal {
-  private static final ThreadLocal<BooleanLiteral> FALSE =
-      ThreadLocal.withInitial(() -> new BooleanLiteral(false));
-  private static final ThreadLocal<BooleanLiteral> TRUE =
-      ThreadLocal.withInitial(() -> new BooleanLiteral(true));
+public final class BooleanLiteral extends Literal {
+  private static final BooleanLiteral FALSE = new BooleanLiteral(false);
+  private static final BooleanLiteral TRUE = new BooleanLiteral(true);
+
   private final boolean value;
 
   private BooleanLiteral(boolean value) {
@@ -32,7 +31,7 @@ public class BooleanLiteral extends Literal {
   }
 
   public static BooleanLiteral get(boolean value) {
-    return value ? TRUE.get() : FALSE.get();
+    return value ? TRUE : FALSE;
   }
 
   public boolean getValue() {
@@ -55,9 +54,30 @@ public class BooleanLiteral extends Literal {
   }
 
   @Override
+  public boolean isBooleanTrue() {
+    return value;
+  }
+
+  @Override
+  public boolean isBooleanFalse() {
+    return !value;
+  }
+
+  @Override
   public BooleanLiteral clone() {
     // Boolean literals are value types do not need to be actually cloned.
     return this;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    // There are only 2 instances so referential equality is sufficient.
+    return o == this;
+  }
+
+  @Override
+  public int hashCode() {
+    return Boolean.hashCode(value);
   }
 
   @Override

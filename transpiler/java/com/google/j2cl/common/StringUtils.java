@@ -16,6 +16,7 @@
 package com.google.j2cl.common;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.Character.digit;
 import static java.util.stream.Collectors.joining;
 
 /** Utilities to produce Strings in code. */
@@ -27,6 +28,52 @@ public final class StringUtils {
       return string;
     }
     return string.substring(0, 1).toUpperCase() + string.substring(1);
+  }
+
+  /**
+   * Unescapes properly escaped Wtf16 strings.
+   *
+   * <p>Note: meant to be used as the inverse of escapeAsWtf16().
+   */
+  public static String unescapeWtf16(String string) {
+    StringBuilder unescapedStringBuilder = new StringBuilder();
+    char[] charArray = string.toCharArray();
+    for (int i = 0; i < charArray.length; i++) {
+      char c = charArray[i];
+      if (c == '\\') {
+        // escape sequence.
+        i++;
+        switch (charArray[i]) {
+          case 't' -> unescapedStringBuilder.append('\t');
+          case 'n' -> unescapedStringBuilder.append('\n');
+          case 'r' -> unescapedStringBuilder.append('\r');
+          case '"' -> unescapedStringBuilder.append('\"');
+          case '\'' -> unescapedStringBuilder.append('\'');
+          case '\\' -> unescapedStringBuilder.append('\\');
+          case 'u' -> {
+            unescapedStringBuilder.append(unescapeUnicode(charArray, i));
+            i += 4;
+          }
+          default -> throw new InternalCompilerError("Bad escaping " + string);
+        }
+        continue;
+      }
+      unescapedStringBuilder.append(c);
+    }
+    return unescapedStringBuilder.toString();
+  }
+
+  private static char unescapeUnicode(char[] charArray, int i) {
+    char value = 0;
+
+    for (int j = 0; j < 4; j++) {
+      int digit = digit(charArray[++i], 16);
+      if (digit < 0) {
+        throw new InternalCompilerError("Bad escaping " + new String(charArray));
+      }
+      value = (char) (value * 16 + digit);
+    }
+    return value;
   }
 
   public static String escapeAsWtf16(String string) {
@@ -71,32 +118,27 @@ public final class StringUtils {
 
   /** Produce a readable encoding of a byte in a String. */
   private static String escape(int c, boolean forUtf8) {
-    switch (c) {
-      case 0x09: // tab
-        return "\\t";
-      case 0x0A: // newline
-        return "\\n";
-      case 0x0D: // return
-        return "\\r";
-      case 0x22: // "
-        return "\\\"";
-      case 0x27: // '
-        return "\\'";
-      case 0x5c: // \
-        return "\\\\";
-    }
+    return switch (c) {
+      case 0x09 -> "\\t"; // tab
+      case 0x0A -> "\\n"; // newline
+      case 0x0D -> "\\r"; // return
+      case 0x22 -> "\\\""; // "
+      case 0x27 -> "\\'"; // '
+      case 0x5c -> "\\\\"; // \
+      default -> {
+        // The rest of the ascii range characters do not need escaping in either representation.
+        if (c >= 0x20 && c < 0x7F) {
+          yield String.valueOf((char) c);
+        }
 
-    // The rest of the ascii range characters do not need escaping in either representation.
-    if (c >= 0x20 && c < 0x7F) {
-      return String.valueOf((char) c);
-    }
-
-    if (forUtf8) {
-      checkArgument(c >= 0 && c <= 0xFF);
-      return String.format("\\%02X", (byte) c);
-    } else {
-      return String.format("\\u%04X", c);
-    }
+        if (forUtf8) {
+          checkArgument(c >= 0 && c <= 0xFF);
+          yield String.format("\\%02X", (byte) c);
+        } else {
+          yield String.format("\\u%04X", c);
+        }
+      }
+    };
   }
 
   private StringUtils() {}

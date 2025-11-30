@@ -10,7 +10,7 @@ let $LambdaAdaptor = goog.forwardDeclare('lambdas.Lambdas.Runnable.$LambdaAdapto
 class Runnable {
  /** @abstract @nodts */
  m_run__void() {}
- /** @nodts @return {Runnable} */
+ /** @nodts @return {!Runnable} */
  static $adapt(/** ?function():void */ fn) {
   Runnable.$clinit();
   return new $LambdaAdaptor(fn);
@@ -35,7 +35,7 @@ class Runnable {
  }
 }
 Runnable.$markImplementor(/**@type {Function}*/ (Runnable));
-$Util.$setClassMetadataForInterface(Runnable, 'lambdas.Lambdas$Runnable');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (Runnable), 'lambdas.Lambdas$Runnable');
 
 exports = Runnable;
 

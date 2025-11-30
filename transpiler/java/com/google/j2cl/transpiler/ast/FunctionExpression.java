@@ -17,7 +17,6 @@ package com.google.j2cl.transpiler.ast;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.collect.Iterables;
 import com.google.j2cl.common.SourcePosition;
 import com.google.j2cl.common.visitor.Processor;
 import com.google.j2cl.common.visitor.Visitable;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 
 /** Class for an inline (lambda) function expression. */
 @Visitable
@@ -34,7 +32,7 @@ public class FunctionExpression extends Expression implements MethodLike {
   // The parameter declarations need to be traversed before the body.
   @Visitable final List<Variable> parameters;
   @Visitable Block body;
-  private final TypeDescriptor typeDescriptor;
+  @Visitable TypeDescriptor typeDescriptor;
   private final SourcePosition sourcePosition;
   private final boolean isJsAsync;
 
@@ -72,15 +70,7 @@ public class FunctionExpression extends Expression implements MethodLike {
     return sourcePosition;
   }
 
-  @Nullable
   @Override
-  public Variable getJsVarargsParameter() {
-    if (isJsVarargs()) {
-      return Iterables.getLast(getParameters());
-    }
-    return null;
-  }
-
   public Block getBody() {
     return body;
   }
@@ -110,7 +100,7 @@ public class FunctionExpression extends Expression implements MethodLike {
            */
           private boolean isDeclaredWithinFunctionExpression(TypeDeclaration typeDeclaration) {
             Predicate<Object> matchesTypeDeclaration =
-                n -> n instanceof Type && ((Type) n).getDeclaration() == typeDeclaration;
+                n -> n instanceof Type t && t.getDeclaration() == typeDeclaration;
             return getParent(matchesTypeDeclaration) != null;
           }
         });
@@ -126,9 +116,18 @@ public class FunctionExpression extends Expression implements MethodLike {
     return isJsAsync;
   }
 
+  public boolean isSuspendFunction() {
+    return getDescriptor().isSuspendFunction();
+  }
+
   @Override
   public Precedence getPrecedence() {
     return Precedence.FUNCTION;
+  }
+
+  @Override
+  public boolean canBeNull() {
+    return false;
   }
 
   @Override

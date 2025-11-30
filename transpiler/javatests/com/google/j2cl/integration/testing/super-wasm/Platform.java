@@ -16,7 +16,7 @@
 package com.google.j2cl.integration.testing;
 
 final class Platform {
-  static final boolean IS_WASM = true;
+  static final int RUNTIME_ENVIRONMENT = Environment.WASM;
 
   static final boolean IS_J2KT = false;
 

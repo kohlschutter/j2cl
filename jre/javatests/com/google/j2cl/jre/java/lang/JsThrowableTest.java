@@ -15,7 +15,6 @@
  */
 package com.google.j2cl.jre.java.lang;
 
-import java.io.IOException;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 
@@ -45,12 +44,13 @@ public class JsThrowableTest extends JsThrowableTestBase {
   }
 
   public void testCatchNative_fillInStackTraceOverride() {
-    Throwable e = new Throwable("<my msg>") {
-      public Throwable fillInStackTrace() {
-        // Replace fill in stack trace with no-op.
-        return this;
-      }
-    };
+    Throwable e =
+        new Throwable("<my msg>") {
+          public Throwable fillInStackTrace() {
+            // Replace fill in stack trace with no-op.
+            return this;
+          }
+        };
 
     Object caughtNative = catchNative(createThrower(e));
     assertTrue(caughtNative instanceof JsError);
@@ -88,35 +88,6 @@ public class JsThrowableTest extends JsThrowableTestBase {
     Throwable subError = new Throwable("Sub-error");
 
     assertNull(getBackingJsObject(subError).getCause());
-  }
-
-  public void testLinkedSuppressedErrors_suppressedAddedViaInit() {
-    final Throwable suppressed = new Throwable();
-    Throwable e =
-        new Throwable() {
-          {
-            addSuppressed(suppressed);
-          }
-        };
-
-    assertEquals(getBackingJsObject(suppressed), getBackingJsObject(e).getSuppressed()[0]);
-  }
-
-  public void testLinkedSuppressedErrors_tryWithResources() {
-    class FailingResource implements AutoCloseable {
-      @Override
-      public void close() throws IOException {
-        throw new IOException("onClose");
-      }
-    }
-
-    RuntimeException e = new RuntimeException("try");
-    try (FailingResource r = new FailingResource()) {
-      throw e;
-    } catch (Exception expected) { }
-
-    assertEquals(
-        getBackingJsObject(e.getSuppressed()[0]), getBackingJsObject(e).getSuppressed()[0]);
   }
 
   @JsType(isNative = true, name = "Error", namespace = JsPackage.GLOBAL)

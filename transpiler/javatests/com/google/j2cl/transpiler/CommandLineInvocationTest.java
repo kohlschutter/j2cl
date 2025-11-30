@@ -54,6 +54,12 @@ public class CommandLineInvocationTest extends TestCase {
         .assertErrorsContainsSnippets("\"llama\" is not a valid value for \"-frontend");
 
     newTesterWithDefaults()
+        .addArgs("-frontend", "javac")
+        .setOutputPath(Files.createTempFile("output-javac", ".zip"))
+        .addCompilationUnit("Foo", "public class Foo {}")
+        .assertTranspileSucceeds();
+
+    newTesterWithDefaults()
         .addArgs("-frontend", "jdt")
         .setOutputPath(Files.createTempFile("output", ".zip"))
         .addCompilationUnit("Foo", "public class Foo {}")
@@ -62,9 +68,16 @@ public class CommandLineInvocationTest extends TestCase {
 
   public void testSyntaxError() {
     newTesterWithDefaults()
-        .addCompilationUnit("SyntaxError", "public class SyntaxError {", "  =", "}")
+        .addCompilationUnit(
+            "SyntaxError",
+            """
+            public class SyntaxError {
+              =
+            }
+            """)
         .assertTranspileFails()
-        .assertErrorsContainsSnippets("Syntax error on token \"=\"");
+        .assertErrorsContainsMatchingSnippet(
+            ".*((Syntax error on token \"=\")|(illegal start of type)).*");
   }
 
   public void testInvalidOutputLocation() throws IOException {
@@ -78,7 +91,8 @@ public class CommandLineInvocationTest extends TestCase {
             "Output location '" + outputLocation + "' must be a directory or .zip file.");
   }
 
-  public void testMissingJreDependency() {
+  // TODO(b/459774514): Figure out how to make javac not pickup any jre.
+  public void disabled_testMissingJreDependency() {
     // Create a clean tester so that the JRE dependency is not automatically added.
     newTester()
         .addCompilationUnit("EmptyClass", "public class EmptyClass {}")
@@ -106,11 +120,13 @@ public class CommandLineInvocationTest extends TestCase {
     newTesterWithDefaults()
         .addFile(
             sourcesPath.resolve("NativeClass.java"),
-            "package random;",
-            "import jsinterop.annotations.*;",
-            "public class NativeClass {",
-            "  @JsMethod public native void nativeInstanceMethod();",
-            "}")
+            """
+            package random;
+            import jsinterop.annotations.*;
+            public class NativeClass {
+              @JsMethod public native void nativeInstanceMethod();
+            }
+            """)
         .addFile(
             sourcesPath.resolve("NativeClass.native.js"),
             "NativeClass.prototype.nativeInstanceMethod = function () {}")
@@ -122,11 +138,13 @@ public class CommandLineInvocationTest extends TestCase {
         .addFileToZipFile(
             "sources.srcjar",
             "src/random/NativeClass.java",
-            "package random;",
-            "import jsinterop.annotations.*;",
-            "public class NativeClass {",
-            "  @JsMethod public native void nativeInstanceMethod();",
-            "}")
+            """
+            package random;
+            import jsinterop.annotations.*;
+            public class NativeClass {
+              @JsMethod public native void nativeInstanceMethod();
+            }
+            """)
         .addFileToZipFile(
             "native.zip",
             "src/random/NativeClass.native.js",
@@ -140,11 +158,13 @@ public class CommandLineInvocationTest extends TestCase {
         .addFileToZipFile(
             "sources.srcjar",
             "src/random/NativeClass.java",
-            "package random;",
-            "import jsinterop.annotations.*;",
-            "public class NativeClass {",
-            "  @JsMethod public native void nativeInstanceMethod();",
-            "}")
+            """
+            package random;
+            import jsinterop.annotations.*;
+            public class NativeClass {
+              @JsMethod public native void nativeInstanceMethod();
+            }
+            """)
         .addFile(
             "src/random/NativeClass.native.js",
             "NativeClass.prototype.nativeInstanceMethod = function () {}")
@@ -156,11 +176,13 @@ public class CommandLineInvocationTest extends TestCase {
     newTesterWithDefaults()
         .addFile(
             sourcesPath.resolve("NativeClass.java"),
-            "package random;",
-            "import jsinterop.annotations.*;",
-            "public class NativeClass {",
-            "  @JsMethod public native void nativeInstanceMethod();",
-            "}")
+            """
+            package random;
+            import jsinterop.annotations.*;
+            public class NativeClass {
+              @JsMethod public native void nativeInstanceMethod();
+            }
+            """)
         .addFile(
             "java/random/NativeClass.native.js",
             "NativeClass.prototype.nativeInstanceMethod = function () {}")
@@ -171,14 +193,16 @@ public class CommandLineInvocationTest extends TestCase {
     newTesterWithDefaults()
         .addCompilationUnit(
             "nativeclasstest.NativeClass",
-            "import jsinterop.annotations.*;",
-            "@JsType(name = \"SomethingElse\")",
-            "public class NativeClass {",
-            "  @JsMethod public native void nativeInstanceMethod();",
-            "  public static class InnerClass {",
-            "    @JsMethod public native void nativeInstanceMethod();",
-            "  }",
-            "}")
+            """
+            import jsinterop.annotations.*;
+            @JsType(name = "SomethingElse")
+            public class NativeClass {
+              @JsMethod public native void nativeInstanceMethod();
+              public static class InnerClass {
+                @JsMethod public native void nativeInstanceMethod();
+              }
+            }
+            """)
         .addFile(
             "this/can/be/anywhere/nativeclasstest.NativeClass.native.js",
             "NativeClass.prototype.nativeInstanceMethod = function () {}")
@@ -192,10 +216,12 @@ public class CommandLineInvocationTest extends TestCase {
     newTesterWithDefaults()
         .addCompilationUnit(
             "nativeclasstest.NativeClass",
-            "import jsinterop.annotations.*;",
-            "public class NativeClass {",
-            "  @JsMethod public native void nativeInstanceMethod();",
-            "}")
+            """
+            import jsinterop.annotations.*;
+            public class NativeClass {
+              @JsMethod public native void nativeInstanceMethod();
+            }
+            """)
         .addFileToZipFile(
             "native.zip",
             "nativeclasstest/BadNameNativeClass.native.js",
@@ -209,12 +235,14 @@ public class CommandLineInvocationTest extends TestCase {
     newTesterWithDefaults()
         .addCompilationUnit(
             "nativeclasstest.ClosureEnum",
-            "import jsinterop.annotations.*;",
-            "@JsEnum",
-            "public enum ClosureEnum{",
-            "  OK,",
-            "  CANCEL",
-            "}")
+            """
+            import jsinterop.annotations.*;
+            @JsEnum
+            public enum ClosureEnum{
+              OK,
+              CANCEL
+            }
+            """)
         .addNativeJsForCompilationUnit(
             "nativeclasstest.ClosureEnum", "const ClosureEnum ={ OK : 'OK', CANCEL : 'Cancel' }")
         .assertTranspileFails()
@@ -226,12 +254,14 @@ public class CommandLineInvocationTest extends TestCase {
     newTesterWithDefaults()
         .addCompilationUnit(
             "nativeclasstest.ClosureEnum",
-            "import jsinterop.annotations.*;",
-            "@JsEnum(isNative=true)",
-            "public enum ClosureEnum{",
-            "  OK,",
-            "  CANCEL",
-            "}")
+            """
+            import jsinterop.annotations.*;
+            @JsEnum(isNative=true)
+            public enum ClosureEnum{
+              OK,
+              CANCEL
+            }
+            """)
         .addNativeJsForCompilationUnit(
             "nativeclasstest.ClosureEnum", "const ClosureEnum ={ OK : 'OK', CANCEL : 'Cancel' }")
         .assertTranspileFails()
@@ -243,10 +273,12 @@ public class CommandLineInvocationTest extends TestCase {
     newTesterWithDefaults()
         .addCompilationUnit(
             "nativeclasstest.NativeClass",
-            "import jsinterop.annotations.*;",
-            "@JsType(isNative=true)",
-            "public class NativeClass{",
-            "}")
+            """
+            import jsinterop.annotations.*;
+            @JsType(isNative=true)
+            public class NativeClass{
+            }
+            """)
         .addNativeJsForCompilationUnit("nativeclasstest.NativeClass", "Class NativeClass{}")
         .assertTranspileFails()
         .assertErrorsWithoutSourcePosition(
@@ -257,10 +289,12 @@ public class CommandLineInvocationTest extends TestCase {
     newTesterWithDefaults()
         .addCompilationUnit(
             "nativeclasstest.NativeClass",
-            "import jsinterop.annotations.*;",
-            "public class NativeClass {",
-            "  @JsMethod public native void nativeInstanceMethod();",
-            "}")
+            """
+            import jsinterop.annotations.*;
+            public class NativeClass {
+              @JsMethod public native void nativeInstanceMethod();
+            }
+            """)
         .addFileToZipFile(
             "native.zip",
             "nativeclasstest/NativeClass.native.js",
@@ -278,10 +312,12 @@ public class CommandLineInvocationTest extends TestCase {
     newTesterWithDefaults()
         .addCompilationUnit(
             "nativeclasstest.NativeClass",
-            "import jsinterop.annotations.*;",
-            "public class NativeClass {",
-            "  @JsMethod public native void nativeInstanceMethod();",
-            "}")
+            """
+            import jsinterop.annotations.*;
+            public class NativeClass {
+              @JsMethod public native void nativeInstanceMethod();
+            }
+            """)
         .addFileToZipFile(
             "native.zip",
             "nativeclasstest/NativeClass.native.js",
@@ -299,20 +335,24 @@ public class CommandLineInvocationTest extends TestCase {
     newTesterWithDefaults()
         .addCompilationUnit(
             "nativeclasstest.NativeClass",
-            "import jsinterop.annotations.*;",
-            "public class NativeClass {",
-            "  @JsMethod public native void nativeInstanceMethod();",
-            "}")
+            """
+            import jsinterop.annotations.*;
+            public class NativeClass {
+              @JsMethod public native void nativeInstanceMethod();
+            }
+            """)
         .addFileToZipFile(
             "native.zip",
             "nativeclasstest/NativeClass.native.js",
             "NativeClass.prototype.nativeInstanceMethod = function () {}")
         .addCompilationUnit(
             "nativeclasstest.subpackage.NativeClass",
-            "import jsinterop.annotations.*;",
-            "public class NativeClass {",
-            "  @JsMethod public native void otherNativeInstanceMethod();",
-            "}")
+            """
+            import jsinterop.annotations.*;
+            public class NativeClass {
+              @JsMethod public native void otherNativeInstanceMethod();
+            }
+            """)
         .addFileToZipFile(
             "native.zip",
             "nativeclasstest/subpackage/NativeClass.native.js",
@@ -323,8 +363,20 @@ public class CommandLineInvocationTest extends TestCase {
   public void testOutputsToDirectory() throws IOException {
     newTesterWithDefaults()
         .setOutputPath(Files.createTempDirectory("outputdir"))
-        .addCompilationUnit("test.Foo", "public class Foo {", "  public class InnerFoo {}", "}")
-        .addCompilationUnit("test.Bar", "public class Bar {", "  public class InnerBar {}", "}")
+        .addCompilationUnit(
+            "test.Foo",
+            """
+            public class Foo {
+              public class InnerFoo {}
+            }
+            """)
+        .addCompilationUnit(
+            "test.Bar",
+            """
+            public class Bar {
+              public class InnerBar {}
+            }
+            """)
         .assertTranspileSucceeds()
         .assertOutputFilesExist(
             "test/Foo.java.js",
@@ -345,8 +397,20 @@ public class CommandLineInvocationTest extends TestCase {
     Path outputLocation = Files.createTempFile("output", ".zip");
     newTesterWithDefaults()
         .setOutputPath(outputLocation)
-        .addCompilationUnit("test.Foo", "public class Foo {", "  public class InnerFoo {}", "}")
-        .addCompilationUnit("test.Bar", "public class Bar {", "  public class InnerBar {}", "}")
+        .addCompilationUnit(
+            "test.Foo",
+            """
+            public class Foo {
+              public class InnerFoo {}
+            }
+            """)
+        .addCompilationUnit(
+            "test.Bar",
+            """
+            public class Bar {
+              public class InnerBar {}
+            }
+            """)
         .assertTranspileSucceeds();
 
     try (ZipFile zipFile = new ZipFile(outputLocation.toFile())) {
@@ -363,16 +427,20 @@ public class CommandLineInvocationTest extends TestCase {
         .addArgs("-forbiddenAnnotation", "GwtIncompatible")
         .addCompilationUnit(
             "annotation.GwtIncompatible",
-            "import java.lang.annotation.*;",
-            "@Retention(RetentionPolicy.CLASS)",
-            "@Target({ElementType.METHOD})",
-            "@interface GwtIncompatible {}")
+            """
+            import java.lang.annotation.*;
+            @Retention(RetentionPolicy.CLASS)
+            @Target({ElementType.METHOD})
+            @interface GwtIncompatible {}
+            """)
         .addCompilationUnit(
             "annotation.ClassWithForbiddenAnnotation",
-            "import jsinterop.annotations.*;",
-            "public class ClassWithForbiddenAnnotation {",
-            "  @GwtIncompatible public  void nativeInstanceMethod() {}",
-            "}")
+            """
+            import jsinterop.annotations.*;
+            public class ClassWithForbiddenAnnotation {
+              @GwtIncompatible public  void nativeInstanceMethod() {}
+            }
+            """)
         .assertTranspileFails()
         .assertErrorsWithoutSourcePosition(
             "Unexpected @GwtIncompatible annotation found. Please run this library through the"
@@ -382,16 +450,20 @@ public class CommandLineInvocationTest extends TestCase {
         .addArgs("-forbiddenAnnotation", "Foo")
         .addCompilationUnit(
             "annotation.GwtIncompatible",
-            "import java.lang.annotation.*;",
-            "@Retention(RetentionPolicy.CLASS)",
-            "@Target({ElementType.METHOD})",
-            "@interface GwtIncompatible {}")
+            """
+            import java.lang.annotation.*;
+            @Retention(RetentionPolicy.CLASS)
+            @Target({ElementType.METHOD})
+            @interface GwtIncompatible {}
+            """)
         .addCompilationUnit(
             "annotation.ClassWithForbiddenAnnotation",
-            "import jsinterop.annotations.*;",
-            "public class ClassWithForbiddenAnnotation {",
-            "  @GwtIncompatible public void nativeInstanceMethod() {}",
-            "}")
+            """
+            import jsinterop.annotations.*;
+            public class ClassWithForbiddenAnnotation {
+              @GwtIncompatible public void nativeInstanceMethod() {}
+            }
+            """)
         .assertTranspileSucceeds();
   }
 }

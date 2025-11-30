@@ -2,6 +2,7 @@
 #   This package intends to test the pruning result output of the rta algorithm.
 
 load("//build_defs:rules.bzl", "j2cl_library", "j2cl_rta")
+load("@rules_java//java:defs.bzl", "java_library", "java_test")
 
 package(
     default_applicable_licenses = ["//:j2cl_license"],
@@ -16,7 +17,7 @@ j2cl_library(
         "Foo.java",
         "UnusedType.java",
     ],
-    deps = ["//third_party:gwt-jsinterop-annotations-j2cl"],
+    deps = ["//third_party:jsinterop-annotations-j2cl"],
 )
 
 j2cl_rta(

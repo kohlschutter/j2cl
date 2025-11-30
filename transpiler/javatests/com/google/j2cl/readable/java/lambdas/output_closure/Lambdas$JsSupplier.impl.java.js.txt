@@ -5,6 +5,7 @@ const $Util = goog.require('nativebootstrap.Util$impl');
 
 let Number = goog.forwardDeclare('java.lang.Number$impl');
 let $LambdaAdaptor = goog.forwardDeclare('lambdas.Lambdas.JsSupplier.$LambdaAdaptor$impl');
+let $Long = goog.forwardDeclare('nativebootstrap.Long$impl');
 
 /**
  * @interface
@@ -14,7 +15,7 @@ let $LambdaAdaptor = goog.forwardDeclare('lambdas.Lambdas.JsSupplier.$LambdaAdap
 class JsSupplier {
  /** @abstract @return {T} */
  get() {}
- /** @nodts @template T @return {JsSupplier<T>} */
+ /** @nodts @template T @return {!JsSupplier<T>} */
  static $adapt(/** ?function():T */ fn) {
   JsSupplier.$clinit();
   return /**@type {!$LambdaAdaptor<T>}*/ (new $LambdaAdaptor(fn));
@@ -41,7 +42,7 @@ class JsSupplier {
  }
 }
 JsSupplier.$markImplementor(/**@type {Function}*/ (JsSupplier));
-$Util.$setClassMetadataForInterface(JsSupplier, 'lambdas.Lambdas$JsSupplier');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (JsSupplier), 'lambdas.Lambdas$JsSupplier');
 
 exports = JsSupplier;
 

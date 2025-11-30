@@ -8,15 +8,15 @@
 # nor the Wasm spec.
 
 load(
-    "@com_google_j2cl//build_defs:rules.bzl",
+    "@j2cl//build_defs:rules.bzl",
     "j2cl_application",
     "j2wasm_application",
     "j2wasm_library",
 )
-load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_library")
+load("@rules_closure//closure:defs.bzl", "closure_js_library")
 
 package(
-    default_applicable_licenses = ["@com_google_j2cl//:j2cl_license"],
+    default_applicable_licenses = ["@j2cl//:j2cl_license"],
     default_visibility = ["//visibility:public"],
     licenses = ["notice"],
 )
@@ -63,7 +63,7 @@ j2cl_application(
     name = "jsapp",
     entry_points = ["entry"],
     extra_dev_resources = [
-        ":app.wasm",
+        ":app_dev.wasm",  # Development output that is not optimized.
     ],
     deps = [":hellojs"],
 )

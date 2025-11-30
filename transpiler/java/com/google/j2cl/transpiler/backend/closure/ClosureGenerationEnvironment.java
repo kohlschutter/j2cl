@@ -18,11 +18,14 @@ package com.google.j2cl.transpiler.backend.closure;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.google.j2cl.transpiler.ast.AstUtils;
 import com.google.j2cl.transpiler.ast.DeclaredTypeDescriptor;
 import com.google.j2cl.transpiler.ast.HasName;
 import com.google.j2cl.transpiler.ast.MethodLike;
 import com.google.j2cl.transpiler.ast.TypeDeclaration;
 import com.google.j2cl.transpiler.ast.TypeDescriptor;
+import com.google.j2cl.transpiler.ast.Variable;
+import com.google.j2cl.transpiler.backend.common.SourceBuilder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,5 +83,53 @@ public class ClosureGenerationEnvironment {
 
   public String getJsDocForParameter(MethodLike methodLike, int index) {
     return closureTypesGenerator.getJsDocForParameter(methodLike, index);
+  }
+
+  public String getJsDocForReturn(MethodLike methodLike) {
+    return closureTypesGenerator.getJsDocForReturnType(methodLike.getDescriptor());
+  }
+
+  /** Emits the comma separated list of parameter annotated with their respective types. */
+  public void emitParameters(SourceBuilder sourceBuilder, MethodLike method) {
+    emitParameters(sourceBuilder, method, null);
+  }
+
+  public void emitParameters(SourceBuilder sourceBuilder, MethodLike method, JavaScriptImplGenerator javaScriptImplGenerator) {
+    sourceBuilder.append("(");
+    String separator = "";
+    for (int i = 0; i < method.getParameters().size(); i++) {
+      sourceBuilder.append(separator);
+      // Emit parameters in the more readable inline short form.
+      emitParameter(sourceBuilder, method, i, javaScriptImplGenerator);
+      separator = ", ";
+    }
+    sourceBuilder.append(") ");
+  }
+
+  private void emitParameter(SourceBuilder sourceBuilder, MethodLike expression, int i, JavaScriptImplGenerator javaScriptImplGenerator) {
+    Variable parameter = expression.getParameters().get(i);
+
+    if (parameter == expression.getJsVarargsParameter()) {
+      sourceBuilder.append("...");
+    }
+    boolean suppress;
+    if (javaScriptImplGenerator != null) {
+      javaScriptImplGenerator.disableSecondaryOutputIfNecessary();
+      suppress = javaScriptImplGenerator.suppressionsContainDangerousUnrecognizedTypeError();
+    } else {
+      suppress = false;
+    }
+
+    if (!suppress && !expression.getDescriptor().getEnclosingTypeDescriptor().isRaw()) {
+      sourceBuilder.append(
+          "/** " + closureTypesGenerator.getJsDocForParameter(expression, i) + " */ ");
+    }
+    if (javaScriptImplGenerator != null) {
+      javaScriptImplGenerator.enableSecondaryOutputIfNecessary();
+    }
+    sourceBuilder.emitWithMapping(
+        // Only map parameters if they are named.
+        AstUtils.removeUnnamedSourcePosition(parameter.getSourcePosition()),
+        () -> sourceBuilder.append(getUniqueNameForVariable(parameter)));
   }
 }

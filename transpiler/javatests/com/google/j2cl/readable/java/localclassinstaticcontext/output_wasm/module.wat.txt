@@ -1,142 +1,216 @@
- ;;; Code for localclassinstaticcontext.LocalClassInStaticContext [type definition]
- (type $localclassinstaticcontext.LocalClassInStaticContext (sub $java.lang.Object (struct
-  (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $localclassinstaticcontext.LocalClassInStaticContext.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  ))
- )
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext [type definition]
+(type $localclassinstaticcontext.LocalClassInStaticContext (sub $java.lang.Object (struct
+ (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $localclassinstaticcontext.LocalClassInStaticContext.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ ))
+)
 
- ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1 [type definition]
- (type $localclassinstaticcontext.LocalClassInStaticContext.1 (sub $java.lang.Object (struct
-  (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.1.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $localclassinstaticcontext.LocalClassInStaticContext.1.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  ))
- )
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1 [type definition]
+(type $localclassinstaticcontext.LocalClassInStaticContext.1 (sub $java.lang.Object (struct
+ (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.1.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $localclassinstaticcontext.LocalClassInStaticContext.1.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ ))
+)
 
- ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.3 [type definition]
- (type $localclassinstaticcontext.LocalClassInStaticContext.3 (sub $java.lang.Object (struct
-  (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.3.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $localclassinstaticcontext.LocalClassInStaticContext.3.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m__void_$pp_localclassinstaticcontext (ref $function.m_m__void_$pp_localclassinstaticcontext))
-  ))
- )
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.2 [type definition]
+(type $localclassinstaticcontext.LocalClassInStaticContext.2 (sub $java.lang.Object (struct
+ (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.2.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $localclassinstaticcontext.LocalClassInStaticContext.2.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m__void_$pp_localclassinstaticcontext (ref $function.m_m__void_$pp_localclassinstaticcontext))
+ ))
+)
 
- ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.2 [type definition]
- (type $localclassinstaticcontext.LocalClassInStaticContext.2 (sub $java.lang.Object (struct
-  (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.2.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $localclassinstaticcontext.LocalClassInStaticContext.2.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  ))
- )
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.3 [type definition]
+(type $localclassinstaticcontext.LocalClassInStaticContext.3 (sub $java.lang.Object (struct
+ (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.3.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $localclassinstaticcontext.LocalClassInStaticContext.3.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ ))
+)
 
- ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C.1D [type definition]
- (type $localclassinstaticcontext.LocalClassInStaticContext.C.1D (sub $java.lang.Object (struct
-  (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.C.1D.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  (field $$outer_this__localclassinstaticcontext_LocalClassInStaticContext_C_1D (mut (ref null $localclassinstaticcontext.LocalClassInStaticContext.C)))
-  ))
- )
- (type $localclassinstaticcontext.LocalClassInStaticContext.C.1D.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_fun__int (ref $function.m_fun__int))
-  ))
- )
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C.1D [type definition]
+(type $localclassinstaticcontext.LocalClassInStaticContext.C.1D (sub $java.lang.Object (struct
+ (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.C.1D.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ (field $$outer_this@localclassinstaticcontext.LocalClassInStaticContext.C.1D (mut (ref null $localclassinstaticcontext.LocalClassInStaticContext.C)))
+ ))
+)
+(type $localclassinstaticcontext.LocalClassInStaticContext.C.1D.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_fun__int (ref $function.m_fun__int))
+ ))
+)
 
- ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C [type definition]
- (type $localclassinstaticcontext.LocalClassInStaticContext.C (sub $java.lang.Object (struct
-  (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.C.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  (field $f_f__localclassinstaticcontext_LocalClassInStaticContext_C (mut i32))
-  ))
- )
- (type $localclassinstaticcontext.LocalClassInStaticContext.C.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_test__void (ref $function.m_test__void))
-  ))
- )
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C [type definition]
+(type $localclassinstaticcontext.LocalClassInStaticContext.C (sub $java.lang.Object (struct
+ (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.C.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ (field $f@localclassinstaticcontext.LocalClassInStaticContext.C (mut i32))
+ ))
+)
+(type $localclassinstaticcontext.LocalClassInStaticContext.C.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_test__void (ref $function.m_test__void))
+ ))
+)
 
- ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1A [type definition]
- (type $localclassinstaticcontext.LocalClassInStaticContext.1A (sub $java.lang.Object (struct
-  (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.1A.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $localclassinstaticcontext.LocalClassInStaticContext.1A.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  ))
- )
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1A [type definition]
+(type $localclassinstaticcontext.LocalClassInStaticContext.1A (sub $java.lang.Object (struct
+ (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.1A.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $localclassinstaticcontext.LocalClassInStaticContext.1A.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ ))
+)
 
- ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1B [type definition]
- (type $localclassinstaticcontext.LocalClassInStaticContext.1B (sub $java.lang.Object (struct
-  (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.1B.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $localclassinstaticcontext.LocalClassInStaticContext.1B.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  ))
- )
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1B [type definition]
+(type $localclassinstaticcontext.LocalClassInStaticContext.1B (sub $java.lang.Object (struct
+ (field $vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.1B.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $localclassinstaticcontext.LocalClassInStaticContext.1B.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ ))
+)
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext [imports]
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1 [imports]
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.2 [imports]
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.3 [imports]
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C.1D [imports]
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C [imports]
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1A [imports]
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1B [imports]
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext [static fields]
+(global $f@localclassinstaticcontext.LocalClassInStaticContext (mut (ref null $java.lang.Object))
+ (ref.null $java.lang.Object)
+)
+(global $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext (mut i32)
+ (i32.const 0)
+)
+(global $$class@localclassinstaticcontext.LocalClassInStaticContext (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1 [static fields]
+(global $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.1 (mut i32)
+ (i32.const 0)
+)
+(global $$class@localclassinstaticcontext.LocalClassInStaticContext.1 (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.2 [static fields]
+(global $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.2 (mut i32)
+ (i32.const 0)
+)
+(global $$class@localclassinstaticcontext.LocalClassInStaticContext.2 (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.3 [static fields]
+(global $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.3 (mut i32)
+ (i32.const 0)
+)
+(global $$class@localclassinstaticcontext.LocalClassInStaticContext.3 (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C.1D [static fields]
+(global $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.C.1D (mut i32)
+ (i32.const 0)
+)
+(global $$class@localclassinstaticcontext.LocalClassInStaticContext.C.1D (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C [static fields]
+(global $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.C (mut i32)
+ (i32.const 0)
+)
+(global $$class@localclassinstaticcontext.LocalClassInStaticContext.C (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1A [static fields]
+(global $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.1A (mut i32)
+ (i32.const 0)
+)
+(global $$class@localclassinstaticcontext.LocalClassInStaticContext.1A (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1B [static fields]
+(global $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.1B (mut i32)
+ (i32.const 0)
+)
+(global $$class@localclassinstaticcontext.LocalClassInStaticContext.1B (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
 
 ;;; Code for localclassinstaticcontext.LocalClassInStaticContext [vtable.init]
 (global $localclassinstaticcontext.LocalClassInStaticContext.vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.vtable)
  (struct.new $localclassinstaticcontext.LocalClassInStaticContext.vtable
   (ref.func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
  )
@@ -147,21 +221,8 @@
  (struct.new $localclassinstaticcontext.LocalClassInStaticContext.1.vtable
   (ref.func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
- )
-)
-
-;;; Code for localclassinstaticcontext.LocalClassInStaticContext.3 [vtable.init]
-(global $localclassinstaticcontext.LocalClassInStaticContext.3.vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.3.vtable)
- (struct.new $localclassinstaticcontext.LocalClassInStaticContext.3.vtable
-  (ref.func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.3)
-  (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
-  (ref.func $m_hashCode__int@java.lang.Object)
-  (ref.func $m_toString__java_lang_String@java.lang.Object)
-  (ref.func $m_m__void_$pp_localclassinstaticcontext@localclassinstaticcontext.LocalClassInStaticContext.3)
  )
 )
 
@@ -170,7 +231,17 @@
  (struct.new $localclassinstaticcontext.LocalClassInStaticContext.2.vtable
   (ref.func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.2)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
+  (ref.func $m_hashCode__int@java.lang.Object)
+  (ref.func $m_toString__java_lang_String@java.lang.Object)
+  (ref.func $m_m__void_$pp_localclassinstaticcontext@localclassinstaticcontext.LocalClassInStaticContext.2)
+ )
+)
+
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.3 [vtable.init]
+(global $localclassinstaticcontext.LocalClassInStaticContext.3.vtable (ref $localclassinstaticcontext.LocalClassInStaticContext.3.vtable)
+ (struct.new $localclassinstaticcontext.LocalClassInStaticContext.3.vtable
+  (ref.func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.3)
+  (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
  )
@@ -181,7 +252,6 @@
  (struct.new $localclassinstaticcontext.LocalClassInStaticContext.C.1D.vtable
   (ref.func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.C.1D)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_fun__int@localclassinstaticcontext.LocalClassInStaticContext.C.1D)
@@ -193,7 +263,6 @@
  (struct.new $localclassinstaticcontext.LocalClassInStaticContext.C.vtable
   (ref.func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.C)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_test__void@localclassinstaticcontext.LocalClassInStaticContext.C)
@@ -205,7 +274,6 @@
  (struct.new $localclassinstaticcontext.LocalClassInStaticContext.1A.vtable
   (ref.func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1A)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
  )
@@ -216,101 +284,9 @@
  (struct.new $localclassinstaticcontext.LocalClassInStaticContext.1B.vtable
   (ref.func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1B)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
  )
-)
-
-;;; Code for localclassinstaticcontext.LocalClassInStaticContext [static fields]
-(global $f_f__localclassinstaticcontext_LocalClassInStaticContext (mut (ref null $java.lang.Object))
- (ref.null $java.lang.Object)
-)
-(global $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext (mut i32)
- (i32.const 0)
-)
-(global $f_$class__localclassinstaticcontext_LocalClassInStaticContext (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1 [static fields]
-(global $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_1 (mut i32)
- (i32.const 0)
-)
-(global $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1 (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1 (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for localclassinstaticcontext.LocalClassInStaticContext.3 [static fields]
-(global $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_3 (mut i32)
- (i32.const 0)
-)
-(global $f_$class__localclassinstaticcontext_LocalClassInStaticContext_3 (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_3 (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for localclassinstaticcontext.LocalClassInStaticContext.2 [static fields]
-(global $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_2 (mut i32)
- (i32.const 0)
-)
-(global $f_$class__localclassinstaticcontext_LocalClassInStaticContext_2 (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_2 (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C.1D [static fields]
-(global $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_C_1D (mut i32)
- (i32.const 0)
-)
-(global $f_$class__localclassinstaticcontext_LocalClassInStaticContext_C_1D (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_C_1D (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C [static fields]
-(global $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_C (mut i32)
- (i32.const 0)
-)
-(global $f_$class__localclassinstaticcontext_LocalClassInStaticContext_C (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_C (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1A [static fields]
-(global $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_1A (mut i32)
- (i32.const 0)
-)
-(global $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1A (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1A (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1B [static fields]
-(global $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_1B (mut i32)
- (i32.const 0)
-)
-(global $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1B (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1B (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
 )
 
 ;;; Code for localclassinstaticcontext.LocalClassInStaticContext [methods]
@@ -318,16 +294,16 @@
 ;;; LocalClassInStaticContext LocalClassInStaticContext.$create()
 (func $$create__@localclassinstaticcontext.LocalClassInStaticContext
  (result (ref null $localclassinstaticcontext.LocalClassInStaticContext))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
  (local $$instance (ref null $localclassinstaticcontext.LocalClassInStaticContext))
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
-  (call $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
-  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext (ref.as_non_null (global.get $localclassinstaticcontext.LocalClassInStaticContext.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+  (call $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext (global.get $localclassinstaticcontext.LocalClassInStaticContext.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
   (call $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext@localclassinstaticcontext.LocalClassInStaticContext (ref.as_non_null (local.get $$instance)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
   (return (local.get $$instance))
  )
 )
@@ -335,62 +311,63 @@
 ;;; void LocalClassInStaticContext.$ctor()
 (func $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext@localclassinstaticcontext.LocalClassInStaticContext
  (param $this (ref null $localclassinstaticcontext.LocalClassInStaticContext))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
 
 ;;; void LocalClassInStaticContext.test()
 (func $m_test__void@localclassinstaticcontext.LocalClassInStaticContext
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:21:21
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:21:21
  (local $a (ref null $java.lang.Object))
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:21:28
-  (call $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:24:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:21:28
+  (call $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:24:4
   (drop (call $$create__@localclassinstaticcontext.LocalClassInStaticContext.1A ))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:25:4
-  (local.set $a (call $$create__@localclassinstaticcontext.LocalClassInStaticContext.3 ))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:25:4
+  (local.set $a (call $$create__@localclassinstaticcontext.LocalClassInStaticContext.2 ))
  )
 )
 
 ;;; void LocalClassInStaticContext.$clinit()
-(func $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+(func $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
  (local $b (ref null $java.lang.Object))
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
-  (if (global.get $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+  (if (global.get $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext)
    (then
-    ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
     (return )
    )
   )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
-  (global.set $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext (i32.const 1))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:18:13
-  (call $$clinit__void@java.lang.Object )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:2
-  (global.set $f_f__localclassinstaticcontext_LocalClassInStaticContext (call $$create__@localclassinstaticcontext.LocalClassInStaticContext.1 ))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:38:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+  (global.set $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:18:13
+  (call $$clinit__void_<once>_@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:2
+  (global.set $f@localclassinstaticcontext.LocalClassInStaticContext (call $$create__@localclassinstaticcontext.LocalClassInStaticContext.1 ))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:38:4
   (drop (call $$create__@localclassinstaticcontext.LocalClassInStaticContext.1B ))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:4
-  (local.set $b (call $$create__@localclassinstaticcontext.LocalClassInStaticContext.2 ))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:4
+  (local.set $b (call $$create__@localclassinstaticcontext.LocalClassInStaticContext.3 ))
  )
 )
 
 ;;; Class<T> LocalClassInStaticContext.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext
+(func $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext))
+  (if (i32.eqz (ref.is_null (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext)))
    (then
-    (global.set $f_$class__localclassinstaticcontext_LocalClassInStaticContext (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|localclassin...|__java_lang_String (ref.func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext))
    )
   )
-  (return (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext))
+  (global.set $$class@localclassinstaticcontext.LocalClassInStaticContext (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|localclassin...|__java_lang_String_<once>_@localclassinstaticcontext.LocalClassInStaticContext )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext))
  )
 )
 
@@ -402,39 +379,26 @@
  (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext))
  (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext)
-
-;;; String LocalClassInStaticContext.$getString_|localclassin...|()
-(func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext))
-   (then
-    (global.set $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "localclassinstaticcontext.LocalClassInStaticContext")))
-   )
-  )
-  (return (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext))
- )
-)
 
 ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1 [methods]
 
 ;;; <anonymous> extends Object <anonymous> extends Object.$create()
 (func $$create__@localclassinstaticcontext.LocalClassInStaticContext.1
  (result (ref null $localclassinstaticcontext.LocalClassInStaticContext.1))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:40
  (local $$instance (ref null $localclassinstaticcontext.LocalClassInStaticContext.1))
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
-  (call $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.1 )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
-  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.1 (ref.as_non_null (global.get $localclassinstaticcontext.LocalClassInStaticContext.1.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:40
+  (call $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1 )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:40
+  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.1 (global.get $localclassinstaticcontext.LocalClassInStaticContext.1.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:40
   (call $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_1@localclassinstaticcontext.LocalClassInStaticContext.1 (ref.as_non_null (local.get $$instance)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:40
   (return (local.get $$instance))
  )
 )
@@ -442,41 +406,42 @@
 ;;; void <anonymous> extends Object.$ctor()
 (func $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_1@localclassinstaticcontext.LocalClassInStaticContext.1
  (param $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.1))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:40
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:40
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
 
 ;;; void <anonymous> extends Object.$clinit()
-(func $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.1
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
+(func $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:27
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
-  (if (global.get $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_1)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:27
+  (if (global.get $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.1)
    (then
-    ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:27
     (return )
    )
   )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
-  (global.set $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_1 (i32.const 1))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:19:40
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:27
+  (global.set $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.1 (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:19:27
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> <anonymous> extends Object.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1
+(func $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1))
+  (if (i32.eqz (ref.is_null (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.1)))
    (then
-    (global.set $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1 (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|localclassin...|__java_lang_String (ref.func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.1) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.1))
    )
   )
-  (return (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1))
+  (global.set $$class@localclassinstaticcontext.LocalClassInStaticContext.1 (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|localclassin...|__java_lang_String_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1 )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.1))
  )
 )
 
@@ -488,139 +453,26 @@
  (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.1))
  (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.1) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1 ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1)
-
-;;; String <anonymous> extends Object.$getString_|localclassin...|()
-(func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.1
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1))
-   (then
-    (global.set $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1 (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "localclassinstaticcontext.LocalClassInStaticContext$1")))
-   )
-  )
-  (return (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1))
- )
-)
-
-;;; Code for localclassinstaticcontext.LocalClassInStaticContext.3 [methods]
-
-;;; <anonymous> extends Object <anonymous> extends Object.$create()
-(func $$create__@localclassinstaticcontext.LocalClassInStaticContext.3
- (result (ref null $localclassinstaticcontext.LocalClassInStaticContext.3))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
- (local $$instance (ref null $localclassinstaticcontext.LocalClassInStaticContext.3))
- (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
-  (call $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.3 )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
-  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.3 (ref.as_non_null (global.get $localclassinstaticcontext.LocalClassInStaticContext.3.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
-  (call $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_3@localclassinstaticcontext.LocalClassInStaticContext.3 (ref.as_non_null (local.get $$instance)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
-  (return (local.get $$instance))
- )
-)
-
-;;; void <anonymous> extends Object.$ctor()
-(func $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_3@localclassinstaticcontext.LocalClassInStaticContext.3
- (param $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.3))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
- (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
-  (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
- )
-)
-
-;;; void <anonymous> extends Object.m()
-(func $m_m__void_$pp_localclassinstaticcontext@localclassinstaticcontext.LocalClassInStaticContext.3
- (type $function.m_m__void_$pp_localclassinstaticcontext)
- (param $this.untyped (ref $java.lang.Object))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:27:15
- (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.3))
- (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.3) (local.get $this.untyped)))
- (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:30:12
-  (drop (call $$create__@localclassinstaticcontext.LocalClassInStaticContext.1A ))
- )
-)
-(elem declare func $m_m__void_$pp_localclassinstaticcontext@localclassinstaticcontext.LocalClassInStaticContext.3)
-
-;;; void <anonymous> extends Object.$clinit()
-(func $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.3
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
- (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
-  (if (global.get $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_3)
-   (then
-    ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
-    (return )
-   )
-  )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
-  (global.set $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_3 (i32.const 1))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:26:21
-  (call $$clinit__void@java.lang.Object )
- )
-)
-
-;;; Class<T> <anonymous> extends Object.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.3
- (result (ref null $java.lang.Class))
- (block
-  (if (ref.is_null (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_3))
-   (then
-    (global.set $f_$class__localclassinstaticcontext_LocalClassInStaticContext_3 (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|localclassin...|__java_lang_String (ref.func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.3) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
-   )
-  )
-  (return (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_3))
- )
-)
-
-;;; Class<?> <anonymous> extends Object.$getClassImpl()
-(func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.3
- (type $function.$getClassImpl__java_lang_Class)
- (param $this.untyped (ref $java.lang.Object))
- (result (ref null $java.lang.Class))
- (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.3))
- (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.3) (local.get $this.untyped)))
- (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.3) ))
- )
-)
-(elem declare func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.3)
-
-;;; String <anonymous> extends Object.$getString_|localclassin...|()
-(func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.3
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_3))
-   (then
-    (global.set $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_3 (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "localclassinstaticcontext.LocalClassInStaticContext$3")))
-   )
-  )
-  (return (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_3))
- )
-)
 
 ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.2 [methods]
 
 ;;; <anonymous> extends Object <anonymous> extends Object.$create()
 (func $$create__@localclassinstaticcontext.LocalClassInStaticContext.2
  (result (ref null $localclassinstaticcontext.LocalClassInStaticContext.2))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:21
  (local $$instance (ref null $localclassinstaticcontext.LocalClassInStaticContext.2))
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
-  (call $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.2 )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
-  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.2 (ref.as_non_null (global.get $localclassinstaticcontext.LocalClassInStaticContext.2.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:21
+  (call $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.2 )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:21
+  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.2 (global.get $localclassinstaticcontext.LocalClassInStaticContext.2.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:21
   (call $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_2@localclassinstaticcontext.LocalClassInStaticContext.2 (ref.as_non_null (local.get $$instance)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:21
   (return (local.get $$instance))
  )
 )
@@ -628,41 +480,56 @@
 ;;; void <anonymous> extends Object.$ctor()
 (func $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_2@localclassinstaticcontext.LocalClassInStaticContext.2
  (param $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.2))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:21
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:21
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
 
-;;; void <anonymous> extends Object.$clinit()
-(func $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.2
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+;;; void <anonymous> extends Object.m()
+(func $m_m__void_$pp_localclassinstaticcontext@localclassinstaticcontext.LocalClassInStaticContext.2
+ (type $function.m_m__void_$pp_localclassinstaticcontext)
+ (param $this.untyped (ref $java.lang.Object))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:27:15
+ (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.2))
+ (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.2) (local.get $this.untyped)))
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
-  (if (global.get $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_2)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:30:12
+  (drop (call $$create__@localclassinstaticcontext.LocalClassInStaticContext.1A ))
+ )
+)
+(elem declare func $m_m__void_$pp_localclassinstaticcontext@localclassinstaticcontext.LocalClassInStaticContext.2)
+
+;;; void <anonymous> extends Object.$clinit()
+(func $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.2
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:8
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:8
+  (if (global.get $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.2)
    (then
-    ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:8
     (return )
    )
   )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
-  (global.set $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_2 (i32.const 1))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:39:28
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:8
+  (global.set $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.2 (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:26:8
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> <anonymous> extends Object.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.2
+(func $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.2
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_2))
+  (if (i32.eqz (ref.is_null (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.2)))
    (then
-    (global.set $f_$class__localclassinstaticcontext_LocalClassInStaticContext_2 (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|localclassin...|__java_lang_String (ref.func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.2) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.2))
    )
   )
-  (return (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_2))
+  (global.set $$class@localclassinstaticcontext.LocalClassInStaticContext.2 (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|localclassin...|__java_lang_String_<once>_@localclassinstaticcontext.LocalClassInStaticContext.2 )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.2))
  )
 )
 
@@ -674,23 +541,84 @@
  (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.2))
  (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.2) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.2) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.2 ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.2)
 
-;;; String <anonymous> extends Object.$getString_|localclassin...|()
-(func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.2
- (result (ref null $java.lang.String))
+;;; Code for localclassinstaticcontext.LocalClassInStaticContext.3 [methods]
+
+;;; <anonymous> extends Object <anonymous> extends Object.$create()
+(func $$create__@localclassinstaticcontext.LocalClassInStaticContext.3
+ (result (ref null $localclassinstaticcontext.LocalClassInStaticContext.3))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+ (local $$instance (ref null $localclassinstaticcontext.LocalClassInStaticContext.3))
  (block
-  (if (ref.is_null (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_2))
-   (then
-    (global.set $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_2 (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "localclassinstaticcontext.LocalClassInStaticContext$2")))
-   )
-  )
-  (return (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_2))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+  (call $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.3 )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.3 (global.get $localclassinstaticcontext.LocalClassInStaticContext.3.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+  (call $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_3@localclassinstaticcontext.LocalClassInStaticContext.3 (ref.as_non_null (local.get $$instance)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+  (return (local.get $$instance))
  )
 )
+
+;;; void <anonymous> extends Object.$ctor()
+(func $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_3@localclassinstaticcontext.LocalClassInStaticContext.3
+ (param $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.3))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:28
+  (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
+ )
+)
+
+;;; void <anonymous> extends Object.$clinit()
+(func $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.3
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:15
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:15
+  (if (global.get $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.3)
+   (then
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:15
+    (return )
+   )
+  )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:15
+  (global.set $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.3 (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:39:15
+  (call $$clinit__void_<once>_@java.lang.Object )
+ )
+)
+
+;;; Class<T> <anonymous> extends Object.$getClassMetadata()
+(func $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.3
+ (result (ref null $java.lang.Class))
+ (block
+  (if (i32.eqz (ref.is_null (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.3)))
+   (then
+    (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.3))
+   )
+  )
+  (global.set $$class@localclassinstaticcontext.LocalClassInStaticContext.3 (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|localclassin...|__java_lang_String_<once>_@localclassinstaticcontext.LocalClassInStaticContext.3 )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.3))
+ )
+)
+
+;;; Class<?> <anonymous> extends Object.$getClassImpl()
+(func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.3
+ (type $function.$getClassImpl__java_lang_Class)
+ (param $this.untyped (ref $java.lang.Object))
+ (result (ref null $java.lang.Class))
+ (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.3))
+ (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.3) (local.get $this.untyped)))
+ (block
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.3 ))
+ )
+)
+(elem declare func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.3)
 
 ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C.1D [methods]
 
@@ -698,16 +626,16 @@
 (func $$create__localclassinstaticcontext_LocalClassInStaticContext_C@localclassinstaticcontext.LocalClassInStaticContext.C.1D
  (param $$outer_this (ref null $localclassinstaticcontext.LocalClassInStaticContext.C))
  (result (ref null $localclassinstaticcontext.LocalClassInStaticContext.C.1D))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
  (local $$instance (ref null $localclassinstaticcontext.LocalClassInStaticContext.C.1D))
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
-  (call $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.C.1D )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
-  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.C.1D (ref.as_non_null (global.get $localclassinstaticcontext.LocalClassInStaticContext.C.1D.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0) (ref.null $localclassinstaticcontext.LocalClassInStaticContext.C)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+  (call $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.C.1D )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.C.1D (global.get $localclassinstaticcontext.LocalClassInStaticContext.C.1D.vtable) (global.get $itable.empty) (i32.const 0) (ref.null $localclassinstaticcontext.LocalClassInStaticContext.C)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
   (call $$ctor__localclassinstaticcontext_LocalClassInStaticContext_C__void_$p_localclassinstaticcontext_LocalClassInStaticContext_C_1D@localclassinstaticcontext.LocalClassInStaticContext.C.1D (ref.as_non_null (local.get $$instance))(local.get $$outer_this))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
   (return (local.get $$instance))
  )
 )
@@ -716,11 +644,11 @@
 (func $$ctor__localclassinstaticcontext_LocalClassInStaticContext_C__void_$p_localclassinstaticcontext_LocalClassInStaticContext_C_1D@localclassinstaticcontext.LocalClassInStaticContext.C.1D
  (param $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.C.1D))
  (param $$outer_this (ref null $localclassinstaticcontext.LocalClassInStaticContext.C))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
-  (struct.set $localclassinstaticcontext.LocalClassInStaticContext.C.1D $$outer_this__localclassinstaticcontext_LocalClassInStaticContext_C_1D (local.get $this) (local.get $$outer_this))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+  (struct.set $localclassinstaticcontext.LocalClassInStaticContext.C.1D $$outer_this@localclassinstaticcontext.LocalClassInStaticContext.C.1D (local.get $this) (local.get $$outer_this))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -730,44 +658,45 @@
  (type $function.m_fun__int)
  (param $this.untyped (ref $java.lang.Object))
  (result i32)
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:48:19
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:48:19
  (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.C.1D))
  (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.C.1D) (local.get $this.untyped)))
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:49:10
-  (return (struct.get $localclassinstaticcontext.LocalClassInStaticContext.C $f_f__localclassinstaticcontext_LocalClassInStaticContext_C (struct.get $localclassinstaticcontext.LocalClassInStaticContext.C.1D $$outer_this__localclassinstaticcontext_LocalClassInStaticContext_C_1D (local.get $this))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:49:10
+  (return (struct.get $localclassinstaticcontext.LocalClassInStaticContext.C $f@localclassinstaticcontext.LocalClassInStaticContext.C (struct.get $localclassinstaticcontext.LocalClassInStaticContext.C.1D $$outer_this@localclassinstaticcontext.LocalClassInStaticContext.C.1D (local.get $this))))
  )
 )
 (elem declare func $m_fun__int@localclassinstaticcontext.LocalClassInStaticContext.C.1D)
 
 ;;; void D.$clinit()
-(func $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.C.1D
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+(func $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.C.1D
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
-  (if (global.get $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_C_1D)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+  (if (global.get $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.C.1D)
    (then
-    ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
     (return )
    )
   )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
-  (global.set $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_C_1D (i32.const 1))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:47:12
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+  (global.set $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.C.1D (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:47:12
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> D.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.C.1D
+(func $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.C.1D
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_C_1D))
+  (if (i32.eqz (ref.is_null (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.C.1D)))
    (then
-    (global.set $f_$class__localclassinstaticcontext_LocalClassInStaticContext_C_1D (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|localclassin...|__java_lang_String (ref.func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.C.1D) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.C.1D))
    )
   )
-  (return (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_C_1D))
+  (global.set $$class@localclassinstaticcontext.LocalClassInStaticContext.C.1D (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|localclassin...|__java_lang_String_<once>_@localclassinstaticcontext.LocalClassInStaticContext.C.1D )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.C.1D))
  )
 )
 
@@ -779,39 +708,26 @@
  (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.C.1D))
  (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.C.1D) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.C.1D) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.C.1D ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.C.1D)
-
-;;; String D.$getString_|localclassin...|()
-(func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.C.1D
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_C_1D))
-   (then
-    (global.set $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_C_1D (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "localclassinstaticcontext.LocalClassInStaticContext$C$1D")))
-   )
-  )
-  (return (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_C_1D))
- )
-)
 
 ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.C [methods]
 
 ;;; C C.$create()
 (func $$create__@localclassinstaticcontext.LocalClassInStaticContext.C
  (result (ref null $localclassinstaticcontext.LocalClassInStaticContext.C))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
  (local $$instance (ref null $localclassinstaticcontext.LocalClassInStaticContext.C))
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
-  (call $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.C )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
-  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.C (ref.as_non_null (global.get $localclassinstaticcontext.LocalClassInStaticContext.C.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0) (i32.const 0)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+  (call $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.C )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.C (global.get $localclassinstaticcontext.LocalClassInStaticContext.C.vtable) (global.get $itable.empty) (i32.const 0) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
   (call $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_C@localclassinstaticcontext.LocalClassInStaticContext.C (ref.as_non_null (local.get $$instance)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
   (return (local.get $$instance))
  )
 )
@@ -819,11 +735,11 @@
 ;;; void C.$ctor()
 (func $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_C@localclassinstaticcontext.LocalClassInStaticContext.C
  (param $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.C))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
   (call $$init__void_$p_localclassinstaticcontext_LocalClassInStaticContext_C@localclassinstaticcontext.LocalClassInStaticContext.C (ref.as_non_null (local.get $this)))
  )
 )
@@ -832,15 +748,15 @@
 (func $m_test__void@localclassinstaticcontext.LocalClassInStaticContext.C
  (type $function.m_test__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:45:16
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:45:16
  (local $$qualifier (ref null $localclassinstaticcontext.LocalClassInStaticContext.C.1D))
  (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.C))
  (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.C) (local.get $this.untyped)))
  (block
   (block
-   ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:52:6
+   ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:52:6
    (local.set $$qualifier (call $$create__localclassinstaticcontext_LocalClassInStaticContext_C@localclassinstaticcontext.LocalClassInStaticContext.C.1D (local.get $this)))
-   ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:52:6
+   ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:52:6
    (drop (call_ref $function.m_fun__int (ref.as_non_null (local.get $$qualifier))(struct.get $localclassinstaticcontext.LocalClassInStaticContext.C.1D.vtable $m_fun__int (struct.get $localclassinstaticcontext.LocalClassInStaticContext.C.1D $vtable(local.get $$qualifier)))))
   )
  )
@@ -850,41 +766,42 @@
 ;;; void C.$init()
 (func $$init__void_$p_localclassinstaticcontext_LocalClassInStaticContext_C@localclassinstaticcontext.LocalClassInStaticContext.C
  (param $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.C))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:43:4
-  (struct.set $localclassinstaticcontext.LocalClassInStaticContext.C $f_f__localclassinstaticcontext_LocalClassInStaticContext_C (local.get $this) (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:43:4
+  (struct.set $localclassinstaticcontext.LocalClassInStaticContext.C $f@localclassinstaticcontext.LocalClassInStaticContext.C (local.get $this) (i32.const 1))
  )
 )
 
 ;;; void C.$clinit()
-(func $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.C
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+(func $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.C
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
-  (if (global.get $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_C)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+  (if (global.get $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.C)
    (then
-    ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
     (return )
    )
   )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
-  (global.set $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_C (i32.const 1))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:42:22
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+  (global.set $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.C (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:42:22
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> C.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.C
+(func $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.C
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_C))
+  (if (i32.eqz (ref.is_null (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.C)))
    (then
-    (global.set $f_$class__localclassinstaticcontext_LocalClassInStaticContext_C (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|localclassin...|__java_lang_String (ref.func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.C) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.C))
    )
   )
-  (return (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_C))
+  (global.set $$class@localclassinstaticcontext.LocalClassInStaticContext.C (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|localclassin...|__java_lang_String_<once>_@localclassinstaticcontext.LocalClassInStaticContext.C )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.C))
  )
 )
 
@@ -896,39 +813,26 @@
  (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.C))
  (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.C) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.C) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.C ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.C)
-
-;;; String C.$getString_|localclassin...|()
-(func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.C
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_C))
-   (then
-    (global.set $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_C (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "localclassinstaticcontext.LocalClassInStaticContext$C")))
-   )
-  )
-  (return (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_C))
- )
-)
 
 ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1A [methods]
 
 ;;; A A.$create()
 (func $$create__@localclassinstaticcontext.LocalClassInStaticContext.1A
  (result (ref null $localclassinstaticcontext.LocalClassInStaticContext.1A))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
  (local $$instance (ref null $localclassinstaticcontext.LocalClassInStaticContext.1A))
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
-  (call $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.1A )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
-  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.1A (ref.as_non_null (global.get $localclassinstaticcontext.LocalClassInStaticContext.1A.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+  (call $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1A )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.1A (global.get $localclassinstaticcontext.LocalClassInStaticContext.1A.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
   (call $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_1A@localclassinstaticcontext.LocalClassInStaticContext.1A (ref.as_non_null (local.get $$instance)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
   (return (local.get $$instance))
  )
 )
@@ -936,41 +840,42 @@
 ;;; void A.$ctor()
 (func $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_1A@localclassinstaticcontext.LocalClassInStaticContext.1A
  (param $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.1A))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
 
 ;;; void A.$clinit()
-(func $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.1A
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+(func $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1A
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
-  (if (global.get $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_1A)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+  (if (global.get $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.1A)
    (then
-    ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
     (return )
    )
   )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
-  (global.set $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_1A (i32.const 1))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:23:10
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+  (global.set $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.1A (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:23:10
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> A.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1A
+(func $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1A
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1A))
+  (if (i32.eqz (ref.is_null (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.1A)))
    (then
-    (global.set $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1A (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|localclassin...|__java_lang_String (ref.func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.1A) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.1A))
    )
   )
-  (return (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1A))
+  (global.set $$class@localclassinstaticcontext.LocalClassInStaticContext.1A (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|localclassin...|__java_lang_String_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1A )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.1A))
  )
 )
 
@@ -982,39 +887,26 @@
  (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.1A))
  (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.1A) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1A) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1A ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1A)
-
-;;; String A.$getString_|localclassin...|()
-(func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.1A
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1A))
-   (then
-    (global.set $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1A (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "localclassinstaticcontext.LocalClassInStaticContext$1A")))
-   )
-  )
-  (return (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1A))
- )
-)
 
 ;;; Code for localclassinstaticcontext.LocalClassInStaticContext.1B [methods]
 
 ;;; B B.$create()
 (func $$create__@localclassinstaticcontext.LocalClassInStaticContext.1B
  (result (ref null $localclassinstaticcontext.LocalClassInStaticContext.1B))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
  (local $$instance (ref null $localclassinstaticcontext.LocalClassInStaticContext.1B))
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
-  (call $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.1B )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
-  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.1B (ref.as_non_null (global.get $localclassinstaticcontext.LocalClassInStaticContext.1B.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+  (call $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1B )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+  (local.set $$instance (struct.new $localclassinstaticcontext.LocalClassInStaticContext.1B (global.get $localclassinstaticcontext.LocalClassInStaticContext.1B.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
   (call $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_1B@localclassinstaticcontext.LocalClassInStaticContext.1B (ref.as_non_null (local.get $$instance)))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
   (return (local.get $$instance))
  )
 )
@@ -1022,41 +914,42 @@
 ;;; void B.$ctor()
 (func $$ctor__void_$p_localclassinstaticcontext_LocalClassInStaticContext_1B@localclassinstaticcontext.LocalClassInStaticContext.1B
  (param $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.1B))
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
 
 ;;; void B.$clinit()
-(func $$clinit__void@localclassinstaticcontext.LocalClassInStaticContext.1B
- ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+(func $$clinit__void_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1B
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
  (block
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
-  (if (global.get $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_1B)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+  (if (global.get $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.1B)
    (then
-    ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
     (return )
    )
   )
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
-  (global.set $f_$initialized__localclassinstaticcontext_LocalClassInStaticContext_1B (i32.const 1))
-  ;;@ localclassinstaticcontext/LocalClassInStaticContext.java:37:10
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+  (global.set $$class-initialized@localclassinstaticcontext.LocalClassInStaticContext.1B (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/localclassinstaticcontext/readable-j2wasm.js/localclassinstaticcontext/LocalClassInStaticContext.java:37:10
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> B.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1B
+(func $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1B
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1B))
+  (if (i32.eqz (ref.is_null (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.1B)))
    (then
-    (global.set $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1B (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|localclassin...|__java_lang_String (ref.func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.1B) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.1B))
    )
   )
-  (return (global.get $f_$class__localclassinstaticcontext_LocalClassInStaticContext_1B))
+  (global.set $$class@localclassinstaticcontext.LocalClassInStaticContext.1B (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|localclassin...|__java_lang_String_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1B )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@localclassinstaticcontext.LocalClassInStaticContext.1B))
  )
 )
 
@@ -1068,20 +961,7 @@
  (local $this (ref null $localclassinstaticcontext.LocalClassInStaticContext.1B))
  (local.set $this (ref.cast (ref $localclassinstaticcontext.LocalClassInStaticContext.1B) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1B) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@localclassinstaticcontext.LocalClassInStaticContext.1B ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@localclassinstaticcontext.LocalClassInStaticContext.1B)
-
-;;; String B.$getString_|localclassin...|()
-(func $$getString_|localclassin...|__java_lang_String@localclassinstaticcontext.LocalClassInStaticContext.1B
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1B))
-   (then
-    (global.set $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1B (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "localclassinstaticcontext.LocalClassInStaticContext$1B")))
-   )
-  )
-  (return (global.get $f_$string_|localclassin...|__localclassinstaticcontext_LocalClassInStaticContext_1B))
- )
-)

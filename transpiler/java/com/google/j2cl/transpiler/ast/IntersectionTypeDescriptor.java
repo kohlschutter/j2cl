@@ -21,9 +21,12 @@ import static java.util.stream.Collectors.joining;
 
 import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.memoized.Memoized;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.j2cl.common.ThreadLocalInterner;
+import com.google.j2cl.common.visitor.Processor;
+import com.google.j2cl.common.visitor.Visitable;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -35,8 +38,9 @@ import javax.annotation.Nullable;
  * <p>Intersection types in Java arise from intersection casts like {@code (A&B&C)} and type
  * variable upper bounds like {@code <T extends A&B>}
  */
+@Visitable
 @AutoValue
-public abstract class IntersectionTypeDescriptor extends TypeDescriptor {
+public abstract non-sealed class IntersectionTypeDescriptor extends TypeDescriptor {
 
   public abstract ImmutableList<TypeDescriptor> getIntersectionTypeDescriptors();
 
@@ -62,7 +66,7 @@ public abstract class IntersectionTypeDescriptor extends TypeDescriptor {
    */
   @Memoized
   public TypeDescriptor getFirstType() {
-    return getIntersectionTypeDescriptors().get(0);
+    return getIntersectionTypeDescriptors().getFirst();
   }
 
   @Override
@@ -85,15 +89,6 @@ public abstract class IntersectionTypeDescriptor extends TypeDescriptor {
   @Nullable
   public TypeDeclaration getMetadataTypeDeclaration() {
     return toRawTypeDescriptor().getMetadataTypeDeclaration();
-  }
-
-  @Override
-  @Memoized
-  public IntersectionTypeDescriptor toUnparameterizedTypeDescriptor() {
-    return newBuilder()
-        .setIntersectionTypeDescriptors(
-            TypeDescriptors.toUnparameterizedTypeDescriptors(getIntersectionTypeDescriptors()))
-        .build();
   }
 
   @Override
@@ -153,7 +148,7 @@ public abstract class IntersectionTypeDescriptor extends TypeDescriptor {
     return IntersectionTypeDescriptor.newBuilder()
         .setIntersectionTypeDescriptors(
             getIntersectionTypeDescriptors().stream()
-                .map(TypeDescriptor::toNullable)
+                .map(TypeDescriptor::toNonNullable)
                 .collect(toImmutableList()))
         .build();
   }
@@ -163,6 +158,19 @@ public abstract class IntersectionTypeDescriptor extends TypeDescriptor {
     return getIntersectionTypeDescriptors()
         .stream()
         .anyMatch(TypeDescriptor::canBeReferencedExternally);
+  }
+
+  @Override
+  @Nullable
+  public MethodDescriptor getMethodDescriptor(String methodName, TypeDescriptor... parameters) {
+    for (TypeDescriptor typeDescriptor : getIntersectionTypeDescriptors()) {
+      MethodDescriptor methodDescriptor =
+          typeDescriptor.getMethodDescriptor(methodName, parameters);
+      if (methodDescriptor != null) {
+        return methodDescriptor;
+      }
+    }
+    return null;
   }
 
   @Override
@@ -202,6 +210,16 @@ public abstract class IntersectionTypeDescriptor extends TypeDescriptor {
   }
 
   @Override
+  @Nullable
+  public DeclaredTypeDescriptor findSupertype(TypeDeclaration supertypeDeclaration) {
+    return getIntersectionTypeDescriptors().stream()
+        .map(td -> td.findSupertype(supertypeDeclaration))
+        .filter(Predicates.notNull())
+        .findFirst()
+        .orElse(null);
+  }
+
+  @Override
   boolean isDenotable(ImmutableSet<TypeVariable> seen) {
     return false;
   }
@@ -210,6 +228,18 @@ public abstract class IntersectionTypeDescriptor extends TypeDescriptor {
   boolean hasReferenceTo(TypeVariable typeVariable, ImmutableSet<TypeVariable> seen) {
     return getIntersectionTypeDescriptors().stream()
         .anyMatch(it -> it.hasReferenceTo(typeVariable, seen));
+  }
+
+  @Override
+  String toStringInternal(ImmutableSet<TypeVariable> seen) {
+    return getIntersectionTypeDescriptors().stream()
+        .map(t -> t.toStringInternal(seen))
+        .collect(joining(" & ", "(", ")"));
+  }
+
+  @Override
+  TypeDescriptor acceptInternal(Processor processor) {
+    return Visitor_IntersectionTypeDescriptor.visit(processor, this);
   }
 
   public static Builder newBuilder() {

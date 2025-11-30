@@ -1,6 +1,8 @@
 # Description:
 #  A minifier library for J2CL generated source. Applicable in dev servers.
 
+load("@rules_java//java:defs.bzl", "java_binary", "java_library")
+
 package(
     default_applicable_licenses = ["//:j2cl_license"],
     licenses = ["notice"],
@@ -14,7 +16,10 @@ java_binary(
 
 java_library(
     name = "minifier",
-    srcs = ["J2clMinifier.java"],
+    srcs = [
+        "J2clMinifier.java",
+        "Platform.java",
+    ],
     visibility = [
         "//:__pkg__",
         "//tools/javatests/com/google/j2cl/tools:__subpackages__",
@@ -23,6 +28,7 @@ java_library(
     # This is integrated by many core infra pieces and should be very lightweight.
     deps = [
         "//third_party:guava",
+        "//third_party:jsinterop-annotations",
         "//third_party:jsr305_annotations",
         "//tools/java/com/google/j2cl/tools/rta:code_removal_info_java_proto",
     ],

@@ -19,13 +19,17 @@ import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.memoized.Memoized;
 import com.google.common.collect.ImmutableSet;
 import com.google.j2cl.common.ThreadLocalInterner;
+import com.google.j2cl.common.visitor.Processor;
+import com.google.j2cl.common.visitor.Visitable;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 /** An array type. */
+@Visitable
 @AutoValue
-public abstract class ArrayTypeDescriptor extends TypeDescriptor {
+public abstract non-sealed class ArrayTypeDescriptor extends TypeDescriptor {
 
   public abstract TypeDescriptor getComponentTypeDescriptor();
 
@@ -53,12 +57,10 @@ public abstract class ArrayTypeDescriptor extends TypeDescriptor {
 
   @Override
   public boolean isSameBaseType(TypeDescriptor other) {
-    if (!(other instanceof ArrayTypeDescriptor)) {
-      return false;
-    }
-    ArrayTypeDescriptor otherArrayType = (ArrayTypeDescriptor) other;
-    return getDimensions() == otherArrayType.getDimensions()
-        && getLeafTypeDescriptor().isSameBaseType(otherArrayType.getLeafTypeDescriptor());
+    return this == other
+        || (other instanceof ArrayTypeDescriptor otherArrayType
+            && getDimensions() == otherArrayType.getDimensions()
+            && getLeafTypeDescriptor().isSameBaseType(otherArrayType.getLeafTypeDescriptor()));
   }
 
   /** Returns true for arrays where raw JavaScript array representation is enough. */
@@ -85,17 +87,10 @@ public abstract class ArrayTypeDescriptor extends TypeDescriptor {
 
   @Override
   public boolean isNativeWasmArray() {
-    if (isMarkedAsNativeWasmArray()) {
-      return true;
-    }
-
-    if (getComponentTypeDescriptor().toRawTypeDescriptor() instanceof DeclaredTypeDescriptor) {
-      DeclaredTypeDescriptor componentTypeDescriptor =
-          (DeclaredTypeDescriptor) getComponentTypeDescriptor().toRawTypeDescriptor();
-      return componentTypeDescriptor.getTypeDeclaration().getWasmInfo() != null;
-    }
-
-    return false;
+    return isMarkedAsNativeWasmArray()
+        || (getComponentTypeDescriptor().toRawTypeDescriptor()
+                instanceof DeclaredTypeDescriptor componentTypeDescriptor
+            && AstUtils.isAnnotatedWithWasm(componentTypeDescriptor.getTypeDeclaration()));
   }
 
   @Override
@@ -117,6 +112,12 @@ public abstract class ArrayTypeDescriptor extends TypeDescriptor {
   }
 
   @Override
+  @Nullable
+  public MethodDescriptor getMethodDescriptor(String methodName, TypeDescriptor... parameters) {
+    return TypeDescriptors.get().javaLangObject.getMethodDescriptor(methodName, parameters);
+  }
+
+  @Override
   public boolean isArray() {
     return true;
   }
@@ -124,15 +125,6 @@ public abstract class ArrayTypeDescriptor extends TypeDescriptor {
   @Override
   public boolean isPrimitiveArray() {
     return getComponentTypeDescriptor().isPrimitive();
-  }
-
-  @Override
-  @Memoized
-  public ArrayTypeDescriptor toUnparameterizedTypeDescriptor() {
-    return toBuilder()
-        .setComponentTypeDescriptor(getComponentTypeDescriptor().toUnparameterizedTypeDescriptor())
-        .setNullable(true)
-        .build();
   }
 
   @Override
@@ -159,7 +151,7 @@ public abstract class ArrayTypeDescriptor extends TypeDescriptor {
   @Memoized
   public String getUniqueId() {
     String prefix = isNullable() ? "?" : "!";
-    String suffix = isNativeWasmArray() ? "(native)" : "";
+    String suffix = isMarkedAsNativeWasmArray() ? "(native)" : "";
     return prefix + "[]" + getComponentTypeDescriptor().getUniqueId() + suffix;
   }
 
@@ -208,7 +200,7 @@ public abstract class ArrayTypeDescriptor extends TypeDescriptor {
     TypeDescriptor component = getComponentTypeDescriptor();
     TypeDescriptor newComponent = replaceTypeDescriptors(component, fn, seen);
     if (component != newComponent) {
-      return Builder.from(this).setComponentTypeDescriptor(newComponent).build();
+      return withComponentTypeDescriptor(newComponent);
     }
     return this;
   }
@@ -220,17 +212,27 @@ public abstract class ArrayTypeDescriptor extends TypeDescriptor {
     if (AstUtils.isIdentityFunction(replacementTypeArgumentByTypeVariable)) {
       return this;
     }
-    return toBuilder()
-        .setComponentTypeDescriptor(
-            getComponentTypeDescriptor()
-                .specializeTypeVariables(replacementTypeArgumentByTypeVariable, seen))
-        .build();
+    return withComponentTypeDescriptor(
+        getComponentTypeDescriptor()
+            .specializeTypeVariables(replacementTypeArgumentByTypeVariable, seen));
   }
 
   @Override
   public ArrayTypeDescriptor specializeTypeVariables(
       Function<TypeVariable, ? extends TypeDescriptor> replacementTypeArgumentByTypeVariable) {
     return specializeTypeVariables(replacementTypeArgumentByTypeVariable, ImmutableSet.of());
+  }
+
+  @Override
+  @Nullable
+  public DeclaredTypeDescriptor findSupertype(TypeDeclaration supertypeDeclaration) {
+    return Stream.of(
+            TypeDescriptors.get().javaLangObject,
+            TypeDescriptors.get().javaLangCloneable,
+            TypeDescriptors.get().javaIoSerializable)
+        .filter(td -> td.getTypeDeclaration().equals(supertypeDeclaration))
+        .findFirst()
+        .orElse(null);
   }
 
   @Override
@@ -241,6 +243,25 @@ public abstract class ArrayTypeDescriptor extends TypeDescriptor {
   @Override
   boolean hasReferenceTo(TypeVariable typeVariable, ImmutableSet<TypeVariable> seen) {
     return getComponentTypeDescriptor().hasReferenceTo(typeVariable, seen);
+  }
+
+  public ArrayTypeDescriptor withComponentTypeDescriptor(TypeDescriptor typeDescriptor) {
+    return ArrayTypeDescriptor.Builder.from(this)
+        .setComponentTypeDescriptor(typeDescriptor)
+        .build();
+  }
+
+  @Override
+  String toStringInternal(ImmutableSet<TypeVariable> seen) {
+    return getComponentTypeDescriptor().toStringInternal(seen)
+        + "[]"
+        + (isNullable() ? "?" : "")
+        + (isMarkedAsNativeWasmArray() ? "(native)" : "");
+  }
+
+  @Override
+  TypeDescriptor acceptInternal(Processor processor) {
+    return Visitor_ArrayTypeDescriptor.visit(processor, this);
   }
 
   abstract Builder toBuilder();

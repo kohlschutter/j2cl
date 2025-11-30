@@ -18,23 +18,29 @@ package com.google.j2cl.transpiler.ast;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.j2cl.common.SourcePosition;
 import com.google.j2cl.common.visitor.Processor;
 import com.google.j2cl.common.visitor.Visitable;
-import com.google.j2cl.transpiler.ast.Expression.Precedence;
+import javax.annotation.Nullable;
 
 /** Class for instanceof Expression. */
 @Visitable
 public class InstanceOfExpression extends Expression implements HasSourcePosition {
   @Visitable Expression expression;
-  private final TypeDescriptor testTypeDescriptor;
+  @Visitable TypeDescriptor testTypeDescriptor;
+  @Visitable @Nullable Pattern pattern;
   private final SourcePosition sourcePosition;
 
   private InstanceOfExpression(
-      SourcePosition sourcePosition, Expression expression, TypeDescriptor testTypeDescriptor) {
+      SourcePosition sourcePosition,
+      Expression expression,
+      TypeDescriptor testTypeDescriptor,
+      Pattern pattern) {
     this.expression = checkNotNull(expression);
     this.testTypeDescriptor = checkNotNull(testTypeDescriptor);
     this.sourcePosition = sourcePosition;
+    this.pattern = pattern;
     checkArgument(
         testTypeDescriptor instanceof DeclaredTypeDescriptor
             || testTypeDescriptor instanceof ArrayTypeDescriptor);
@@ -53,6 +59,10 @@ public class InstanceOfExpression extends Expression implements HasSourcePositio
     return PrimitiveTypes.BOOLEAN;
   }
 
+  public Pattern getPattern() {
+    return pattern;
+  }
+
   @Override
   public boolean isIdempotent() {
     return expression.isIdempotent();
@@ -66,7 +76,8 @@ public class InstanceOfExpression extends Expression implements HasSourcePositio
 
   @Override
   public InstanceOfExpression clone() {
-    return new InstanceOfExpression(sourcePosition, expression.clone(), testTypeDescriptor);
+    return new InstanceOfExpression(
+        sourcePosition, expression.clone(), testTypeDescriptor, AstUtils.clone(pattern));
   }
 
   @Override
@@ -87,31 +98,43 @@ public class InstanceOfExpression extends Expression implements HasSourcePositio
   public static class Builder {
     private Expression expression;
     private TypeDescriptor testTypeDescriptor;
+    private Pattern pattern;
     private SourcePosition sourcePosition;
 
     public static Builder from(InstanceOfExpression instanceOfExpression) {
       return new Builder()
           .setExpression(instanceOfExpression.getExpression())
-          .setTestTypeDescriptor(instanceOfExpression.getTestTypeDescriptor());
+          .setTestTypeDescriptor(instanceOfExpression.getTestTypeDescriptor())
+          .setPattern(instanceOfExpression.getPattern())
+          .setSourcePosition(instanceOfExpression.getSourcePosition());
     }
 
+    @CanIgnoreReturnValue
     public Builder setSourcePosition(SourcePosition sourcePosition) {
       this.sourcePosition = sourcePosition;
       return this;
     }
 
+    @CanIgnoreReturnValue
     public Builder setExpression(Expression expression) {
       this.expression = expression;
       return this;
     }
 
-    public Builder setTestTypeDescriptor(TypeDescriptor castTypeDescriptor) {
-      this.testTypeDescriptor = castTypeDescriptor;
+    @CanIgnoreReturnValue
+    public Builder setTestTypeDescriptor(TypeDescriptor testTypeDescriptor) {
+      this.testTypeDescriptor = testTypeDescriptor;
+      return this;
+    }
+
+    @CanIgnoreReturnValue
+    public Builder setPattern(Pattern pattern) {
+      this.pattern = pattern;
       return this;
     }
 
     public InstanceOfExpression build() {
-      return new InstanceOfExpression(sourcePosition, expression, testTypeDescriptor);
+      return new InstanceOfExpression(sourcePosition, expression, testTypeDescriptor, pattern);
     }
   }
 }

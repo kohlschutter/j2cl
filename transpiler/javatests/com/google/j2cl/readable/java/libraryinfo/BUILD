@@ -10,10 +10,10 @@ package(
 
 readable_example(
     srcs = glob(["*.java"]),
-    # TODO(b/204793387): Figure out LibraryInfo for J2KT.
-    generate_kt_readables = False,
+    # The native method (for jsinterop) would break the kt native (but not jvm/closure) build
+    build_kt_native_readables = False,
     generate_library_info = True,
     deps = [
-        "//third_party:gwt-jsinterop-annotations-j2cl",
+        "//third_party:jsinterop-annotations-j2cl",
     ],
 )

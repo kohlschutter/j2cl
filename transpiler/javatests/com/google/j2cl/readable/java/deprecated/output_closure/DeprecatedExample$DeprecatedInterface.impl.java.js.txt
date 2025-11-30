@@ -11,7 +11,7 @@ let $LambdaAdaptor = goog.forwardDeclare('deprecated.DeprecatedExample.Deprecate
 class DeprecatedInterface {
  /** @abstract @deprecated */
  doAThing(/** number */ anInt) {}
- /** @nodts @return {DeprecatedInterface} */
+ /** @nodts @return {!DeprecatedInterface} */
  static $adapt(/** ?function(number):void */ fn) {
   DeprecatedInterface.$clinit();
   return new $LambdaAdaptor(fn);
@@ -36,7 +36,7 @@ class DeprecatedInterface {
  }
 }
 DeprecatedInterface.$markImplementor(/**@type {Function}*/ (DeprecatedInterface));
-$Util.$setClassMetadataForInterface(DeprecatedInterface, 'deprecated.DeprecatedExample$DeprecatedInterface');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (DeprecatedInterface), 'deprecated.DeprecatedExample$DeprecatedInterface');
 
 exports = DeprecatedInterface;
 

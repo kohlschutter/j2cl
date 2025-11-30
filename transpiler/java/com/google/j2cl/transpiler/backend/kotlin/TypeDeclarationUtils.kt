@@ -15,14 +15,12 @@
  */
 package com.google.j2cl.transpiler.backend.kotlin
 
-import com.google.j2cl.transpiler.ast.FieldDescriptor
 import com.google.j2cl.transpiler.ast.MemberDescriptor
 import com.google.j2cl.transpiler.ast.MethodDescriptor
 import com.google.j2cl.transpiler.ast.TypeDeclaration
 import com.google.j2cl.transpiler.ast.TypeVariable
 import com.google.j2cl.transpiler.ast.Visibility
 import com.google.j2cl.transpiler.backend.kotlin.ast.Visibility as KtVisibility
-import com.google.j2cl.transpiler.backend.kotlin.ast.withWidestScopeOrNull
 
 // TODO(b/216796920): Remove when the bug is fixed.
 internal val TypeDeclaration.directlyDeclaredTypeParameterDescriptors: List<TypeVariable>
@@ -50,13 +48,6 @@ internal val TypeDeclaration.canBeNullableAsBound: Boolean
     !hasRecursiveTypeBounds() ||
       typeParameterDescriptors.all { it.upperBoundTypeDescriptor.isNullable }
 
-internal val TypeDeclaration.isKtFunctionalInterface
-  get() =
-    isFunctionalInterface &&
-      toUnparameterizedTypeDescriptor().singleAbstractMethodDescriptor!!.let { methodDescriptor ->
-        !methodDescriptor.isKtProperty && methodDescriptor.typeParameterTypeDescriptors.isEmpty()
-      }
-
 internal val TypeDeclaration.isKtInner: Boolean
   get() =
     enclosingTypeDeclaration != null &&
@@ -75,18 +66,16 @@ internal val MethodDescriptor.isOpen: Boolean
       !isStatic &&
       !visibility.isPrivate
 
-internal val MemberDescriptor.ktVisibility: KtVisibility
+/**
+ * Returns whether the described type is a test class, i.e. has the JUnit `@RunWith` annotation or
+ * `@RunParameterized` annotation.
+ */
+internal val TypeDeclaration.isTestClass: Boolean
   get() =
-    when {
-      // Enum constructors are implicitly private in Kotlin
-      isEnumConstructor -> KtVisibility.PRIVATE
-      // All interface methods are public in Kotlin, and Java allows non-public static members, so
-      // we map them to public.
-      isInterfaceMethod -> KtVisibility.PUBLIC
-      else -> visibility!!.memberKtVisibility
-    }
+    hasAnnotation("org.junit.runner.RunWith") ||
+      hasAnnotation("com.google.apps.xplat.testing.parameterized.RunParameterized")
 
-internal val Visibility.memberKtVisibility: KtVisibility
+internal val Visibility.defaultMemberKtVisibility: KtVisibility
   get() =
     when (this) {
       Visibility.PUBLIC -> KtVisibility.PUBLIC
@@ -99,27 +88,17 @@ internal val Visibility.memberKtVisibility: KtVisibility
       Visibility.PRIVATE -> KtVisibility.INTERNAL
     }
 
-/** Inferred visibility, which does not require explicit visibility modifier in the source code. */
-internal val MemberDescriptor.inferredKtVisibility: KtVisibility
-  get() =
-    when (this) {
-      is MethodDescriptor -> inferredKtVisibility
-      is FieldDescriptor -> KtVisibility.PUBLIC
-      else -> error("$this.inferredKtVisibility")
-    }
-
-/** Inferred visibility, which does not require explicit visibility modifier in the source code. */
-private val MethodDescriptor.inferredKtVisibility: KtVisibility
-  get() =
-    when {
-      isEnumConstructor -> KtVisibility.PRIVATE
-      else ->
-        javaOverriddenMethodDescriptors.map { it.ktVisibility }.let { it.withWidestScopeOrNull() }
-          ?: KtVisibility.PUBLIC
-    }
-
-private val MemberDescriptor.isEnumConstructor: Boolean
+internal val MemberDescriptor.isEnumConstructor: Boolean
   get() = enclosingTypeDescriptor.isEnum && isConstructor
 
-private val MemberDescriptor.isInterfaceMethod: Boolean
+internal val MemberDescriptor.isInterfaceMethod: Boolean
   get() = enclosingTypeDescriptor.isInterface
+
+internal fun TypeDeclaration.equalsOrEnclosedIn(other: TypeDeclaration): Boolean =
+  this == other || enclosingTypeDeclaration?.equalsOrEnclosedIn(other) ?: false
+
+internal fun TypeDeclaration.isFromJRE(): Boolean =
+  packageName.startsWith("javaemul.") ||
+    packageName.startsWith("java.") ||
+    packageName.startsWith("javax.") ||
+    packageName.startsWith("kotlin.")

@@ -20,12 +20,12 @@ import static com.google.j2cl.integration.testing.Asserts.assertTrue;
 
 @SuppressWarnings({"BoxedPrimitiveConstructor", "unchecked"})
 public class Main {
-  public static void main(String[] args) {
+  public static void main(String... args) {
     testPrimitiveToPrimitive();
     testObjectReferenceToPrimitive();
     testBoxedToPrimitive();
-    testTypeExtendsLongReferenceToPrimitive();
-    testTypeExtendsIntersectionReferenceToPrimitive();
+    testTypeExtendsLongReferenceToPrimitive(0L);
+    testTypeExtendsIntersectionReferenceToPrimitive(0L);
     testPrimitiveToReference();
   }
 
@@ -281,7 +281,8 @@ public class Main {
     }
   }
 
-  public static <T extends Long> void testTypeExtendsLongReferenceToPrimitive() {
+  public static <T extends Long> void testTypeExtendsLongReferenceToPrimitive(
+      T unusedForInference) {
     T o = (T) new Long(1);
     long l = (long) o;
     assertTrue(l == 1);
@@ -294,7 +295,7 @@ public class Main {
   }
 
   public static <T extends Long & Comparable<Long>>
-      void testTypeExtendsIntersectionReferenceToPrimitive() {
+      void testTypeExtendsIntersectionReferenceToPrimitive(T unusedForInference) {
     T o = (T) new Long(1);
     long l = (long) o;
     assertTrue(l == 1);

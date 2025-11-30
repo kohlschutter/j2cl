@@ -57,7 +57,7 @@ public abstract class AbstractCompilationUnitBuilder {
   protected <T> T processEnclosedBy(Type type, Supplier<T> supplier) {
     typeStack.add(type);
     T converted = supplier.get();
-    typeStack.remove(typeStack.size() - 1);
+    typeStack.removeLast();
     return converted;
   }
 
@@ -74,8 +74,8 @@ public abstract class AbstractCompilationUnitBuilder {
    * Creates temporary variables for a resource that is declared outside of the try-catch statement.
    */
   protected static VariableDeclarationExpression toResource(Expression expression) {
-    if (expression instanceof VariableDeclarationExpression) {
-      return (VariableDeclarationExpression) expression;
+    if (expression instanceof VariableDeclarationExpression variableDeclarationExpression) {
+      return variableDeclarationExpression;
     }
 
     // Create temporary variables for resources declared outside of the try statement.

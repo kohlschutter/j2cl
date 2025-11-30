@@ -32,6 +32,7 @@ import com.google.j2cl.transpiler.ast.PrimitiveTypes;
 import com.google.j2cl.transpiler.ast.ReturnStatement;
 import com.google.j2cl.transpiler.ast.StringLiteral;
 import com.google.j2cl.transpiler.ast.Type;
+import com.google.j2cl.transpiler.ast.TypeDeclaration.Origin;
 import com.google.j2cl.transpiler.ast.TypeDescriptor;
 import com.google.j2cl.transpiler.ast.TypeDescriptors;
 import com.google.j2cl.transpiler.ast.TypeLiteral;
@@ -42,7 +43,7 @@ public class ImplementClassMetadataViaGetters extends NormalizationPass {
   @Override
   public void applyTo(Type type) {
     synthesizeLazyGetClassGetter(type);
-    synthesizeGetClassImplememntationsMethods(type);
+    synthesizeGetClassImplementationMethods(type);
     replaceTypeLiterals(type);
   }
 
@@ -56,8 +57,8 @@ public class ImplementClassMetadataViaGetters extends NormalizationPass {
   private static final String GET_CLASS_IMPL_METHOD_NAME = "$getClassImpl";
 
   /** Synthesizes the getClass() override for this class. */
-  private static void synthesizeGetClassImplememntationsMethods(Type type) {
-    if (type.isInterface() || type.isAbstract() || type.isNative()) {
+  private static void synthesizeGetClassImplementationMethods(Type type) {
+    if (!needsGetClassImplementation(type)) {
       return;
     }
 
@@ -66,7 +67,7 @@ public class ImplementClassMetadataViaGetters extends NormalizationPass {
       // Object.class.
       type.getMembers()
           .removeIf(m -> m.getDescriptor().getName().equals(GET_CLASS_IMPL_METHOD_NAME));
-              }
+    }
 
     // return Type.class;
     type.addMember(
@@ -80,6 +81,13 @@ public class ImplementClassMetadataViaGetters extends NormalizationPass {
                     .build())
             .setSourcePosition(SourcePosition.NONE)
             .build());
+  }
+
+  private static boolean needsGetClassImplementation(Type type) {
+    if (type.isInterface() || type.isNative()) {
+      return false;
+    }
+    return type.getDeclaration().getOrigin() != Origin.LAMBDA_IMPLEMENTOR;
   }
 
   private static MethodDescriptor getGetClassImplMethodDescriptor(
@@ -213,9 +221,9 @@ public class ImplementClassMetadataViaGetters extends NormalizationPass {
   /** Returns the descriptor for the getter of {@code typeDescriptor}. */
   private static MethodDescriptor getLazyClassMetadataGetterMethodDescriptor(
       TypeDescriptor typeDescriptor) {
-    if (typeDescriptor instanceof DeclaredTypeDescriptor) {
+    if (typeDescriptor instanceof DeclaredTypeDescriptor declaredTypeDescriptor) {
       return getLazyClassMetadataGetterMethodDescriptor(
-          (DeclaredTypeDescriptor) typeDescriptor, "$getClassMetadata");
+          declaredTypeDescriptor, "$getClassMetadata");
     }
     checkState(typeDescriptor instanceof PrimitiveTypeDescriptor);
     return getLazyClassMetadataGetterMethodDescriptor(
@@ -234,7 +242,6 @@ public class ImplementClassMetadataViaGetters extends NormalizationPass {
         .setOrigin(MethodOrigin.SYNTHETIC_CLASS_LITERAL_GETTER)
         .setStatic(true)
         .setSynthetic(true)
-        .setSideEffectFree(true)
         .build();
   }
 }

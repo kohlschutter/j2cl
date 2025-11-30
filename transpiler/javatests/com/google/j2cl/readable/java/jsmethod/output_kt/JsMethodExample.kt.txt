@@ -1,19 +1,21 @@
 // Generated from "jsmethod/JsMethodExample.java"
-@file:OptIn(ExperimentalObjCName::class)
 @file:Suppress(
  "ALWAYS_NULL",
  "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
- "REPEATED_BOUND",
  "SENSELESS_COMPARISON",
  "UNCHECKED_CAST",
  "UNNECESSARY_LATEINIT",
  "UNNECESSARY_NOT_NULL_ASSERTION",
  "UNREACHABLE_CODE",
+ "UNUSED_ANONYMOUS_PARAMETER",
  "UNUSED_PARAMETER",
  "UNUSED_VARIABLE",
  "USELESS_CAST",
  "VARIABLE_IN_SINGLETON_WITHOUT_THREAD_LOCAL",
- "VARIABLE_WITH_REDUNDANT_INITIALIZER")
+ "VARIABLE_WITH_REDUNDANT_INITIALIZER",
+ "INCOMPATIBLE_OBJC_NAME_OVERRIDE",
+ "REDUNDANT_ELSE_IN_WHEN",
+ "ACCIDENTAL_OVERRIDE")
 
 package jsmethod
 
@@ -21,16 +23,11 @@ import javaemul.lang.*
 import java.util.ArrayList
 import jsinterop.annotations.JsMethod
 import jsinterop.annotations.JsType
-import kotlin.OptIn
 import kotlin.String
 import kotlin.Suppress
-import kotlin.experimental.ExperimentalObjCName
 import kotlin.jvm.JvmStatic
-import kotlin.native.ObjCName
 
-@ObjCName("J2ktJsmethodJsMethodExample", exact = true)
 open class JsMethodExample {
- @ObjCName("testMethod")
  @JsMethod
  external open fun <T: ArrayList<String?>?> testMethod(): T
 
@@ -40,29 +37,23 @@ open class JsMethodExample {
  }
 
  fun interface I {
-  @ObjCName("m")
   @JsMethod(name = "mString")
-  fun m(
-   @ObjCName("withNSString") s: String?
-  )
+  fun m(s: String?)
  }
 
- open class Sub internal constructor(): JsMethodExample.Base<String?>(), JsMethodExample.I {
-  open override fun m(s: String?) {}
+ open class Sub internal constructor(): Base<String?>(), I {
+  override fun m(s: String?) {}
 
-  internal open override fun m_pp_jsmethod(arg0: String?) {
+  internal override fun m_pp_jsmethod(arg0: String?) {
    this.m(arg0)
   }
  }
 
  @JsType
- open class SubJsType internal constructor(): JsMethodExample.Base<String?>() {
-  @ObjCName("m")
-  public open fun m(
-   @ObjCName("withNSString") s: String?
-  ) {}
+ open class SubJsType internal constructor(): Base<String?>() {
+  public open fun m(s: String?) {}
 
-  open override fun m_pp_jsmethod(arg0: String?) {
+  override fun m_pp_jsmethod(arg0: String?) {
    this.m(arg0)
   }
 
@@ -73,39 +64,31 @@ open class JsMethodExample {
  }
 
  @JsType
- open class SubGenericsJsType<T> internal constructor(): JsMethodExample.Base<T>() {
-  @ObjCName("m")
-  public open fun m(
-   @ObjCName("withId") s: T
-  ) {}
+ open class SubGenericsJsType<T> internal constructor(): Base<T>() {
+  public open fun m(s: T) {}
 
-  open override fun m_pp_jsmethod(arg0: T) {
+  override fun m_pp_jsmethod(arg0: T) {
    this.m(arg0)
   }
  }
 
  @JsType
- open class SubJsTypeWithRenamedJsMethod internal constructor(): JsMethodExample.Base<String?>() {
-  @ObjCName("m")
+ open class SubJsTypeWithRenamedJsMethod internal constructor(): Base<String?>() {
   @JsMethod(name = "renamedM")
-  public open fun m(
-   @ObjCName("withNSString") s: String?
-  ) {}
+  public open fun m(s: String?) {}
 
-  open override fun m_pp_jsmethod(arg0: String?) {
+  override fun m_pp_jsmethod(arg0: String?) {
    this.m(arg0)
   }
  }
 
  interface InterfaceWithMethod {
-  @ObjCName("m")
   fun m()
 
-  @ObjCName("n")
   fun n()
  }
 
- fun interface InterfaceExposingJsMethods: JsMethodExample.InterfaceWithMethod {
+ fun interface InterfaceExposingJsMethods: InterfaceWithMethod {
   @JsMethod
   override fun m() {}
 
@@ -114,9 +97,8 @@ open class JsMethodExample {
  }
 
  open class SuperClassWithFinalMethod internal constructor() {
-  @ObjCName("n")
   fun n() {}
  }
 
- open class ExposesOverrideableJsMethod internal constructor(): JsMethodExample.SuperClassWithFinalMethod(), JsMethodExample.InterfaceExposingJsMethods {}
+ open class ExposesOverrideableJsMethod internal constructor(): SuperClassWithFinalMethod(), InterfaceExposingJsMethods
 }

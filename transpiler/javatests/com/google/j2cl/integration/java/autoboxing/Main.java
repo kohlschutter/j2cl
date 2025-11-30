@@ -21,6 +21,7 @@ import static com.google.j2cl.integration.testing.Asserts.assertThrowsNullPointe
 import static com.google.j2cl.integration.testing.Asserts.assertTrue;
 import static com.google.j2cl.integration.testing.Asserts.fail;
 import static com.google.j2cl.integration.testing.TestUtils.getUndefined;
+import static com.google.j2cl.integration.testing.TestUtils.isJ2Kt;
 import static com.google.j2cl.integration.testing.TestUtils.isJavaScript;
 import static com.google.j2cl.integration.testing.TestUtils.isJvm;
 
@@ -41,7 +42,7 @@ import jsinterop.annotations.JsMethod;
 })
 public class Main {
 
-  public static void main(String[] args) {
+  public static void main(String... args) {
     testBox_byParameter();
     testBox_numberAsDouble();
     testBox_byAssignment();
@@ -49,8 +50,10 @@ public class Main {
     testUnbox_byParameter();
     testUnbox_byAssignment();
     testUnbox_byOperator();
-    testUnbox_fromTypeVariable();
-    testUnbox_fromIntersectionType();
+    testUnbox_byOperator_throwsNPE();
+    testUnbox_byOperator_throwsCCE();
+    testUnbox_fromTypeVariable(0L);
+    testUnbox_fromIntersectionType(0L);
     testUnbox_conditionals();
     testUnbox_switchExpression();
     testAutoboxing_arithmetic();
@@ -372,7 +375,14 @@ public class Main {
     assertTrue((!boxB.booleanValue()));
     assertTrue((b3));
 
-    // Unboxing can cause NPE.
+    // Should not throw since it should be converted into a string using String.valueOf(Object) and
+    // thus does not require an erasure casts (the JLS requires just enough erasure casts to
+    // make the program type safe).
+    Ref<Integer> booleanInIntegerRef = (Ref) new Ref<Boolean>(true);
+    String unusedS = "" + booleanInIntegerRef.field;
+  }
+
+  private static void testUnbox_byOperator_throwsNPE() {
     Boolean b = null;
     assertThrowsNullPointerException(
         () -> {
@@ -394,13 +404,20 @@ public class Main {
         () -> {
           Object unused = -n;
         });
+  }
+
+  private static void testUnbox_byOperator_throwsCCE() {
+    // TODO(b/420648962): These do not work on J2KT, because of missing erasure type safety casts.
+    // On Kotlin/Native they lead to heap pollution: https://youtrack.jetbrains.com/issue/KT-40613
+    if (isJ2Kt()) {
+      return;
+    }
 
     Ref<Integer> shortInIntegerRef = (Ref) new Ref<Short>((short) 1);
     Ref<Integer> booleanInIntegerRef = (Ref) new Ref<Boolean>(true);
     Ref<Boolean> integerInBooleanRef = (Ref) new Ref<Integer>(1);
     Ref<String> integerInStringRef = (Ref) new Ref<Integer>(1);
 
-    // Unboxing can cause ClassCastException.
     assertThrowsClassCastException(() -> booleanInIntegerRef.field++, Integer.class);
 
     assertThrowsClassCastException(
@@ -449,11 +466,6 @@ public class Main {
         Integer.class);
 
     assertThrowsClassCastException(() -> acceptsInt(shortInIntegerRef.field), Integer.class);
-
-    // Should not throw since it should be converted into a string using String.valueOf(Object) and
-    // thus does not require an erasure casts (the JLS requires just enough erasure casts to
-    // make the program type safe).
-    String unusedS = "" + booleanInIntegerRef.field;
   }
 
   private static void acceptsInt(int x) {}
@@ -533,7 +545,15 @@ public class Main {
     assertTrue(zero == boxedMinusZero);
 
     // Object semantics.
-    assertTrue(boxedZero != boxedMinusZero);
+    // TODO(b/462136113): Remove the introduced variables and use `boxedZero` and `boxedMinusZero`
+    // instead when the bug is fixed. In J2KT the above code emits `boxedZero!!` and
+    // `boxedMinusZero!!` as part of the previous comparisons which due to smart casts which turns
+    // the boxed comparison `boxedZero !== boxedMinusZero` into a primitive comparison.
+    // wrong.
+    Double boxedZero2 = Double.valueOf(0.0);
+    Double boxedMinusZero2 = Double.valueOf(-0.0);
+    assertTrue(boxedZero2 != boxedMinusZero2);
+
     assertTrue(asObjectZero != asObjectMinusZero);
 
     assertTrue(undefinedDouble == nullDouble);
@@ -720,7 +740,7 @@ public class Main {
     assertTrue(boxI == 6);
   }
 
-  private static <T extends Long> void testUnbox_fromTypeVariable() {
+  private static <T extends Long> void testUnbox_fromTypeVariable(T unusedForInference) {
     T n = (T) (Long) 10L;
     // Auto unboxing from variable n.
     long l = n;
@@ -740,7 +760,8 @@ public class Main {
     assertTrue(l == 11L);
   }
 
-  private static <T extends Long & Comparable<Long>> void testUnbox_fromIntersectionType() {
+  private static <T extends Long & Comparable<Long>> void testUnbox_fromIntersectionType(
+      T unusedForInference) {
     T n = (T) (Long) 10L;
     // Auto unboxing from variable n.
     long l = n;

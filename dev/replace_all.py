@@ -34,14 +34,13 @@ def replace_pattern(pattern_string, replacement, in_value):
 
 def get_readable_dirs(name_filter, rule_suffix=""):
   """Finds and returns the dirs of readable examples."""
-  return _get_dirs_from_blaze_query("%s:readable%s$" %
-                                    (name_filter, rule_suffix))
+  return _get_dirs_from_blaze_query(f"{name_filter}:readable{rule_suffix}$")
 
 
 def _get_dirs_from_blaze_query(rules_filter):
   dirs = repo_util.run_cmd([
       "blaze", "query",
-      "filter('%s', %s)" % (rules_filter, READABLE_TARGET_PATTERN),
+      f"filter('{rules_filter}', {READABLE_TARGET_PATTERN})",
       "--output=package"
   ]).splitlines()
   return list(filter(bool, dirs))
@@ -55,7 +54,6 @@ def blaze_clean():
 def blaze_build(
     js_readable_dirs,
     wasm_readable_dirs,
-    wasm_modular_readable_dirs,
     wasm_imports_readable_dirs,
     j2kt_readable_dirs,
     j2kt_web_readable_dirs,
@@ -66,9 +64,6 @@ def blaze_build(
   build_targets += [d + ":readable_wasm_golden" for d in wasm_readable_dirs]
   build_targets += [d + ":readable_wasm_imports_golden"
                     for d in wasm_imports_readable_dirs]
-  build_targets += [
-      d + ":readable_wasm_modular_golden" for d in wasm_modular_readable_dirs
-  ]
   build_targets += [d + ":readable_j2kt_golden" for d in j2kt_readable_dirs]
   build_targets += [
       d + ":readable-j2kt-web_golden" for d in j2kt_web_readable_dirs
@@ -84,15 +79,6 @@ def replace_transpiled_wasm(readable_dirs):
   """Copy and replace with Blaze built Wasm."""
   _replace_readable_outputs(
       readable_dirs, "readable_wasm_golden", "output_wasm"
-  )
-
-
-def replace_transpiled_wasm_modular(readable_dirs):
-  """Copy and replace with Blaze built Wasm modular output."""
-  _replace_readable_outputs(
-      readable_dirs,
-      "readable_wasm_modular_golden",
-      "output_wasm_modular",
   )
 
 
@@ -176,12 +162,12 @@ def replace_transpiled_j2kt(readable_dirs):
 def _replace_readable_outputs(readable_dirs, tree_artifact_dir, output_dir):
   """Copy and replace readable directories with output from Blaze."""
   for readable_dir in readable_dirs:
-    transpiler_output = "blaze-bin/%s/%s" % (readable_dir, tree_artifact_dir)
-    output = "%s/%s" % (readable_dir, output_dir)
+    transpiler_output = f"blaze-bin/{readable_dir}/{tree_artifact_dir}"
+    output = f"{readable_dir}/{output_dir}"
     repo_util.run_cmd(["rm", "-Rf", output])
     repo_util.run_cmd(["mkdir", output])
     repo_util.run_cmd(
-        ["cp --no-preserve=mode -r %s/* %s" % (transpiler_output, output)],
+        [f"cp --no-preserve=mode -r {transpiler_output}/* {output}"],
         shell=True)
 
 
@@ -200,11 +186,6 @@ def main(argv):
       readable_pattern, "_js") if "CLOSURE" in args.platforms else []
   wasm_readable_dirs = get_readable_dirs(
       readable_pattern, "_wasm") if "WASM" in args.platforms else []
-  wasm_modular_readable_dirs = (
-      get_readable_dirs(readable_pattern, "_wasm_modular_golden")
-      if "WASM" in args.platforms
-      else []
-  )
   wasm_imports_readable_dirs = (
       get_readable_dirs(readable_pattern, "_wasm_imports_golden")
       if "WASM" in args.platforms else [])
@@ -230,7 +211,7 @@ def main(argv):
     return -1
 
   print("Generating readable and build logs:")
-  if not args.nologs:
+  if not args.nologs and (js_readable_dirs or j2kt_web_readable_dirs):
     print("  Cleaning stale blaze outputs")
     blaze_clean()
 
@@ -253,7 +234,6 @@ def main(argv):
   build_log = blaze_build(
       js_readable_dirs,
       wasm_readable_dirs,
-      wasm_modular_readable_dirs,
       wasm_imports_readable_dirs,
       j2kt_readable_dirs,
       j2kt_web_readable_dirs,
@@ -277,10 +257,6 @@ def main(argv):
   if wasm_readable_dirs:
     print("  Copying and reformatting transpiled Wasm")
     replace_transpiled_wasm(wasm_readable_dirs)
-
-  if wasm_modular_readable_dirs:
-    print("  Copying and reformatting transpiled Wasm modular")
-    replace_transpiled_wasm_modular(wasm_modular_readable_dirs)
 
   if wasm_imports_readable_dirs:
     print("  Copying and reformatting transpiled Wasm imports")

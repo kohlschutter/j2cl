@@ -8,9 +8,4 @@ package(
     licenses = ["notice"],
 )
 
-integration_test(
-    name = "fieldmethodclasscollision",
-    srcs = glob(["*.java"]),
-    # TODO(b/219914876): Name collision
-    enable_kt = False,
-)
+integration_test(srcs = glob(["*.java"]))

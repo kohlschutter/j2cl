@@ -108,31 +108,27 @@ public class NormalizeJsDocCastExpressions extends NormalizationPass {
           @Override
           public Expression rewriteJsDocCastExpression(JsDocCastExpression jsDocCastExpression) {
             TypeDescriptor castTypeDescriptor = jsDocCastExpression.getTypeDescriptor();
-            if (jsDocCastExpression.getTypeDescriptor() instanceof DeclaredTypeDescriptor) {
-
-              DeclaredTypeDescriptor castDeclaredTypeDescriptor =
-                  (DeclaredTypeDescriptor) jsDocCastExpression.getTypeDescriptor();
+            if (jsDocCastExpression.getTypeDescriptor()
+                instanceof DeclaredTypeDescriptor castDeclaredTypeDescriptor) {
 
               // If it is a parameterized type first replace wildcards with their bound top
               // avoid "unknown type" errors.
               if (castDeclaredTypeDescriptor.hasTypeArguments()) {
                 castTypeDescriptor =
-                    DeclaredTypeDescriptor.Builder.from(castDeclaredTypeDescriptor)
-                        .setTypeArgumentDescriptors(
-                            castDeclaredTypeDescriptor.getTypeArgumentDescriptors().stream()
-                                .map(NormalizeJsDocCastExpressions::replaceWildcardWithBound)
-                                .collect(toImmutableList()))
-                        .build();
+                    castDeclaredTypeDescriptor.withTypeArguments(
+                        castDeclaredTypeDescriptor.getTypeArgumentDescriptors().stream()
+                            .map(NormalizeJsDocCastExpressions::replaceWildcardWithBound)
+                            .collect(toImmutableList()));
               }
             }
 
             // Replace out of bounds type variables that might have been left by the frontend
-            // if the inferrence was not needed for Java compilation.
+            // if the inference was not needed for Java compilation.
             return JsDocCastExpression.Builder.from(jsDocCastExpression)
-                .setCastType(
+                .setCastTypeDescriptor(
                     castTypeDescriptor.specializeTypeVariables(
                         typeVariable ->
-                            replaceOutofScopeTypeVariable(getCurrentMember(), typeVariable)))
+                            replaceOutOfScopeTypeVariable(getCurrentMember(), typeVariable)))
                 .build();
           }
         });
@@ -140,15 +136,14 @@ public class NormalizeJsDocCastExpressions extends NormalizationPass {
 
   /** Replaces wildcards with their bound. */
   private static TypeDescriptor replaceWildcardWithBound(TypeDescriptor typeDescriptor) {
-    if (!(typeDescriptor instanceof TypeVariable)) {
+    if (!(typeDescriptor instanceof TypeVariable typeVariable)) {
       return typeDescriptor;
     }
-    TypeVariable typeVariable = (TypeVariable) typeDescriptor;
     return typeVariable.isWildcardOrCapture() ? typeDescriptor.toRawTypeDescriptor() : typeVariable;
   }
 
-  /** Replaces out of scope variables by a wilcard. */
-  private TypeDescriptor replaceOutofScopeTypeVariable(Member member, TypeVariable typeVariable) {
+  /** Replaces out of scope variables by a wildcard. */
+  private TypeDescriptor replaceOutOfScopeTypeVariable(Member member, TypeVariable typeVariable) {
     return typeVariable.isWildcardOrCapture()
             || typeVariablesByMember.containsEntry(member, typeVariable)
         ? typeVariable

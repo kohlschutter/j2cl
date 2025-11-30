@@ -1,167 +1,239 @@
- ;;; Code for typeannotations.ParametricType [type definition]
- (type $typeannotations.ParametricType.vtable (sub (struct
-  (field $m_m__java_lang_String__java_lang_Object__java_lang_Object (ref $function.m_m__java_lang_String__java_lang_Object__java_lang_Object))
-  (field $m_m__java_util_List__java_lang_Object__java_util_List (ref $function.m_m__java_util_List__java_lang_Object__java_util_List))
-  (field $m_m__java_util_List__java_util_List (ref $function.m_m__java_util_List__java_util_List))
-  ))
- )
+;;; Code for typeannotations.ParametricType [type definition]
+(type $typeannotations.ParametricType.vtable (sub (struct
+ (field $m_m__java_lang_String__java_lang_Object__java_lang_Object (ref $function.m_m__java_lang_String__java_lang_Object__java_lang_Object))
+ (field $m_m__java_util_List__java_lang_Object__java_util_List (ref $function.m_m__java_util_List__java_lang_Object__java_util_List))
+ (field $m_m__java_util_List__java_util_List (ref $function.m_m__java_util_List__java_util_List))
+ ))
+)
 
- ;;; Code for typeannotations.AbstractType [type definition]
- (type $typeannotations.AbstractType (sub $java.lang.Object (struct
-  (field $vtable (ref $typeannotations.AbstractType.vtable))
-  (field $itable (ref $typeannotations.AbstractType.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $typeannotations.AbstractType.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m__java_lang_String__java_lang_Object__java_lang_Object (ref $function.m_m__java_lang_String__java_lang_Object__java_lang_Object))
-  (field $m_m__java_util_List__java_lang_Object__java_util_List (ref $function.m_m__java_util_List__java_lang_Object__java_util_List))
-  (field $m_m__java_util_List__java_util_List (ref $function.m_m__java_util_List__java_util_List))
-  ))
- )
- (type $typeannotations.AbstractType.itable (sub $itable (struct
- (field $slot0 (ref $typeannotations.ParametricType.vtable))
- (field $slot1 (ref null struct))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for typeannotations.AbstractType [type definition]
+(type $typeannotations.AbstractType (sub $java.lang.Object (struct
+ (field $vtable (ref $typeannotations.AbstractType.vtable))
+ (field $itable (ref $typeannotations.AbstractType.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $typeannotations.AbstractType.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m__java_lang_String__java_lang_Object__java_lang_Object (ref $function.m_m__java_lang_String__java_lang_Object__java_lang_Object))
+ (field $m_m__java_util_List__java_lang_Object__java_util_List (ref $function.m_m__java_util_List__java_lang_Object__java_util_List))
+ (field $m_m__java_util_List__java_util_List (ref $function.m_m__java_util_List__java_util_List))
+ ))
+)
 
- ;;; Code for typeannotations.AbstractTypeNonNull [type definition]
- (type $typeannotations.AbstractTypeNonNull (sub $java.lang.Object (struct
-  (field $vtable (ref $typeannotations.AbstractTypeNonNull.vtable))
-  (field $itable (ref $typeannotations.AbstractTypeNonNull.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $typeannotations.AbstractTypeNonNull.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m__java_lang_String__java_lang_Object__java_lang_Object (ref $function.m_m__java_lang_String__java_lang_Object__java_lang_Object))
-  (field $m_m__java_util_List__java_lang_Object__java_util_List (ref $function.m_m__java_util_List__java_lang_Object__java_util_List))
-  (field $m_m__java_util_List__java_util_List (ref $function.m_m__java_util_List__java_util_List))
-  ))
- )
- (type $typeannotations.AbstractTypeNonNull.itable (sub $itable (struct
- (field $slot0 (ref $typeannotations.ParametricType.vtable))
- (field $slot1 (ref null struct))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for typeannotations.AbstractTypeNonNull [type definition]
+(type $typeannotations.AbstractTypeNonNull (sub $java.lang.Object (struct
+ (field $vtable (ref $typeannotations.AbstractTypeNonNull.vtable))
+ (field $itable (ref $typeannotations.AbstractTypeNonNull.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $typeannotations.AbstractTypeNonNull.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m__java_lang_String__java_lang_Object__java_lang_Object (ref $function.m_m__java_lang_String__java_lang_Object__java_lang_Object))
+ (field $m_m__java_util_List__java_lang_Object__java_util_List (ref $function.m_m__java_util_List__java_lang_Object__java_util_List))
+ (field $m_m__java_util_List__java_util_List (ref $function.m_m__java_util_List__java_util_List))
+ ))
+)
 
- ;;; Code for typeannotations.Parent [type definition]
- (type $typeannotations.Parent (sub $java.lang.Object (struct
-  (field $vtable (ref $typeannotations.Parent.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $typeannotations.Parent.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (ref $function.m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent))
-  (field $m_m__java_util_List__typeannotations_Parent__java_util_List (ref $function.m_m__java_util_List__typeannotations_Parent__java_util_List))
-  ))
- )
+;;; Code for typeannotations.Parent [type definition]
+(type $typeannotations.Parent (sub $java.lang.Object (struct
+ (field $vtable (ref $typeannotations.Parent.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $typeannotations.Parent.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (ref $function.m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent))
+ (field $m_m__java_util_List__typeannotations_Parent__java_util_List (ref $function.m_m__java_util_List__typeannotations_Parent__java_util_List))
+ ))
+)
 
- ;;; Code for typeannotations.TypeAnnotations [type definition]
- (type $typeannotations.TypeAnnotations (sub $java.lang.Object (struct
-  (field $vtable (ref $typeannotations.TypeAnnotations.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $typeannotations.TypeAnnotations.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  ))
- )
+;;; Code for typeannotations.TypeAnnotations [type definition]
+(type $typeannotations.TypeAnnotations (sub $java.lang.Object (struct
+ (field $vtable (ref $typeannotations.TypeAnnotations.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $typeannotations.TypeAnnotations.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ ))
+)
 
- ;;; Code for typeannotations.ChildWithNullableParent [type definition]
- (type $typeannotations.ChildWithNullableParent (sub $typeannotations.Parent (struct
-  (field $vtable (ref $typeannotations.ChildWithNullableParent.vtable))
-  (field $itable (ref $typeannotations.ChildWithNullableParent.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $typeannotations.ChildWithNullableParent.vtable (sub $typeannotations.Parent.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (ref $function.m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent))
-  (field $m_m__java_util_List__typeannotations_Parent__java_util_List (ref $function.m_m__java_util_List__typeannotations_Parent__java_util_List))
-  (field $m_m__java_lang_String__java_lang_Object__java_lang_Object (ref $function.m_m__java_lang_String__java_lang_Object__java_lang_Object))
-  (field $m_m__java_util_List__java_lang_Object__java_util_List (ref $function.m_m__java_util_List__java_lang_Object__java_util_List))
-  (field $m_m__java_util_List__java_util_List (ref $function.m_m__java_util_List__java_util_List))
-  ))
- )
- (type $typeannotations.ChildWithNullableParent.itable (sub $itable (struct
- (field $slot0 (ref $typeannotations.ParametricType.vtable))
- (field $slot1 (ref null struct))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for typeannotations.ChildWithNullableParent [type definition]
+(type $typeannotations.ChildWithNullableParent (sub $typeannotations.Parent (struct
+ (field $vtable (ref $typeannotations.ChildWithNullableParent.vtable))
+ (field $itable (ref $typeannotations.ChildWithNullableParent.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $typeannotations.ChildWithNullableParent.vtable (sub $typeannotations.Parent.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (ref $function.m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent))
+ (field $m_m__java_util_List__typeannotations_Parent__java_util_List (ref $function.m_m__java_util_List__typeannotations_Parent__java_util_List))
+ (field $m_m__java_lang_String__java_lang_Object__java_lang_Object (ref $function.m_m__java_lang_String__java_lang_Object__java_lang_Object))
+ (field $m_m__java_util_List__java_lang_Object__java_util_List (ref $function.m_m__java_util_List__java_lang_Object__java_util_List))
+ (field $m_m__java_util_List__java_util_List (ref $function.m_m__java_util_List__java_util_List))
+ ))
+)
 
- ;;; Code for typeannotations.ChildWithNonNullableParent [type definition]
- (type $typeannotations.ChildWithNonNullableParent (sub $typeannotations.Parent (struct
-  (field $vtable (ref $typeannotations.ChildWithNonNullableParent.vtable))
-  (field $itable (ref $typeannotations.ChildWithNonNullableParent.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
+;;; Code for typeannotations.ChildWithNonNullableParent [type definition]
+(type $typeannotations.ChildWithNonNullableParent (sub $typeannotations.Parent (struct
+ (field $vtable (ref $typeannotations.ChildWithNonNullableParent.vtable))
+ (field $itable (ref $typeannotations.ChildWithNonNullableParent.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $typeannotations.ChildWithNonNullableParent.vtable (sub $typeannotations.Parent.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (ref $function.m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent))
+ (field $m_m__java_util_List__typeannotations_Parent__java_util_List (ref $function.m_m__java_util_List__typeannotations_Parent__java_util_List))
+ (field $m_m__java_lang_String__java_lang_Object__java_lang_Object (ref $function.m_m__java_lang_String__java_lang_Object__java_lang_Object))
+ (field $m_m__java_util_List__java_lang_Object__java_util_List (ref $function.m_m__java_util_List__java_lang_Object__java_util_List))
+ (field $m_m__java_util_List__java_util_List (ref $function.m_m__java_util_List__java_util_List))
+ ))
+)
+
+;;; Code for typeannotations.ParametricType [imports]
+
+;;; Code for typeannotations.AbstractType [imports]
+
+;;; Code for typeannotations.AbstractTypeNonNull [imports]
+
+;;; Code for typeannotations.Parent [imports]
+
+;;; Code for typeannotations.TypeAnnotations [imports]
+
+;;; Code for typeannotations.ChildWithNullableParent [imports]
+
+;;; Code for typeannotations.ChildWithNonNullableParent [imports]
+
+;;; Code for typeannotations.ParametricType [static fields]
+(global $$class-initialized@typeannotations.ParametricType (mut i32)
+ (i32.const 0)
+)
+(global $$class@typeannotations.ParametricType (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for typeannotations.ParametricType [methods]
+
+;;; List<T> ParametricType.m(List<Map<String[], Map<List<String>[], String[]>>> l)
+(func $m_m__java_util_List__java_util_List@typeannotations.ParametricType
+ (param $this (ref null $java.lang.Object))
+ (param $l (ref null $java.lang.Object))
+ (result (ref null $java.lang.Object))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/parametric-type-j2wasm.js/typeannotations/ParametricType.java:28:29
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/parametric-type-j2wasm.js/typeannotations/ParametricType.java:35:4
+  (return (ref.null $java.lang.Object))
  )
- (type $typeannotations.ChildWithNonNullableParent.vtable (sub $typeannotations.Parent.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (ref $function.m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent))
-  (field $m_m__java_util_List__typeannotations_Parent__java_util_List (ref $function.m_m__java_util_List__typeannotations_Parent__java_util_List))
-  (field $m_m__java_lang_String__java_lang_Object__java_lang_Object (ref $function.m_m__java_lang_String__java_lang_Object__java_lang_Object))
-  (field $m_m__java_util_List__java_lang_Object__java_util_List (ref $function.m_m__java_util_List__java_lang_Object__java_util_List))
-  (field $m_m__java_util_List__java_util_List (ref $function.m_m__java_util_List__java_util_List))
-  ))
+)
+(elem declare func $m_m__java_util_List__java_util_List@typeannotations.ParametricType)
+
+;;; void ParametricType.$clinit()
+(func $$clinit__void_<once>_@typeannotations.ParametricType
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/parametric-type-j2wasm.js/typeannotations/ParametricType.java:23:10
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/parametric-type-j2wasm.js/typeannotations/ParametricType.java:23:10
+  (if (global.get $$class-initialized@typeannotations.ParametricType)
+   (then
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/parametric-type-j2wasm.js/typeannotations/ParametricType.java:23:10
+    (return )
+   )
+  )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/parametric-type-j2wasm.js/typeannotations/ParametricType.java:23:10
+  (global.set $$class-initialized@typeannotations.ParametricType (i32.const 1))
  )
- (type $typeannotations.ChildWithNonNullableParent.itable (sub $itable (struct
- (field $slot0 (ref $typeannotations.ParametricType.vtable))
- (field $slot1 (ref null struct))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+)
+
+;;; Class<T> ParametricType.$getClassMetadata()
+(func $$getClassMetadata__java_lang_Class_<once>_@typeannotations.ParametricType
+ (result (ref null $java.lang.Class))
+ (block
+  (if (i32.eqz (ref.is_null (global.get $$class@typeannotations.ParametricType)))
+   (then
+    (return (global.get $$class@typeannotations.ParametricType))
+   )
+  )
+  (global.set $$class@typeannotations.ParametricType (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $$getString_|typeannotati...|__java_lang_String_<once>_@typeannotations.ParametricType )))
+  (return (global.get $$class@typeannotations.ParametricType))
+ )
+)
+
+;;; Code for typeannotations.AbstractType [static fields]
+(global $$class-initialized@typeannotations.AbstractType (mut i32)
+ (i32.const 0)
+)
+(global $$class@typeannotations.AbstractType (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for typeannotations.AbstractTypeNonNull [static fields]
+(global $$class-initialized@typeannotations.AbstractTypeNonNull (mut i32)
+ (i32.const 0)
+)
+(global $$class@typeannotations.AbstractTypeNonNull (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for typeannotations.Parent [static fields]
+(global $$class-initialized@typeannotations.Parent (mut i32)
+ (i32.const 0)
+)
+(global $$class@typeannotations.Parent (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for typeannotations.ChildWithNullableParent [static fields]
+(global $$class-initialized@typeannotations.ChildWithNullableParent (mut i32)
+ (i32.const 0)
+)
+(global $$class@typeannotations.ChildWithNullableParent (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for typeannotations.ChildWithNonNullableParent [static fields]
+(global $$class-initialized@typeannotations.ChildWithNonNullableParent (mut i32)
+ (i32.const 0)
+)
+(global $$class@typeannotations.ChildWithNonNullableParent (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for typeannotations.TypeAnnotations [static fields]
+(global $$class-initialized@typeannotations.TypeAnnotations (mut i32)
+ (i32.const 0)
+)
+(global $$class@typeannotations.TypeAnnotations (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
 
 ;;; Code for typeannotations.Parent [vtable.init]
 (global $typeannotations.Parent.vtable (ref $typeannotations.Parent.vtable)
  (struct.new $typeannotations.Parent.vtable
   (ref.func $$getClassImpl__java_lang_Class@typeannotations.Parent)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent@typeannotations.Parent)
@@ -174,7 +246,6 @@
  (struct.new $typeannotations.ChildWithNullableParent.vtable
   (ref.func $$getClassImpl__java_lang_Class@typeannotations.ChildWithNullableParent)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent@typeannotations.Parent)
@@ -184,25 +255,11 @@
   (ref.func $m_m__java_util_List__java_util_List@typeannotations.ChildWithNullableParent)
  )
 )
-
-;;; Code for typeannotations.ChildWithNullableParent [itable.init]
-
 (global $typeannotations.ParametricType.vtable@$typeannotations.ChildWithNullableParent (ref $typeannotations.ParametricType.vtable)
  (struct.new $typeannotations.ParametricType.vtable
   (ref.func $m_m__java_lang_String__java_lang_Object__java_lang_Object@typeannotations.ChildWithNullableParent)
   (ref.func $m_m__java_util_List__java_lang_Object__java_util_List@typeannotations.ChildWithNullableParent)
   (ref.func $m_m__java_util_List__java_util_List@typeannotations.ChildWithNullableParent)
- )
-)
-(global $typeannotations.ChildWithNullableParent.itable (ref $typeannotations.ChildWithNullableParent.itable)
- (struct.new $typeannotations.ChildWithNullableParent.itable
-   (global.get $typeannotations.ParametricType.vtable@$typeannotations.ChildWithNullableParent)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
  )
 )
 
@@ -211,7 +268,6 @@
  (struct.new $typeannotations.ChildWithNonNullableParent.vtable
   (ref.func $$getClassImpl__java_lang_Class@typeannotations.ChildWithNonNullableParent)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent@typeannotations.Parent)
@@ -221,25 +277,11 @@
   (ref.func $m_m__java_util_List__java_util_List@typeannotations.ChildWithNonNullableParent)
  )
 )
-
-;;; Code for typeannotations.ChildWithNonNullableParent [itable.init]
-
 (global $typeannotations.ParametricType.vtable@$typeannotations.ChildWithNonNullableParent (ref $typeannotations.ParametricType.vtable)
  (struct.new $typeannotations.ParametricType.vtable
   (ref.func $m_m__java_lang_String__java_lang_Object__java_lang_Object@typeannotations.ChildWithNonNullableParent)
   (ref.func $m_m__java_util_List__java_lang_Object__java_util_List@typeannotations.ChildWithNonNullableParent)
   (ref.func $m_m__java_util_List__java_util_List@typeannotations.ChildWithNonNullableParent)
- )
-)
-(global $typeannotations.ChildWithNonNullableParent.itable (ref $typeannotations.ChildWithNonNullableParent.itable)
- (struct.new $typeannotations.ChildWithNonNullableParent.itable
-   (global.get $typeannotations.ParametricType.vtable@$typeannotations.ChildWithNonNullableParent)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
  )
 )
 
@@ -248,143 +290,8 @@
  (struct.new $typeannotations.TypeAnnotations.vtable
   (ref.func $$getClassImpl__java_lang_Class@typeannotations.TypeAnnotations)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
- )
-)
-
-;;; Code for typeannotations.ParametricType [static fields]
-(global $f_$initialized__typeannotations_ParametricType (mut i32)
- (i32.const 0)
-)
-(global $f_$class__typeannotations_ParametricType (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|typeannotati...|__typeannotations_ParametricType (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for typeannotations.AbstractType [static fields]
-(global $f_$initialized__typeannotations_AbstractType (mut i32)
- (i32.const 0)
-)
-(global $f_$class__typeannotations_AbstractType (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|typeannotati...|__typeannotations_AbstractType (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for typeannotations.AbstractTypeNonNull [static fields]
-(global $f_$initialized__typeannotations_AbstractTypeNonNull (mut i32)
- (i32.const 0)
-)
-(global $f_$class__typeannotations_AbstractTypeNonNull (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|typeannotati...|__typeannotations_AbstractTypeNonNull (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for typeannotations.Parent [static fields]
-(global $f_$initialized__typeannotations_Parent (mut i32)
- (i32.const 0)
-)
-(global $f_$class__typeannotations_Parent (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|typeannotati...|__typeannotations_Parent (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for typeannotations.ChildWithNullableParent [static fields]
-(global $f_$initialized__typeannotations_ChildWithNullableParent (mut i32)
- (i32.const 0)
-)
-(global $f_$class__typeannotations_ChildWithNullableParent (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|typeannotati...|__typeannotations_ChildWithNullableParent (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for typeannotations.ChildWithNonNullableParent [static fields]
-(global $f_$initialized__typeannotations_ChildWithNonNullableParent (mut i32)
- (i32.const 0)
-)
-(global $f_$class__typeannotations_ChildWithNonNullableParent (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|typeannotati...|__typeannotations_ChildWithNonNullableParent (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for typeannotations.TypeAnnotations [static fields]
-(global $f_$initialized__typeannotations_TypeAnnotations (mut i32)
- (i32.const 0)
-)
-(global $f_$class__typeannotations_TypeAnnotations (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|typeannotati...|__typeannotations_TypeAnnotations (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for typeannotations.ParametricType [methods]
-
-;;; List<T> ParametricType.m(List<Map<String[], Map<List<String>[], String[]>>> l)
-(func $m_m__java_util_List__java_util_List@typeannotations.ParametricType
- (param $this (ref null $java.lang.Object))
- (param $l (ref null $java.lang.Object))
- (result (ref null $java.lang.Object))
- ;;@ typeannotations/ParametricType.java:28:29
- (block
-  ;;@ typeannotations/ParametricType.java:35:4
-  (return (ref.null $java.lang.Object))
- )
-)
-(elem declare func $m_m__java_util_List__java_util_List@typeannotations.ParametricType)
-
-;;; void ParametricType.$clinit()
-(func $$clinit__void@typeannotations.ParametricType
- ;;@ typeannotations/ParametricType.java:23:10
- (block
-  ;;@ typeannotations/ParametricType.java:23:10
-  (if (global.get $f_$initialized__typeannotations_ParametricType)
-   (then
-    ;;@ typeannotations/ParametricType.java:23:10
-    (return )
-   )
-  )
-  ;;@ typeannotations/ParametricType.java:23:10
-  (global.set $f_$initialized__typeannotations_ParametricType (i32.const 1))
- )
-)
-
-;;; Class<T> ParametricType.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@typeannotations.ParametricType
- (result (ref null $java.lang.Class))
- (block
-  (if (ref.is_null (global.get $f_$class__typeannotations_ParametricType))
-   (then
-    (global.set $f_$class__typeannotations_ParametricType (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|typeannotati...|__java_lang_String (ref.func $$getString_|typeannotati...|__java_lang_String@typeannotations.ParametricType) )))
-   )
-  )
-  (return (global.get $f_$class__typeannotations_ParametricType))
- )
-)
-
-;;; String ParametricType.$getString_|typeannotati...|()
-(func $$getString_|typeannotati...|__java_lang_String@typeannotations.ParametricType
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|typeannotati...|__typeannotations_ParametricType))
-   (then
-    (global.set $f_$string_|typeannotati...|__typeannotations_ParametricType (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "typeannotations.ParametricType")))
-   )
-  )
-  (return (global.get $f_$string_|typeannotati...|__typeannotations_ParametricType))
  )
 )
 
@@ -393,9 +300,9 @@
 ;;; void AbstractType.$ctor()
 (func $$ctor__void_$p_typeannotations_AbstractType@typeannotations.AbstractType
  (param $this (ref null $typeannotations.AbstractType))
- ;;@ typeannotations/TypeAnnotations.java:22:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:22:15
  (block
-  ;;@ typeannotations/TypeAnnotations.java:22:15
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:22:15
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -406,70 +313,71 @@
  (param $this.untyped (ref $java.lang.Object))
  (param $arg0 (ref null $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ typeannotations/TypeAnnotations.java:22:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:22:15
  (local $this (ref null $typeannotations.AbstractType))
  (local.set $this (ref.cast (ref $typeannotations.AbstractType) (local.get $this.untyped)))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:22:15
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:22:15
   (return (call $m_m__java_util_List__java_util_List@typeannotations.ParametricType (ref.as_non_null (local.get $this))(local.get $arg0)))
  )
 )
 (elem declare func $m_m__java_util_List__java_util_List@typeannotations.AbstractType)
 
 ;;; void AbstractType.$clinit()
-(func $$clinit__void@typeannotations.AbstractType
- ;;@ typeannotations/TypeAnnotations.java:22:15
+(func $$clinit__void_<once>_@typeannotations.AbstractType
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:22:15
  (block
-  ;;@ typeannotations/TypeAnnotations.java:22:15
-  (if (global.get $f_$initialized__typeannotations_AbstractType)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:22:15
+  (if (global.get $$class-initialized@typeannotations.AbstractType)
    (then
-    ;;@ typeannotations/TypeAnnotations.java:22:15
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:22:15
     (return )
    )
   )
-  ;;@ typeannotations/TypeAnnotations.java:22:15
-  (global.set $f_$initialized__typeannotations_AbstractType (i32.const 1))
-  ;;@ typeannotations/TypeAnnotations.java:22:15
-  (call $$clinit__void@java.lang.Object )
-  ;;@ typeannotations/TypeAnnotations.java:22:15
-  (call $$clinit__void@typeannotations.ParametricType )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:22:15
+  (global.set $$class-initialized@typeannotations.AbstractType (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:22:15
+  (call $$clinit__void_<once>_@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:22:15
+  (call $$clinit__void_<once>_@typeannotations.ParametricType )
  )
 )
 
 ;;; Class<T> AbstractType.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@typeannotations.AbstractType
+(func $$getClassMetadata__java_lang_Class_<once>_@typeannotations.AbstractType
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__typeannotations_AbstractType))
+  (if (i32.eqz (ref.is_null (global.get $$class@typeannotations.AbstractType)))
    (then
-    (global.set $f_$class__typeannotations_AbstractType (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|typeannotati...|__java_lang_String (ref.func $$getString_|typeannotati...|__java_lang_String@typeannotations.AbstractType) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@typeannotations.AbstractType))
    )
   )
-  (return (global.get $f_$class__typeannotations_AbstractType))
+  (global.set $$class@typeannotations.AbstractType (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|typeannotati...|__java_lang_String_<once>_@typeannotations.AbstractType )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@typeannotations.AbstractType))
  )
 )
 
-;;; String AbstractType.$getString_|typeannotati...|()
-(func $$getString_|typeannotati...|__java_lang_String@typeannotations.AbstractType
- (result (ref null $java.lang.String))
+;;; Class<?> AbstractType.$getClassImpl()
+(func $$getClassImpl__java_lang_Class@typeannotations.AbstractType
+ (type $function.$getClassImpl__java_lang_Class)
+ (param $this.untyped (ref $java.lang.Object))
+ (result (ref null $java.lang.Class))
+ (local $this (ref null $typeannotations.AbstractType))
+ (local.set $this (ref.cast (ref $typeannotations.AbstractType) (local.get $this.untyped)))
  (block
-  (if (ref.is_null (global.get $f_$string_|typeannotati...|__typeannotations_AbstractType))
-   (then
-    (global.set $f_$string_|typeannotati...|__typeannotations_AbstractType (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "typeannotations.AbstractType")))
-   )
-  )
-  (return (global.get $f_$string_|typeannotati...|__typeannotations_AbstractType))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@typeannotations.AbstractType ))
  )
 )
+(elem declare func $$getClassImpl__java_lang_Class@typeannotations.AbstractType)
 
 ;;; Code for typeannotations.AbstractTypeNonNull [methods]
 
 ;;; void AbstractTypeNonNull.$ctor()
 (func $$ctor__void_$p_typeannotations_AbstractTypeNonNull@typeannotations.AbstractTypeNonNull
  (param $this (ref null $typeannotations.AbstractTypeNonNull))
- ;;@ typeannotations/TypeAnnotations.java:26:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:26:15
  (block
-  ;;@ typeannotations/TypeAnnotations.java:26:15
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:26:15
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -480,77 +388,78 @@
  (param $this.untyped (ref $java.lang.Object))
  (param $arg0 (ref null $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ typeannotations/TypeAnnotations.java:26:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:26:15
  (local $this (ref null $typeannotations.AbstractTypeNonNull))
  (local.set $this (ref.cast (ref $typeannotations.AbstractTypeNonNull) (local.get $this.untyped)))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:26:15
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:26:15
   (return (call $m_m__java_util_List__java_util_List@typeannotations.ParametricType (ref.as_non_null (local.get $this))(local.get $arg0)))
  )
 )
 (elem declare func $m_m__java_util_List__java_util_List@typeannotations.AbstractTypeNonNull)
 
 ;;; void AbstractTypeNonNull.$clinit()
-(func $$clinit__void@typeannotations.AbstractTypeNonNull
- ;;@ typeannotations/TypeAnnotations.java:26:15
+(func $$clinit__void_<once>_@typeannotations.AbstractTypeNonNull
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:26:15
  (block
-  ;;@ typeannotations/TypeAnnotations.java:26:15
-  (if (global.get $f_$initialized__typeannotations_AbstractTypeNonNull)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:26:15
+  (if (global.get $$class-initialized@typeannotations.AbstractTypeNonNull)
    (then
-    ;;@ typeannotations/TypeAnnotations.java:26:15
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:26:15
     (return )
    )
   )
-  ;;@ typeannotations/TypeAnnotations.java:26:15
-  (global.set $f_$initialized__typeannotations_AbstractTypeNonNull (i32.const 1))
-  ;;@ typeannotations/TypeAnnotations.java:26:15
-  (call $$clinit__void@java.lang.Object )
-  ;;@ typeannotations/TypeAnnotations.java:26:15
-  (call $$clinit__void@typeannotations.ParametricType )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:26:15
+  (global.set $$class-initialized@typeannotations.AbstractTypeNonNull (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:26:15
+  (call $$clinit__void_<once>_@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:26:15
+  (call $$clinit__void_<once>_@typeannotations.ParametricType )
  )
 )
 
 ;;; Class<T> AbstractTypeNonNull.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@typeannotations.AbstractTypeNonNull
+(func $$getClassMetadata__java_lang_Class_<once>_@typeannotations.AbstractTypeNonNull
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__typeannotations_AbstractTypeNonNull))
+  (if (i32.eqz (ref.is_null (global.get $$class@typeannotations.AbstractTypeNonNull)))
    (then
-    (global.set $f_$class__typeannotations_AbstractTypeNonNull (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|typeannotati...|__java_lang_String (ref.func $$getString_|typeannotati...|__java_lang_String@typeannotations.AbstractTypeNonNull) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@typeannotations.AbstractTypeNonNull))
    )
   )
-  (return (global.get $f_$class__typeannotations_AbstractTypeNonNull))
+  (global.set $$class@typeannotations.AbstractTypeNonNull (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|typeannotati...|__java_lang_String_<once>_@typeannotations.AbstractTypeNonNull )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@typeannotations.AbstractTypeNonNull))
  )
 )
 
-;;; String AbstractTypeNonNull.$getString_|typeannotati...|()
-(func $$getString_|typeannotati...|__java_lang_String@typeannotations.AbstractTypeNonNull
- (result (ref null $java.lang.String))
+;;; Class<?> AbstractTypeNonNull.$getClassImpl()
+(func $$getClassImpl__java_lang_Class@typeannotations.AbstractTypeNonNull
+ (type $function.$getClassImpl__java_lang_Class)
+ (param $this.untyped (ref $java.lang.Object))
+ (result (ref null $java.lang.Class))
+ (local $this (ref null $typeannotations.AbstractTypeNonNull))
+ (local.set $this (ref.cast (ref $typeannotations.AbstractTypeNonNull) (local.get $this.untyped)))
  (block
-  (if (ref.is_null (global.get $f_$string_|typeannotati...|__typeannotations_AbstractTypeNonNull))
-   (then
-    (global.set $f_$string_|typeannotati...|__typeannotations_AbstractTypeNonNull (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "typeannotations.AbstractTypeNonNull")))
-   )
-  )
-  (return (global.get $f_$string_|typeannotati...|__typeannotations_AbstractTypeNonNull))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@typeannotations.AbstractTypeNonNull ))
  )
 )
+(elem declare func $$getClassImpl__java_lang_Class@typeannotations.AbstractTypeNonNull)
 
 ;;; Code for typeannotations.Parent [methods]
 
 ;;; Parent Parent.$create()
 (func $$create__@typeannotations.Parent
  (result (ref null $typeannotations.Parent))
- ;;@ typeannotations/TypeAnnotations.java:30:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
  (local $$instance (ref null $typeannotations.Parent))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:30:6
-  (call $$clinit__void@typeannotations.Parent )
-  ;;@ typeannotations/TypeAnnotations.java:30:6
-  (local.set $$instance (struct.new $typeannotations.Parent (ref.as_non_null (global.get $typeannotations.Parent.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ typeannotations/TypeAnnotations.java:30:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
+  (call $$clinit__void_<once>_@typeannotations.Parent )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
+  (local.set $$instance (struct.new $typeannotations.Parent (global.get $typeannotations.Parent.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
   (call $$ctor__void_$p_typeannotations_Parent@typeannotations.Parent (ref.as_non_null (local.get $$instance)))
-  ;;@ typeannotations/TypeAnnotations.java:30:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
   (return (local.get $$instance))
  )
 )
@@ -558,9 +467,9 @@
 ;;; void Parent.$ctor()
 (func $$ctor__void_$p_typeannotations_Parent@typeannotations.Parent
  (param $this (ref null $typeannotations.Parent))
- ;;@ typeannotations/TypeAnnotations.java:30:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
  (block
-  ;;@ typeannotations/TypeAnnotations.java:30:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -572,11 +481,11 @@
  (param $s (ref null $java.lang.String))
  (param $c (ref null $typeannotations.Parent))
  (result (ref null $typeannotations.Parent))
- ;;@ typeannotations/TypeAnnotations.java:31:16
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:31:16
  (local $this (ref null $typeannotations.Parent))
  (local.set $this (ref.cast (ref $typeannotations.Parent) (local.get $this.untyped)))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:32:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:32:4
   (return (local.get $c))
  )
 )
@@ -589,44 +498,45 @@
  (param $l (ref null $java.lang.Object))
  (param $c (ref null $typeannotations.Parent))
  (result (ref null $java.lang.Object))
- ;;@ typeannotations/TypeAnnotations.java:35:33
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:35:33
  (local $this (ref null $typeannotations.Parent))
  (local.set $this (ref.cast (ref $typeannotations.Parent) (local.get $this.untyped)))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:36:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:36:4
   (return (call $$create__@java.util.ArrayList ))
  )
 )
 (elem declare func $m_m__java_util_List__typeannotations_Parent__java_util_List@typeannotations.Parent)
 
 ;;; void Parent.$clinit()
-(func $$clinit__void@typeannotations.Parent
- ;;@ typeannotations/TypeAnnotations.java:30:6
+(func $$clinit__void_<once>_@typeannotations.Parent
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
  (block
-  ;;@ typeannotations/TypeAnnotations.java:30:6
-  (if (global.get $f_$initialized__typeannotations_Parent)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
+  (if (global.get $$class-initialized@typeannotations.Parent)
    (then
-    ;;@ typeannotations/TypeAnnotations.java:30:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
     (return )
    )
   )
-  ;;@ typeannotations/TypeAnnotations.java:30:6
-  (global.set $f_$initialized__typeannotations_Parent (i32.const 1))
-  ;;@ typeannotations/TypeAnnotations.java:30:6
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
+  (global.set $$class-initialized@typeannotations.Parent (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:30:6
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> Parent.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@typeannotations.Parent
+(func $$getClassMetadata__java_lang_Class_<once>_@typeannotations.Parent
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__typeannotations_Parent))
+  (if (i32.eqz (ref.is_null (global.get $$class@typeannotations.Parent)))
    (then
-    (global.set $f_$class__typeannotations_Parent (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|typeannotati...|__java_lang_String (ref.func $$getString_|typeannotati...|__java_lang_String@typeannotations.Parent) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@typeannotations.Parent))
    )
   )
-  (return (global.get $f_$class__typeannotations_Parent))
+  (global.set $$class@typeannotations.Parent (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|typeannotati...|__java_lang_String_<once>_@typeannotations.Parent )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@typeannotations.Parent))
  )
 )
 
@@ -638,39 +548,26 @@
  (local $this (ref null $typeannotations.Parent))
  (local.set $this (ref.cast (ref $typeannotations.Parent) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@typeannotations.Parent) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@typeannotations.Parent ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@typeannotations.Parent)
-
-;;; String Parent.$getString_|typeannotati...|()
-(func $$getString_|typeannotati...|__java_lang_String@typeannotations.Parent
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|typeannotati...|__typeannotations_Parent))
-   (then
-    (global.set $f_$string_|typeannotati...|__typeannotations_Parent (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "typeannotations.Parent")))
-   )
-  )
-  (return (global.get $f_$string_|typeannotati...|__typeannotations_Parent))
- )
-)
 
 ;;; Code for typeannotations.TypeAnnotations [methods]
 
 ;;; TypeAnnotations TypeAnnotations.$create()
 (func $$create__@typeannotations.TypeAnnotations
  (result (ref null $typeannotations.TypeAnnotations))
- ;;@ typeannotations/TypeAnnotations.java:50:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
  (local $$instance (ref null $typeannotations.TypeAnnotations))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:50:13
-  (call $$clinit__void@typeannotations.TypeAnnotations )
-  ;;@ typeannotations/TypeAnnotations.java:50:13
-  (local.set $$instance (struct.new $typeannotations.TypeAnnotations (ref.as_non_null (global.get $typeannotations.TypeAnnotations.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ typeannotations/TypeAnnotations.java:50:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
+  (call $$clinit__void_<once>_@typeannotations.TypeAnnotations )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
+  (local.set $$instance (struct.new $typeannotations.TypeAnnotations (global.get $typeannotations.TypeAnnotations.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
   (call $$ctor__void_$p_typeannotations_TypeAnnotations@typeannotations.TypeAnnotations (ref.as_non_null (local.get $$instance)))
-  ;;@ typeannotations/TypeAnnotations.java:50:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
   (return (local.get $$instance))
  )
 )
@@ -678,53 +575,54 @@
 ;;; void TypeAnnotations.$ctor()
 (func $$ctor__void_$p_typeannotations_TypeAnnotations@typeannotations.TypeAnnotations
  (param $this (ref null $typeannotations.TypeAnnotations))
- ;;@ typeannotations/TypeAnnotations.java:50:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
  (block
-  ;;@ typeannotations/TypeAnnotations.java:50:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
 
 ;;; void TypeAnnotations.main()
 (func $m_main__void@typeannotations.TypeAnnotations
- ;;@ typeannotations/TypeAnnotations.java:51:21
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:51:21
  (local $list (ref null $java.lang.Object))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:51:28
-  (call $$clinit__void@typeannotations.TypeAnnotations )
-  ;;@ typeannotations/TypeAnnotations.java:53:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:51:28
+  (call $$clinit__void_<once>_@typeannotations.TypeAnnotations )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:53:4
   (local.set $list (call $$create__@java.util.ArrayList ))
  )
 )
 
 ;;; void TypeAnnotations.$clinit()
-(func $$clinit__void@typeannotations.TypeAnnotations
- ;;@ typeannotations/TypeAnnotations.java:50:13
+(func $$clinit__void_<once>_@typeannotations.TypeAnnotations
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
  (block
-  ;;@ typeannotations/TypeAnnotations.java:50:13
-  (if (global.get $f_$initialized__typeannotations_TypeAnnotations)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
+  (if (global.get $$class-initialized@typeannotations.TypeAnnotations)
    (then
-    ;;@ typeannotations/TypeAnnotations.java:50:13
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
     (return )
    )
   )
-  ;;@ typeannotations/TypeAnnotations.java:50:13
-  (global.set $f_$initialized__typeannotations_TypeAnnotations (i32.const 1))
-  ;;@ typeannotations/TypeAnnotations.java:50:13
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
+  (global.set $$class-initialized@typeannotations.TypeAnnotations (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:50:13
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> TypeAnnotations.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@typeannotations.TypeAnnotations
+(func $$getClassMetadata__java_lang_Class_<once>_@typeannotations.TypeAnnotations
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__typeannotations_TypeAnnotations))
+  (if (i32.eqz (ref.is_null (global.get $$class@typeannotations.TypeAnnotations)))
    (then
-    (global.set $f_$class__typeannotations_TypeAnnotations (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|typeannotati...|__java_lang_String (ref.func $$getString_|typeannotati...|__java_lang_String@typeannotations.TypeAnnotations) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@typeannotations.TypeAnnotations))
    )
   )
-  (return (global.get $f_$class__typeannotations_TypeAnnotations))
+  (global.set $$class@typeannotations.TypeAnnotations (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|typeannotati...|__java_lang_String_<once>_@typeannotations.TypeAnnotations )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@typeannotations.TypeAnnotations))
  )
 )
 
@@ -736,39 +634,26 @@
  (local $this (ref null $typeannotations.TypeAnnotations))
  (local.set $this (ref.cast (ref $typeannotations.TypeAnnotations) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@typeannotations.TypeAnnotations) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@typeannotations.TypeAnnotations ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@typeannotations.TypeAnnotations)
-
-;;; String TypeAnnotations.$getString_|typeannotati...|()
-(func $$getString_|typeannotati...|__java_lang_String@typeannotations.TypeAnnotations
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|typeannotati...|__typeannotations_TypeAnnotations))
-   (then
-    (global.set $f_$string_|typeannotati...|__typeannotations_TypeAnnotations (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "typeannotations.TypeAnnotations")))
-   )
-  )
-  (return (global.get $f_$string_|typeannotati...|__typeannotations_TypeAnnotations))
- )
-)
 
 ;;; Code for typeannotations.ChildWithNullableParent [methods]
 
 ;;; ChildWithNullableParent ChildWithNullableParent.$create()
 (func $$create__@typeannotations.ChildWithNullableParent
  (result (ref null $typeannotations.ChildWithNullableParent))
- ;;@ typeannotations/TypeAnnotations.java:40:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
  (local $$instance (ref null $typeannotations.ChildWithNullableParent))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:40:6
-  (call $$clinit__void@typeannotations.ChildWithNullableParent )
-  ;;@ typeannotations/TypeAnnotations.java:40:6
-  (local.set $$instance (struct.new $typeannotations.ChildWithNullableParent (ref.as_non_null (global.get $typeannotations.ChildWithNullableParent.vtable)) (ref.as_non_null (global.get $typeannotations.ChildWithNullableParent.itable)) (i32.const 0)))
-  ;;@ typeannotations/TypeAnnotations.java:40:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
+  (call $$clinit__void_<once>_@typeannotations.ChildWithNullableParent )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
+  (local.set $$instance (struct.new $typeannotations.ChildWithNullableParent (global.get $typeannotations.ChildWithNullableParent.vtable) (global.get $typeannotations.ChildWithNullableParent.itable) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
   (call $$ctor__void_$p_typeannotations_ChildWithNullableParent@typeannotations.ChildWithNullableParent (ref.as_non_null (local.get $$instance)))
-  ;;@ typeannotations/TypeAnnotations.java:40:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
   (return (local.get $$instance))
  )
 )
@@ -776,9 +661,9 @@
 ;;; void ChildWithNullableParent.$ctor()
 (func $$ctor__void_$p_typeannotations_ChildWithNullableParent@typeannotations.ChildWithNullableParent
  (param $this (ref null $typeannotations.ChildWithNullableParent))
- ;;@ typeannotations/TypeAnnotations.java:40:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
  (block
-  ;;@ typeannotations/TypeAnnotations.java:40:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
   (call $$ctor__void_$p_typeannotations_Parent@typeannotations.Parent (ref.as_non_null (local.get $this)))
  )
 )
@@ -790,12 +675,12 @@
  (param $arg0 (ref null $java.lang.String))
  (param $arg1 (ref null $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ typeannotations/TypeAnnotations.java:40:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
  (local $this (ref null $typeannotations.ChildWithNullableParent))
  (local.set $this (ref.cast (ref $typeannotations.ChildWithNullableParent) (local.get $this.untyped)))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:40:6
-  (return (call_ref $function.m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (ref.as_non_null (local.get $this))(local.get $arg0)(ref.cast (ref null $typeannotations.Parent) (local.get $arg1))(struct.get $typeannotations.Parent.vtable $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (struct.get $typeannotations.Parent $vtable(local.get $this)))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
+  (return (call_ref $function.m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (ref.as_non_null (local.get $this))(local.get $arg0)(ref.cast (ref null $typeannotations.Parent) (local.get $arg1))(struct.get $typeannotations.ChildWithNullableParent.vtable $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (struct.get $typeannotations.ChildWithNullableParent $vtable(local.get $this)))))
  )
 )
 (elem declare func $m_m__java_lang_String__java_lang_Object__java_lang_Object@typeannotations.ChildWithNullableParent)
@@ -807,12 +692,12 @@
  (param $arg0 (ref null $java.lang.Object))
  (param $arg1 (ref null $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ typeannotations/TypeAnnotations.java:40:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
  (local $this (ref null $typeannotations.ChildWithNullableParent))
  (local.set $this (ref.cast (ref $typeannotations.ChildWithNullableParent) (local.get $this.untyped)))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:40:6
-  (return (call_ref $function.m_m__java_util_List__typeannotations_Parent__java_util_List (ref.as_non_null (local.get $this))(local.get $arg0)(ref.cast (ref null $typeannotations.Parent) (local.get $arg1))(struct.get $typeannotations.Parent.vtable $m_m__java_util_List__typeannotations_Parent__java_util_List (struct.get $typeannotations.Parent $vtable(local.get $this)))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
+  (return (call_ref $function.m_m__java_util_List__typeannotations_Parent__java_util_List (ref.as_non_null (local.get $this))(local.get $arg0)(ref.cast (ref null $typeannotations.Parent) (local.get $arg1))(struct.get $typeannotations.ChildWithNullableParent.vtable $m_m__java_util_List__typeannotations_Parent__java_util_List (struct.get $typeannotations.ChildWithNullableParent $vtable(local.get $this)))))
  )
 )
 (elem declare func $m_m__java_util_List__java_lang_Object__java_util_List@typeannotations.ChildWithNullableParent)
@@ -823,46 +708,47 @@
  (param $this.untyped (ref $java.lang.Object))
  (param $arg0 (ref null $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ typeannotations/TypeAnnotations.java:40:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
  (local $this (ref null $typeannotations.ChildWithNullableParent))
  (local.set $this (ref.cast (ref $typeannotations.ChildWithNullableParent) (local.get $this.untyped)))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:40:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
   (return (call $m_m__java_util_List__java_util_List@typeannotations.ParametricType (ref.as_non_null (local.get $this))(local.get $arg0)))
  )
 )
 (elem declare func $m_m__java_util_List__java_util_List@typeannotations.ChildWithNullableParent)
 
 ;;; void ChildWithNullableParent.$clinit()
-(func $$clinit__void@typeannotations.ChildWithNullableParent
- ;;@ typeannotations/TypeAnnotations.java:40:6
+(func $$clinit__void_<once>_@typeannotations.ChildWithNullableParent
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
  (block
-  ;;@ typeannotations/TypeAnnotations.java:40:6
-  (if (global.get $f_$initialized__typeannotations_ChildWithNullableParent)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
+  (if (global.get $$class-initialized@typeannotations.ChildWithNullableParent)
    (then
-    ;;@ typeannotations/TypeAnnotations.java:40:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
     (return )
    )
   )
-  ;;@ typeannotations/TypeAnnotations.java:40:6
-  (global.set $f_$initialized__typeannotations_ChildWithNullableParent (i32.const 1))
-  ;;@ typeannotations/TypeAnnotations.java:40:6
-  (call $$clinit__void@typeannotations.Parent )
-  ;;@ typeannotations/TypeAnnotations.java:40:6
-  (call $$clinit__void@typeannotations.ParametricType )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
+  (global.set $$class-initialized@typeannotations.ChildWithNullableParent (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
+  (call $$clinit__void_<once>_@typeannotations.Parent )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:40:6
+  (call $$clinit__void_<once>_@typeannotations.ParametricType )
  )
 )
 
 ;;; Class<T> ChildWithNullableParent.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@typeannotations.ChildWithNullableParent
+(func $$getClassMetadata__java_lang_Class_<once>_@typeannotations.ChildWithNullableParent
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__typeannotations_ChildWithNullableParent))
+  (if (i32.eqz (ref.is_null (global.get $$class@typeannotations.ChildWithNullableParent)))
    (then
-    (global.set $f_$class__typeannotations_ChildWithNullableParent (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|typeannotati...|__java_lang_String (ref.func $$getString_|typeannotati...|__java_lang_String@typeannotations.ChildWithNullableParent) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@typeannotations.Parent) )))
+    (return (global.get $$class@typeannotations.ChildWithNullableParent))
    )
   )
-  (return (global.get $f_$class__typeannotations_ChildWithNullableParent))
+  (global.set $$class@typeannotations.ChildWithNullableParent (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|typeannotati...|__java_lang_String_<once>_@typeannotations.ChildWithNullableParent )(call $$getClassMetadata__java_lang_Class_<once>_@typeannotations.Parent )))
+  (return (global.get $$class@typeannotations.ChildWithNullableParent))
  )
 )
 
@@ -874,39 +760,26 @@
  (local $this (ref null $typeannotations.ChildWithNullableParent))
  (local.set $this (ref.cast (ref $typeannotations.ChildWithNullableParent) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@typeannotations.ChildWithNullableParent) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@typeannotations.ChildWithNullableParent ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@typeannotations.ChildWithNullableParent)
-
-;;; String ChildWithNullableParent.$getString_|typeannotati...|()
-(func $$getString_|typeannotati...|__java_lang_String@typeannotations.ChildWithNullableParent
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|typeannotati...|__typeannotations_ChildWithNullableParent))
-   (then
-    (global.set $f_$string_|typeannotati...|__typeannotations_ChildWithNullableParent (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "typeannotations.ChildWithNullableParent")))
-   )
-  )
-  (return (global.get $f_$string_|typeannotati...|__typeannotations_ChildWithNullableParent))
- )
-)
 
 ;;; Code for typeannotations.ChildWithNonNullableParent [methods]
 
 ;;; ChildWithNonNullableParent ChildWithNonNullableParent.$create()
 (func $$create__@typeannotations.ChildWithNonNullableParent
  (result (ref null $typeannotations.ChildWithNonNullableParent))
- ;;@ typeannotations/TypeAnnotations.java:45:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
  (local $$instance (ref null $typeannotations.ChildWithNonNullableParent))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:45:6
-  (call $$clinit__void@typeannotations.ChildWithNonNullableParent )
-  ;;@ typeannotations/TypeAnnotations.java:45:6
-  (local.set $$instance (struct.new $typeannotations.ChildWithNonNullableParent (ref.as_non_null (global.get $typeannotations.ChildWithNonNullableParent.vtable)) (ref.as_non_null (global.get $typeannotations.ChildWithNonNullableParent.itable)) (i32.const 0)))
-  ;;@ typeannotations/TypeAnnotations.java:45:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
+  (call $$clinit__void_<once>_@typeannotations.ChildWithNonNullableParent )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
+  (local.set $$instance (struct.new $typeannotations.ChildWithNonNullableParent (global.get $typeannotations.ChildWithNonNullableParent.vtable) (global.get $typeannotations.ChildWithNonNullableParent.itable) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
   (call $$ctor__void_$p_typeannotations_ChildWithNonNullableParent@typeannotations.ChildWithNonNullableParent (ref.as_non_null (local.get $$instance)))
-  ;;@ typeannotations/TypeAnnotations.java:45:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
   (return (local.get $$instance))
  )
 )
@@ -914,9 +787,9 @@
 ;;; void ChildWithNonNullableParent.$ctor()
 (func $$ctor__void_$p_typeannotations_ChildWithNonNullableParent@typeannotations.ChildWithNonNullableParent
  (param $this (ref null $typeannotations.ChildWithNonNullableParent))
- ;;@ typeannotations/TypeAnnotations.java:45:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
  (block
-  ;;@ typeannotations/TypeAnnotations.java:45:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
   (call $$ctor__void_$p_typeannotations_Parent@typeannotations.Parent (ref.as_non_null (local.get $this)))
  )
 )
@@ -928,12 +801,12 @@
  (param $arg0 (ref null $java.lang.String))
  (param $arg1 (ref null $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ typeannotations/TypeAnnotations.java:45:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
  (local $this (ref null $typeannotations.ChildWithNonNullableParent))
  (local.set $this (ref.cast (ref $typeannotations.ChildWithNonNullableParent) (local.get $this.untyped)))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:45:6
-  (return (call_ref $function.m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (ref.as_non_null (local.get $this))(local.get $arg0)(ref.cast (ref null $typeannotations.Parent) (local.get $arg1))(struct.get $typeannotations.Parent.vtable $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (struct.get $typeannotations.Parent $vtable(local.get $this)))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
+  (return (call_ref $function.m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (ref.as_non_null (local.get $this))(local.get $arg0)(ref.cast (ref null $typeannotations.Parent) (local.get $arg1))(struct.get $typeannotations.ChildWithNonNullableParent.vtable $m_m__java_lang_String__typeannotations_Parent__typeannotations_Parent (struct.get $typeannotations.ChildWithNonNullableParent $vtable(local.get $this)))))
  )
 )
 (elem declare func $m_m__java_lang_String__java_lang_Object__java_lang_Object@typeannotations.ChildWithNonNullableParent)
@@ -945,12 +818,12 @@
  (param $arg0 (ref null $java.lang.Object))
  (param $arg1 (ref null $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ typeannotations/TypeAnnotations.java:45:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
  (local $this (ref null $typeannotations.ChildWithNonNullableParent))
  (local.set $this (ref.cast (ref $typeannotations.ChildWithNonNullableParent) (local.get $this.untyped)))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:45:6
-  (return (call_ref $function.m_m__java_util_List__typeannotations_Parent__java_util_List (ref.as_non_null (local.get $this))(local.get $arg0)(ref.cast (ref null $typeannotations.Parent) (local.get $arg1))(struct.get $typeannotations.Parent.vtable $m_m__java_util_List__typeannotations_Parent__java_util_List (struct.get $typeannotations.Parent $vtable(local.get $this)))))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
+  (return (call_ref $function.m_m__java_util_List__typeannotations_Parent__java_util_List (ref.as_non_null (local.get $this))(local.get $arg0)(ref.cast (ref null $typeannotations.Parent) (local.get $arg1))(struct.get $typeannotations.ChildWithNonNullableParent.vtable $m_m__java_util_List__typeannotations_Parent__java_util_List (struct.get $typeannotations.ChildWithNonNullableParent $vtable(local.get $this)))))
  )
 )
 (elem declare func $m_m__java_util_List__java_lang_Object__java_util_List@typeannotations.ChildWithNonNullableParent)
@@ -961,46 +834,47 @@
  (param $this.untyped (ref $java.lang.Object))
  (param $arg0 (ref null $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ typeannotations/TypeAnnotations.java:45:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
  (local $this (ref null $typeannotations.ChildWithNonNullableParent))
  (local.set $this (ref.cast (ref $typeannotations.ChildWithNonNullableParent) (local.get $this.untyped)))
  (block
-  ;;@ typeannotations/TypeAnnotations.java:45:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
   (return (call $m_m__java_util_List__java_util_List@typeannotations.ParametricType (ref.as_non_null (local.get $this))(local.get $arg0)))
  )
 )
 (elem declare func $m_m__java_util_List__java_util_List@typeannotations.ChildWithNonNullableParent)
 
 ;;; void ChildWithNonNullableParent.$clinit()
-(func $$clinit__void@typeannotations.ChildWithNonNullableParent
- ;;@ typeannotations/TypeAnnotations.java:45:6
+(func $$clinit__void_<once>_@typeannotations.ChildWithNonNullableParent
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
  (block
-  ;;@ typeannotations/TypeAnnotations.java:45:6
-  (if (global.get $f_$initialized__typeannotations_ChildWithNonNullableParent)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
+  (if (global.get $$class-initialized@typeannotations.ChildWithNonNullableParent)
    (then
-    ;;@ typeannotations/TypeAnnotations.java:45:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
     (return )
    )
   )
-  ;;@ typeannotations/TypeAnnotations.java:45:6
-  (global.set $f_$initialized__typeannotations_ChildWithNonNullableParent (i32.const 1))
-  ;;@ typeannotations/TypeAnnotations.java:45:6
-  (call $$clinit__void@typeannotations.Parent )
-  ;;@ typeannotations/TypeAnnotations.java:45:6
-  (call $$clinit__void@typeannotations.ParametricType )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
+  (global.set $$class-initialized@typeannotations.ChildWithNonNullableParent (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
+  (call $$clinit__void_<once>_@typeannotations.Parent )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/typeannotations/readable-j2wasm.js/typeannotations/TypeAnnotations.java:45:6
+  (call $$clinit__void_<once>_@typeannotations.ParametricType )
  )
 )
 
 ;;; Class<T> ChildWithNonNullableParent.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@typeannotations.ChildWithNonNullableParent
+(func $$getClassMetadata__java_lang_Class_<once>_@typeannotations.ChildWithNonNullableParent
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__typeannotations_ChildWithNonNullableParent))
+  (if (i32.eqz (ref.is_null (global.get $$class@typeannotations.ChildWithNonNullableParent)))
    (then
-    (global.set $f_$class__typeannotations_ChildWithNonNullableParent (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|typeannotati...|__java_lang_String (ref.func $$getString_|typeannotati...|__java_lang_String@typeannotations.ChildWithNonNullableParent) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@typeannotations.Parent) )))
+    (return (global.get $$class@typeannotations.ChildWithNonNullableParent))
    )
   )
-  (return (global.get $f_$class__typeannotations_ChildWithNonNullableParent))
+  (global.set $$class@typeannotations.ChildWithNonNullableParent (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|typeannotati...|__java_lang_String_<once>_@typeannotations.ChildWithNonNullableParent )(call $$getClassMetadata__java_lang_Class_<once>_@typeannotations.Parent )))
+  (return (global.get $$class@typeannotations.ChildWithNonNullableParent))
  )
 )
 
@@ -1012,20 +886,7 @@
  (local $this (ref null $typeannotations.ChildWithNonNullableParent))
  (local.set $this (ref.cast (ref $typeannotations.ChildWithNonNullableParent) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@typeannotations.ChildWithNonNullableParent) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@typeannotations.ChildWithNonNullableParent ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@typeannotations.ChildWithNonNullableParent)
-
-;;; String ChildWithNonNullableParent.$getString_|typeannotati...|()
-(func $$getString_|typeannotati...|__java_lang_String@typeannotations.ChildWithNonNullableParent
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|typeannotati...|__typeannotations_ChildWithNonNullableParent))
-   (then
-    (global.set $f_$string_|typeannotati...|__typeannotations_ChildWithNonNullableParent (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "typeannotations.ChildWithNonNullableParent")))
-   )
-  )
-  (return (global.get $f_$string_|typeannotati...|__typeannotations_ChildWithNonNullableParent))
- )
-)

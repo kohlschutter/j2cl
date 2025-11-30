@@ -26,6 +26,7 @@ import com.google.j2cl.transpiler.backend.kotlin.common.inBackTicks
 import com.google.j2cl.transpiler.backend.kotlin.source.Source
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.spaceSeparated
 import com.google.j2cl.transpiler.backend.kotlin.source.orEmpty
+import java.lang.Boolean.getBoolean
 
 /**
  * Renderer of member descriptors.
@@ -33,6 +34,9 @@ import com.google.j2cl.transpiler.backend.kotlin.source.orEmpty
  * @param nameRenderer underlying name renderer
  */
 internal data class MemberDescriptorRenderer(val nameRenderer: NameRenderer) {
+  private val environment: Environment
+    get() = nameRenderer.environment
+
   fun methodKindAndNameSource(methodDescriptor: MethodDescriptor): Source =
     if (methodDescriptor.isConstructor) {
       CONSTRUCTOR_KEYWORD
@@ -40,7 +44,7 @@ internal data class MemberDescriptorRenderer(val nameRenderer: NameRenderer) {
       spaceSeparated(
         if (methodDescriptor.isKtProperty) KotlinSource.VAL_KEYWORD else KotlinSource.FUN_KEYWORD,
         nameRenderer.typeParametersSource(methodDescriptor.typeParameterTypeDescriptors),
-        identifierSource(methodDescriptor.ktMangledName)
+        identifierSource(environment.ktMangledName(methodDescriptor)),
       )
     }
 
@@ -60,14 +64,14 @@ internal data class MemberDescriptorRenderer(val nameRenderer: NameRenderer) {
             KotlinSource.classLiteral(
               nameRenderer.typeDescriptorSource(it.toRawTypeDescriptor().toNonNullable())
             )
-          }
+          },
         )
       }
       .orEmpty()
 
   fun nativeThrowsAnnotationSource(methodDescriptor: MethodDescriptor): Source =
     methodDescriptor.ktInfo
-      .takeIf { it.isThrows }
+      .takeIf { it.isThrows && SHOULD_RENDER_NATIVE_THROWS }
       ?.let {
         KotlinSource.annotation(
           nameRenderer.topLevelQualifiedNameSource("javaemul.lang.NativeThrows"),
@@ -75,35 +79,22 @@ internal data class MemberDescriptorRenderer(val nameRenderer: NameRenderer) {
             nameRenderer.typeDescriptorSource(
               TypeDescriptors.get().javaLangThrowable.toNonNullable()
             )
-          )
+          ),
         )
       }
       .orEmpty()
 
+  fun visibilityModifierSource(memberDescriptor: MemberDescriptor): Source =
+    environment
+      .ktVisibility(memberDescriptor)
+      .takeUnless { it == environment.inferredKtVisibility(memberDescriptor) }
+      ?.source
+      .orEmpty()
+
   companion object {
-    val MethodDescriptor.methodModifiersSource: Source
-      get() =
-        spaceSeparated(
-          visibilityModifierSource,
-          Source.emptyUnless(!enclosingTypeDescriptor.typeDeclaration.isInterface) {
-            spaceSeparated(
-              Source.emptyUnless(isNative) { KotlinSource.EXTERNAL_KEYWORD },
-              inheritanceModifierSource
-            )
-          },
-          Source.emptyUnless(isKtOverride) { KotlinSource.OVERRIDE_KEYWORD }
-        )
-
-    val MemberDescriptor.visibilityModifierSource: Source
-      get() = ktVisibility.takeUnless { it == inferredKtVisibility }?.source.orEmpty()
-
-    val MethodDescriptor.inheritanceModifierSource
-      get() =
-        when {
-          isAbstract -> KotlinSource.ABSTRACT_KEYWORD
-          isOpen -> KotlinSource.OPEN_KEYWORD
-          else -> Source.EMPTY
-        }
+    // TODO(b/316324154): Remove when no longer necessary
+    val SHOULD_RENDER_NATIVE_THROWS: Boolean =
+      !getBoolean("com.google.j2cl.transpiler.backend.kotlin.isNativeThrowsDisabled")
 
     val FieldDescriptor.enumValueDeclarationNameSource: Source
       get() =

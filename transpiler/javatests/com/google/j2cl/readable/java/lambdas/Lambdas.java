@@ -15,7 +15,6 @@
  */
 package lambdas;
 
-
 import javaemul.internal.annotations.Wasm;
 import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsMethod;
@@ -163,6 +162,10 @@ public class Lambdas {
     R apply(T t);
   }
 
+  private static class Wrapper<T> {
+    T wrapped = null;
+  }
+
   public <T extends Enum<T>> void testLambdaWithGenerics() {
     callWithTypeVariable(i -> i, new Error());
     callParameterized(i -> i, new Error());
@@ -173,6 +176,7 @@ public class Lambdas {
         });
     callWithBiFunction((x, y) -> 3.0);
     Function<? super T, ?> f = item -> 1L;
+    Function<Wrapper<String>, String> f2 = item -> item.wrapped;
   }
 
   public static Object m() {
@@ -350,5 +354,35 @@ public class Lambdas {
       Runnable r = () -> super.m();
     }
   }
+
+  interface EmptyInterface {}
+
+  interface EmptyInterfaceProvider {
+    EmptyInterface provide();
+  }
+
+  static class ProviderHolder {
+    public static final EmptyInterface emptyInterface = new EmptyInterface() {};
+    public static final EmptyInterfaceProvider provideFromField = () -> emptyInterface;
+    public static final EmptyInterfaceProvider provideFromAnonImpl = () -> new EmptyInterface() {};
+  }
+
+  // TODO(b/428219461): The type descriptors for the anonymous class are inconsistent. In the class
+  // declaration it does not have the enclosing method type parameter but in the inferred
+  // references it has. Remove @J2ktIncompatible when this is fixed and verify that
+  // the build.log error disappears.
+  @J2ktIncompatible
+  public <T> void testParameterizedTypeWithUnusedTypeVariable() {
+    acceptsSupplier(() -> new Object() {});
+  }
+
+  @java.lang.FunctionalInterface
+  public interface Supplier<T> {
+    T get();
+  }
+
+  private static <T> void acceptsSupplier(Supplier<T> supplier) {}
+
+  @interface J2ktIncompatible {}
 }
 

@@ -106,16 +106,16 @@ public class InsertWideningPrimitiveConversions extends NormalizationPass {
   private Expression widenTo(TypeDescriptor toTypeDescriptor, Expression expression) {
     TypeDescriptor fromTypeDescriptor = expression.getTypeDescriptor();
 
-    // Don't emit known NOOP widenings.
+    // Don't emit known NOOP widening.
     if (fromTypeDescriptor.isAssignableTo(toTypeDescriptor)
         && !needFloatOrDoubleWidening(toTypeDescriptor)) {
       return expression;
     }
 
     // Widen literals at compile time.
-    if (expression instanceof NumberLiteral) {
+    if (expression instanceof NumberLiteral literal) {
       PrimitiveTypeDescriptor literalTypeDescriptor = (PrimitiveTypeDescriptor) toTypeDescriptor;
-      return new NumberLiteral(literalTypeDescriptor, ((NumberLiteral) expression).getValue());
+      return new NumberLiteral(literalTypeDescriptor, literal.getValue());
     }
 
     return RuntimeMethods.createPrimitivesWideningMethodCall(

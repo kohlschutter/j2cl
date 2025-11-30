@@ -15,6 +15,8 @@
  */
 package com.google.j2cl.integration.testing;
 
+import static com.google.j2cl.integration.testing.TestUtils.isJ2Kt;
+import static com.google.j2cl.integration.testing.TestUtils.isJ2KtNative;
 import static com.google.j2cl.integration.testing.TestUtils.isJvm;
 
 import com.google.j2cl.integration.testing.Asserts.JsRunnable;
@@ -66,7 +68,8 @@ public class AssertsBase {
     } catch (ClassCastException expected) {
       if (qualifiedBinaryName != null) {
         String message = expected.getMessage();
-        String expectedMessage = isJvm() ? "cannot be cast to class " : "cannot be cast to ";
+        String expectedMessage =
+            isJvm() || isJ2KtNative() ? "cannot be cast to class " : "cannot be cast to ";
         expectedMessage += qualifiedBinaryName;
         assertTrue(
             getFailureMessage(expectedMessage, message, "exception message should contain"),
@@ -76,7 +79,14 @@ public class AssertsBase {
   }
 
   public static void assertThrowsClassCastException(JsRunnable runnable, Class<?> toClass) {
-    assertThrowsClassCastException(runnable, toClass.getName());
+    assertThrowsClassCastException(
+        runnable,
+        // TODO(b/368263653): On J2KT, Class.getComponentType() always returns Object.class for
+        //  non-primitive arrays, so skip the check for exception message as we don't know the
+        //  actual component type to check for.
+        isJ2Kt() && toClass.isArray() && !toClass.getComponentType().isPrimitive()
+            ? null
+            : toClass.getName());
   }
 
   public static void assertThrowsNullPointerException(JsRunnable runnable) {

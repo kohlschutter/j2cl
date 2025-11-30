@@ -1,196 +1,290 @@
- ;;; Code for supermethodcall.GrandParentInterface [type definition]
- (type $supermethodcall.GrandParentInterface.vtable (sub (struct
-  (field $m_defaultGrandParent__void (ref $function.m_defaultGrandParent__void))
-  ))
- )
+;;; Code for supermethodcall.GrandParentInterface [type definition]
+(type $supermethodcall.GrandParentInterface.vtable (sub (struct
+ (field $m_defaultGrandParent__void (ref $function.m_defaultGrandParent__void))
+ ))
+)
 
- ;;; Code for supermethodcall.ParentInterface [type definition]
- (type $supermethodcall.ParentInterface.vtable (sub (struct
-  (field $m_defaultParent__void (ref $function.m_defaultParent__void))
-  ))
- )
+;;; Code for supermethodcall.ParentInterface [type definition]
+(type $supermethodcall.ParentInterface.vtable (sub (struct
+ (field $m_defaultParent__void (ref $function.m_defaultParent__void))
+ ))
+)
 
- ;;; Code for supermethodcall.I1 [type definition]
- (type $supermethodcall.I1.vtable (sub (struct
-  (field $m_m__void (ref $function.m_m__void))
-  ))
- )
+;;; Code for supermethodcall.I1 [type definition]
+(type $supermethodcall.I1.vtable (sub (struct
+ (field $m_m__void (ref $function.m_m__void))
+ ))
+)
 
- ;;; Code for supermethodcall.I2 [type definition]
- (type $supermethodcall.I2.vtable (sub (struct
-  (field $m_m__void (ref $function.m_m__void))
-  ))
- )
+;;; Code for supermethodcall.I2 [type definition]
+(type $supermethodcall.I2.vtable (sub (struct
+ (field $m_m__void (ref $function.m_m__void))
+ ))
+)
 
- ;;; Code for supermethodcall.I3 [type definition]
- (type $supermethodcall.I3.vtable (sub (struct
-  ))
- )
+;;; Code for supermethodcall.GrandParent [type definition]
+(type $supermethodcall.GrandParent (sub $java.lang.Object (struct
+ (field $vtable (ref $supermethodcall.GrandParent.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $supermethodcall.GrandParent.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_defaultGrandParent__void (ref $function.m_defaultGrandParent__void))
+ (field $m_defaultParent__void (ref $function.m_defaultParent__void))
+ (field $m_grandParentSimplest__void (ref $function.m_grandParentSimplest__void))
+ (field $m_grandParentWithChangingReturn__java_lang_Object (ref $function.m_grandParentWithChangingReturn__java_lang_Object))
+ (field $m_grandParentWithParams__int__void (ref $function.m_grandParentWithParams__int__void))
+ ))
+)
 
- ;;; Code for supermethodcall.GrandParent [type definition]
- (type $supermethodcall.GrandParent (sub $java.lang.Object (struct
-  (field $vtable (ref $supermethodcall.GrandParent.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $supermethodcall.GrandParent.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_defaultGrandParent__void (ref $function.m_defaultGrandParent__void))
-  (field $m_defaultParent__void (ref $function.m_defaultParent__void))
-  (field $m_grandParentSimplest__void (ref $function.m_grandParentSimplest__void))
-  (field $m_grandParentWithChangingReturn__java_lang_Object (ref $function.m_grandParentWithChangingReturn__java_lang_Object))
-  (field $m_grandParentWithParams__int__void (ref $function.m_grandParentWithParams__int__void))
-  ))
- )
+;;; Code for supermethodcall.I3 [type definition]
+(type $supermethodcall.I3.vtable (sub $supermethodcall.I1.vtable (struct
+ (field $m_m__void (ref $function.m_m__void))
+ ))
+)
 
- ;;; Code for supermethodcall.Super [type definition]
- (type $supermethodcall.Super (sub $java.lang.Object (struct
-  (field $vtable (ref $supermethodcall.Super.vtable))
-  (field $itable (ref $itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $supermethodcall.Super.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m__void (ref $function.m_m__void))
-  ))
- )
+;;; Code for supermethodcall.Super [type definition]
+(type $supermethodcall.Super (sub $java.lang.Object (struct
+ (field $vtable (ref $supermethodcall.Super.vtable))
+ (field $itable (ref $itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $supermethodcall.Super.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m__void (ref $function.m_m__void))
+ ))
+)
 
- ;;; Code for supermethodcall.SuperToStringTest [type definition]
- (type $supermethodcall.SuperToStringTest (sub $java.lang.Object (struct
-  (field $vtable (ref $supermethodcall.SuperToStringTest.vtable))
-  (field $itable (ref $supermethodcall.SuperToStringTest.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $supermethodcall.SuperToStringTest.vtable (sub $java.lang.Object.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m__void (ref $function.m_m__void))
-  ))
- )
- (type $supermethodcall.SuperToStringTest.itable (sub $itable (struct
- (field $slot0 (ref $supermethodcall.I1.vtable))
- (field $slot1 (ref null struct))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for supermethodcall.SuperToStringTest [type definition]
+(type $supermethodcall.SuperToStringTest (sub $java.lang.Object (struct
+ (field $vtable (ref $supermethodcall.SuperToStringTest.vtable))
+ (field $itable (ref $supermethodcall.SuperToStringTest.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $supermethodcall.SuperToStringTest.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m__void (ref $function.m_m__void))
+ ))
+)
 
- ;;; Code for supermethodcall.Parent [type definition]
- (type $supermethodcall.Parent (sub $supermethodcall.GrandParent (struct
-  (field $vtable (ref $supermethodcall.Parent.vtable))
-  (field $itable (ref $supermethodcall.Parent.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $supermethodcall.Parent.vtable (sub $supermethodcall.GrandParent.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_defaultGrandParent__void (ref $function.m_defaultGrandParent__void))
-  (field $m_defaultParent__void (ref $function.m_defaultParent__void))
-  (field $m_grandParentSimplest__void (ref $function.m_grandParentSimplest__void))
-  (field $m_grandParentWithChangingReturn__java_lang_Object (ref $function.m_grandParentWithChangingReturn__java_lang_Object))
-  (field $m_grandParentWithParams__int__void (ref $function.m_grandParentWithParams__int__void))
-  (field $m_parentSimplest__void (ref $function.m_parentSimplest__void))
-  (field $m_parentWithChangingReturn__java_lang_Object (ref $function.m_parentWithChangingReturn__java_lang_Object))
-  (field $m_parentWithParams__int__void (ref $function.m_parentWithParams__int__void))
-  ))
- )
- (type $supermethodcall.Parent.itable (sub $itable (struct
- (field $slot0 (ref $supermethodcall.ParentInterface.vtable))
- (field $slot1 (ref null struct))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for supermethodcall.I2.$LambdaAdaptor [type definition]
+(type $supermethodcall.I2.$LambdaAdaptor (sub $java.lang.Object (struct
+ (field $vtable (ref $supermethodcall.I2.$LambdaAdaptor.vtable))
+ (field $itable (ref $supermethodcall.I2.$LambdaAdaptor.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $supermethodcall.I2.$LambdaAdaptor.vtable (sub $java.lang.Object.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m__void (ref $function.m_m__void))
+ ))
+)
 
- ;;; Code for supermethodcall.Sub [type definition]
- (type $supermethodcall.Sub (sub $supermethodcall.Super (struct
-  (field $vtable (ref $supermethodcall.Sub.vtable))
-  (field $itable (ref $supermethodcall.Sub.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $supermethodcall.Sub.vtable (sub $supermethodcall.Super.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_m__void (ref $function.m_m__void))
-  ))
- )
- (type $supermethodcall.Sub.itable (sub $itable (struct
- (field $slot0 (ref $supermethodcall.I1.vtable))
- (field $slot1 (ref $supermethodcall.I2.vtable))
- (field $slot2 (ref $supermethodcall.I3.vtable))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for supermethodcall.Parent [type definition]
+(type $supermethodcall.Parent (sub $supermethodcall.GrandParent (struct
+ (field $vtable (ref $supermethodcall.Parent.vtable))
+ (field $itable (ref $supermethodcall.Parent.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $supermethodcall.Parent.vtable (sub $supermethodcall.GrandParent.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_defaultGrandParent__void (ref $function.m_defaultGrandParent__void))
+ (field $m_defaultParent__void (ref $function.m_defaultParent__void))
+ (field $m_grandParentSimplest__void (ref $function.m_grandParentSimplest__void))
+ (field $m_grandParentWithChangingReturn__java_lang_Object (ref $function.m_grandParentWithChangingReturn__java_lang_Object))
+ (field $m_grandParentWithParams__int__void (ref $function.m_grandParentWithParams__int__void))
+ (field $m_parentSimplest__void (ref $function.m_parentSimplest__void))
+ (field $m_parentWithChangingReturn__java_lang_Object (ref $function.m_parentWithChangingReturn__java_lang_Object))
+ (field $m_parentWithParams__int__void (ref $function.m_parentWithParams__int__void))
+ ))
+)
 
- ;;; Code for supermethodcall.Child [type definition]
- (type $supermethodcall.Child (sub $supermethodcall.Parent (struct
-  (field $vtable (ref $supermethodcall.Child.vtable))
-  (field $itable (ref $supermethodcall.Child.itable))
-  (field $f_$systemIdentityHashCode__java_lang_Object (mut i32))
-  ))
- )
- (type $supermethodcall.Child.vtable (sub $supermethodcall.Parent.vtable (struct
-  (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
-  (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
-  (field $m_getClass__java_lang_Class (ref $function.m_getClass__java_lang_Class))
-  (field $m_hashCode__int (ref $function.m_hashCode__int))
-  (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
-  (field $m_defaultGrandParent__void (ref $function.m_defaultGrandParent__void))
-  (field $m_defaultParent__void (ref $function.m_defaultParent__void))
-  (field $m_grandParentSimplest__void (ref $function.m_grandParentSimplest__void))
-  (field $m_grandParentWithChangingReturn__java_lang_Object (ref $function.m_grandParentWithChangingReturn__java_lang_Object))
-  (field $m_grandParentWithParams__int__void (ref $function.m_grandParentWithParams__int__void))
-  (field $m_parentSimplest__void (ref $function.m_parentSimplest__void))
-  (field $m_parentWithChangingReturn__java_lang_Object (ref $function.m_parentWithChangingReturn__java_lang_Object))
-  (field $m_parentWithParams__int__void (ref $function.m_parentWithParams__int__void))
-  (field $m_grandParentWithChangingReturn__supermethodcall_Child (ref $function.m_grandParentWithChangingReturn__supermethodcall_Child))
-  (field $m_parentWithChangingReturn__supermethodcall_Child (ref $function.m_parentWithChangingReturn__supermethodcall_Child))
-  ))
- )
- (type $supermethodcall.Child.itable (sub $supermethodcall.Parent.itable (struct
- (field $slot0 (ref $supermethodcall.ParentInterface.vtable))
- (field $slot1 (ref $supermethodcall.GrandParentInterface.vtable))
- (field $slot2 (ref null struct))
- (field $slot3 (ref null struct))
- (field $slot4 (ref null struct))
- (field $slot5 (ref null struct))
- (field $slot6 (ref null struct))
- )))
+;;; Code for supermethodcall.Sub [type definition]
+(type $supermethodcall.Sub (sub $supermethodcall.Super (struct
+ (field $vtable (ref $supermethodcall.Sub.vtable))
+ (field $itable (ref $supermethodcall.Sub.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $supermethodcall.Sub.vtable (sub $supermethodcall.Super.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_m__void (ref $function.m_m__void))
+ ))
+)
+
+;;; Code for supermethodcall.Child [type definition]
+(type $supermethodcall.Child (sub $supermethodcall.Parent (struct
+ (field $vtable (ref $supermethodcall.Child.vtable))
+ (field $itable (ref $supermethodcall.Child.itable))
+ (field $$systemIdentityHashCode@java.lang.Object (mut i32))
+ ))
+)
+(type $supermethodcall.Child.vtable (sub $supermethodcall.Parent.vtable (struct
+ (field $$getClassImpl__java_lang_Class (ref $function.$getClassImpl__java_lang_Class))
+ (field $m_equals__java_lang_Object__boolean (ref $function.m_equals__java_lang_Object__boolean))
+ (field $m_hashCode__int (ref $function.m_hashCode__int))
+ (field $m_toString__java_lang_String (ref $function.m_toString__java_lang_String))
+ (field $m_defaultGrandParent__void (ref $function.m_defaultGrandParent__void))
+ (field $m_defaultParent__void (ref $function.m_defaultParent__void))
+ (field $m_grandParentSimplest__void (ref $function.m_grandParentSimplest__void))
+ (field $m_grandParentWithChangingReturn__java_lang_Object (ref $function.m_grandParentWithChangingReturn__java_lang_Object))
+ (field $m_grandParentWithParams__int__void (ref $function.m_grandParentWithParams__int__void))
+ (field $m_parentSimplest__void (ref $function.m_parentSimplest__void))
+ (field $m_parentWithChangingReturn__java_lang_Object (ref $function.m_parentWithChangingReturn__java_lang_Object))
+ (field $m_parentWithParams__int__void (ref $function.m_parentWithParams__int__void))
+ (field $m_grandParentWithChangingReturn__supermethodcall_Child (ref $function.m_grandParentWithChangingReturn__supermethodcall_Child))
+ (field $m_parentWithChangingReturn__supermethodcall_Child (ref $function.m_parentWithChangingReturn__supermethodcall_Child))
+ ))
+)
+
+;;; Code for supermethodcall.GrandParentInterface [imports]
+
+;;; Code for supermethodcall.ParentInterface [imports]
+
+;;; Code for supermethodcall.I1 [imports]
+
+;;; Code for supermethodcall.I2 [imports]
+
+;;; Code for supermethodcall.GrandParent [imports]
+
+;;; Code for supermethodcall.I3 [imports]
+
+;;; Code for supermethodcall.Super [imports]
+
+;;; Code for supermethodcall.SuperToStringTest [imports]
+
+;;; Code for supermethodcall.I2.$LambdaAdaptor [imports]
+
+;;; Code for supermethodcall.Parent [imports]
+
+;;; Code for supermethodcall.Sub [imports]
+
+;;; Code for supermethodcall.Child [imports]
+
+;;; Code for supermethodcall.GrandParentInterface [static fields]
+(global $$class-initialized@supermethodcall.GrandParentInterface (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.GrandParentInterface (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for supermethodcall.ParentInterface [static fields]
+(global $$class-initialized@supermethodcall.ParentInterface (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.ParentInterface (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for supermethodcall.GrandParent [static fields]
+(global $$class-initialized@supermethodcall.GrandParent (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.GrandParent (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for supermethodcall.Parent [static fields]
+(global $$class-initialized@supermethodcall.Parent (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.Parent (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for supermethodcall.Child [static fields]
+(global $$class-initialized@supermethodcall.Child (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.Child (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for supermethodcall.I1 [static fields]
+(global $$class-initialized@supermethodcall.I1 (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.I1 (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for supermethodcall.I2 [static fields]
+(global $$class-initialized@supermethodcall.I2 (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.I2 (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for supermethodcall.I3 [static fields]
+(global $$class-initialized@supermethodcall.I3 (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.I3 (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for supermethodcall.Super [static fields]
+(global $$class-initialized@supermethodcall.Super (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.Super (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for supermethodcall.Sub [static fields]
+(global $$class-initialized@supermethodcall.Sub (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.Sub (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for supermethodcall.SuperToStringTest [static fields]
+(global $$class-initialized@supermethodcall.SuperToStringTest (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.SuperToStringTest (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
+
+;;; Code for supermethodcall.I2.$LambdaAdaptor [static fields]
+(global $$class-initialized@supermethodcall.I2.$LambdaAdaptor (mut i32)
+ (i32.const 0)
+)
+(global $$class@supermethodcall.I2.$LambdaAdaptor (mut (ref null $java.lang.Class))
+ (ref.null $java.lang.Class)
+)
 
 ;;; Code for supermethodcall.GrandParent [vtable.init]
 (global $supermethodcall.GrandParent.vtable (ref $supermethodcall.GrandParent.vtable)
  (struct.new $supermethodcall.GrandParent.vtable
   (ref.func $$getClassImpl__java_lang_Class@supermethodcall.GrandParent)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_defaultGrandParent__void@supermethodcall.GrandParent)
@@ -206,7 +300,6 @@
  (struct.new $supermethodcall.Parent.vtable
   (ref.func $$getClassImpl__java_lang_Class@supermethodcall.Parent)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_defaultGrandParent__void@supermethodcall.GrandParent)
@@ -219,23 +312,9 @@
   (ref.func $m_parentWithParams__int__void@supermethodcall.Parent)
  )
 )
-
-;;; Code for supermethodcall.Parent [itable.init]
-
 (global $supermethodcall.ParentInterface.vtable@$supermethodcall.Parent (ref $supermethodcall.ParentInterface.vtable)
  (struct.new $supermethodcall.ParentInterface.vtable
   (ref.func $m_defaultParent__void@supermethodcall.Parent)
- )
-)
-(global $supermethodcall.Parent.itable (ref $supermethodcall.Parent.itable)
- (struct.new $supermethodcall.Parent.itable
-   (global.get $supermethodcall.ParentInterface.vtable@$supermethodcall.Parent)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
  )
 )
 
@@ -244,7 +323,6 @@
  (struct.new $supermethodcall.Child.vtable
   (ref.func $$getClassImpl__java_lang_Class@supermethodcall.Child)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_defaultGrandParent__void@supermethodcall.Child)
@@ -259,28 +337,14 @@
   (ref.func $m_parentWithChangingReturn__supermethodcall_Child@supermethodcall.Child)
  )
 )
-
-;;; Code for supermethodcall.Child [itable.init]
-
-(global $supermethodcall.ParentInterface.vtable@$supermethodcall.Child (ref $supermethodcall.ParentInterface.vtable)
- (struct.new $supermethodcall.ParentInterface.vtable
-  (ref.func $m_defaultParent__void@supermethodcall.Parent)
- )
-)
 (global $supermethodcall.GrandParentInterface.vtable@$supermethodcall.Child (ref $supermethodcall.GrandParentInterface.vtable)
  (struct.new $supermethodcall.GrandParentInterface.vtable
   (ref.func $m_defaultGrandParent__void@supermethodcall.Child)
  )
 )
-(global $supermethodcall.Child.itable (ref $supermethodcall.Child.itable)
- (struct.new $supermethodcall.Child.itable
-   (global.get $supermethodcall.ParentInterface.vtable@$supermethodcall.Child)
-   (global.get $supermethodcall.GrandParentInterface.vtable@$supermethodcall.Child)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
+(global $supermethodcall.ParentInterface.vtable@$supermethodcall.Child (ref $supermethodcall.ParentInterface.vtable)
+ (struct.new $supermethodcall.ParentInterface.vtable
+  (ref.func $m_defaultParent__void@supermethodcall.Parent)
  )
 )
 
@@ -289,7 +353,6 @@
  (struct.new $supermethodcall.Super.vtable
   (ref.func $$getClassImpl__java_lang_Class@supermethodcall.Super)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_m__void@supermethodcall.Super)
@@ -301,160 +364,21 @@
  (struct.new $supermethodcall.Sub.vtable
   (ref.func $$getClassImpl__java_lang_Class@supermethodcall.Sub)
   (ref.func $m_equals__java_lang_Object__boolean@java.lang.Object)
-  (ref.func $m_getClass__java_lang_Class@java.lang.Object)
   (ref.func $m_hashCode__int@java.lang.Object)
   (ref.func $m_toString__java_lang_String@java.lang.Object)
   (ref.func $m_m__void@supermethodcall.Sub)
  )
 )
-
-;;; Code for supermethodcall.Sub [itable.init]
-
-(global $supermethodcall.I1.vtable@$supermethodcall.Sub (ref $supermethodcall.I1.vtable)
- (struct.new $supermethodcall.I1.vtable
+(global $supermethodcall.I3.vtable@$supermethodcall.Sub (ref $supermethodcall.I3.vtable)
+ (struct.new $supermethodcall.I3.vtable
   (ref.func $m_m__void@supermethodcall.Sub)
  )
 )
+(global $supermethodcall.I1.vtable@$supermethodcall.Sub (ref $supermethodcall.I3.vtable) (global.get $supermethodcall.I3.vtable@$supermethodcall.Sub))
 (global $supermethodcall.I2.vtable@$supermethodcall.Sub (ref $supermethodcall.I2.vtable)
  (struct.new $supermethodcall.I2.vtable
   (ref.func $m_m__void@supermethodcall.Sub)
  )
-)
-(global $supermethodcall.I3.vtable@$supermethodcall.Sub (ref $supermethodcall.I3.vtable)
- (struct.new $supermethodcall.I3.vtable
- )
-)
-(global $supermethodcall.Sub.itable (ref $supermethodcall.Sub.itable)
- (struct.new $supermethodcall.Sub.itable
-   (global.get $supermethodcall.I1.vtable@$supermethodcall.Sub)
-   (global.get $supermethodcall.I2.vtable@$supermethodcall.Sub)
-   (global.get $supermethodcall.I3.vtable@$supermethodcall.Sub)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
-   (ref.null struct)
- )
-)
-
-;;; Code for supermethodcall.GrandParentInterface [static fields]
-(global $f_$initialized__supermethodcall_GrandParentInterface (mut i32)
- (i32.const 0)
-)
-(global $f_$class__supermethodcall_GrandParentInterface (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|supermethodc...|__supermethodcall_GrandParentInterface (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for supermethodcall.ParentInterface [static fields]
-(global $f_$initialized__supermethodcall_ParentInterface (mut i32)
- (i32.const 0)
-)
-(global $f_$class__supermethodcall_ParentInterface (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|supermethodc...|__supermethodcall_ParentInterface (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for supermethodcall.GrandParent [static fields]
-(global $f_$initialized__supermethodcall_GrandParent (mut i32)
- (i32.const 0)
-)
-(global $f_$class__supermethodcall_GrandParent (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|supermethodc...|__supermethodcall_GrandParent (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for supermethodcall.Parent [static fields]
-(global $f_$initialized__supermethodcall_Parent (mut i32)
- (i32.const 0)
-)
-(global $f_$class__supermethodcall_Parent (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|supermethodc...|__supermethodcall_Parent (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for supermethodcall.Child [static fields]
-(global $f_$initialized__supermethodcall_Child (mut i32)
- (i32.const 0)
-)
-(global $f_$class__supermethodcall_Child (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|supermethodc...|__supermethodcall_Child (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for supermethodcall.I1 [static fields]
-(global $f_$initialized__supermethodcall_I1 (mut i32)
- (i32.const 0)
-)
-(global $f_$class__supermethodcall_I1 (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|supermethodc...|__supermethodcall_I1 (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for supermethodcall.I2 [static fields]
-(global $f_$initialized__supermethodcall_I2 (mut i32)
- (i32.const 0)
-)
-(global $f_$class__supermethodcall_I2 (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|supermethodc...|__supermethodcall_I2 (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for supermethodcall.I3 [static fields]
-(global $f_$initialized__supermethodcall_I3 (mut i32)
- (i32.const 0)
-)
-(global $f_$class__supermethodcall_I3 (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|supermethodc...|__supermethodcall_I3 (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for supermethodcall.Super [static fields]
-(global $f_$initialized__supermethodcall_Super (mut i32)
- (i32.const 0)
-)
-(global $f_$class__supermethodcall_Super (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|supermethodc...|__supermethodcall_Super (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for supermethodcall.Sub [static fields]
-(global $f_$initialized__supermethodcall_Sub (mut i32)
- (i32.const 0)
-)
-(global $f_$class__supermethodcall_Sub (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|supermethodc...|__supermethodcall_Sub (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
-)
-
-;;; Code for supermethodcall.SuperToStringTest [static fields]
-(global $f_$initialized__supermethodcall_SuperToStringTest (mut i32)
- (i32.const 0)
-)
-(global $f_$class__supermethodcall_SuperToStringTest (mut (ref null $java.lang.Class))
- (ref.null $java.lang.Class)
-)
-(global $f_$string_|supermethodc...|__supermethodcall_SuperToStringTest (mut (ref null $java.lang.String))
- (ref.null $java.lang.String)
 )
 
 ;;; Code for supermethodcall.GrandParentInterface [methods]
@@ -462,51 +386,39 @@
 ;;; void GrandParentInterface.defaultGrandParent()
 (func $m_defaultGrandParent__void@supermethodcall.GrandParentInterface
  (param $this (ref null $java.lang.Object))
- ;;@ supermethodcall/Child.java:19:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:19:15
  (block
  )
 )
 (elem declare func $m_defaultGrandParent__void@supermethodcall.GrandParentInterface)
 
 ;;; void GrandParentInterface.$clinit()
-(func $$clinit__void@supermethodcall.GrandParentInterface
- ;;@ supermethodcall/Child.java:18:10
+(func $$clinit__void_<once>_@supermethodcall.GrandParentInterface
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:18:10
  (block
-  ;;@ supermethodcall/Child.java:18:10
-  (if (global.get $f_$initialized__supermethodcall_GrandParentInterface)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:18:10
+  (if (global.get $$class-initialized@supermethodcall.GrandParentInterface)
    (then
-    ;;@ supermethodcall/Child.java:18:10
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:18:10
     (return )
    )
   )
-  ;;@ supermethodcall/Child.java:18:10
-  (global.set $f_$initialized__supermethodcall_GrandParentInterface (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:18:10
+  (global.set $$class-initialized@supermethodcall.GrandParentInterface (i32.const 1))
  )
 )
 
 ;;; Class<T> GrandParentInterface.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@supermethodcall.GrandParentInterface
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.GrandParentInterface
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__supermethodcall_GrandParentInterface))
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.GrandParentInterface)))
    (then
-    (global.set $f_$class__supermethodcall_GrandParentInterface (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|supermethodc...|__java_lang_String (ref.func $$getString_|supermethodc...|__java_lang_String@supermethodcall.GrandParentInterface) )))
+    (return (global.get $$class@supermethodcall.GrandParentInterface))
    )
   )
-  (return (global.get $f_$class__supermethodcall_GrandParentInterface))
- )
-)
-
-;;; String GrandParentInterface.$getString_|supermethodc...|()
-(func $$getString_|supermethodc...|__java_lang_String@supermethodcall.GrandParentInterface
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|supermethodc...|__supermethodcall_GrandParentInterface))
-   (then
-    (global.set $f_$string_|supermethodc...|__supermethodcall_GrandParentInterface (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "supermethodcall.GrandParentInterface")))
-   )
-  )
-  (return (global.get $f_$string_|supermethodc...|__supermethodcall_GrandParentInterface))
+  (global.set $$class@supermethodcall.GrandParentInterface (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.GrandParentInterface )))
+  (return (global.get $$class@supermethodcall.GrandParentInterface))
  )
 )
 
@@ -515,51 +427,39 @@
 ;;; void ParentInterface.defaultParent()
 (func $m_defaultParent__void@supermethodcall.ParentInterface
  (param $this (ref null $java.lang.Object))
- ;;@ supermethodcall/Child.java:23:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:23:15
  (block
  )
 )
 (elem declare func $m_defaultParent__void@supermethodcall.ParentInterface)
 
 ;;; void ParentInterface.$clinit()
-(func $$clinit__void@supermethodcall.ParentInterface
- ;;@ supermethodcall/Child.java:22:10
+(func $$clinit__void_<once>_@supermethodcall.ParentInterface
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:22:10
  (block
-  ;;@ supermethodcall/Child.java:22:10
-  (if (global.get $f_$initialized__supermethodcall_ParentInterface)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:22:10
+  (if (global.get $$class-initialized@supermethodcall.ParentInterface)
    (then
-    ;;@ supermethodcall/Child.java:22:10
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:22:10
     (return )
    )
   )
-  ;;@ supermethodcall/Child.java:22:10
-  (global.set $f_$initialized__supermethodcall_ParentInterface (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:22:10
+  (global.set $$class-initialized@supermethodcall.ParentInterface (i32.const 1))
  )
 )
 
 ;;; Class<T> ParentInterface.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@supermethodcall.ParentInterface
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.ParentInterface
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__supermethodcall_ParentInterface))
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.ParentInterface)))
    (then
-    (global.set $f_$class__supermethodcall_ParentInterface (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|supermethodc...|__java_lang_String (ref.func $$getString_|supermethodc...|__java_lang_String@supermethodcall.ParentInterface) )))
+    (return (global.get $$class@supermethodcall.ParentInterface))
    )
   )
-  (return (global.get $f_$class__supermethodcall_ParentInterface))
- )
-)
-
-;;; String ParentInterface.$getString_|supermethodc...|()
-(func $$getString_|supermethodc...|__java_lang_String@supermethodcall.ParentInterface
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|supermethodc...|__supermethodcall_ParentInterface))
-   (then
-    (global.set $f_$string_|supermethodc...|__supermethodcall_ParentInterface (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "supermethodcall.ParentInterface")))
-   )
-  )
-  (return (global.get $f_$string_|supermethodc...|__supermethodcall_ParentInterface))
+  (global.set $$class@supermethodcall.ParentInterface (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.ParentInterface )))
+  (return (global.get $$class@supermethodcall.ParentInterface))
  )
 )
 
@@ -568,141 +468,71 @@
 ;;; void I1.m()
 (func $m_m__void@supermethodcall.I1
  (param $this (ref null $java.lang.Object))
- ;;@ supermethodcall/Child.java:99:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:99:15
  (block
  )
 )
 (elem declare func $m_m__void@supermethodcall.I1)
 
 ;;; void I1.$clinit()
-(func $$clinit__void@supermethodcall.I1
- ;;@ supermethodcall/Child.java:98:10
+(func $$clinit__void_<once>_@supermethodcall.I1
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:98:10
  (block
-  ;;@ supermethodcall/Child.java:98:10
-  (if (global.get $f_$initialized__supermethodcall_I1)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:98:10
+  (if (global.get $$class-initialized@supermethodcall.I1)
    (then
-    ;;@ supermethodcall/Child.java:98:10
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:98:10
     (return )
    )
   )
-  ;;@ supermethodcall/Child.java:98:10
-  (global.set $f_$initialized__supermethodcall_I1 (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:98:10
+  (global.set $$class-initialized@supermethodcall.I1 (i32.const 1))
  )
 )
 
 ;;; Class<T> I1.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@supermethodcall.I1
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.I1
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__supermethodcall_I1))
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.I1)))
    (then
-    (global.set $f_$class__supermethodcall_I1 (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|supermethodc...|__java_lang_String (ref.func $$getString_|supermethodc...|__java_lang_String@supermethodcall.I1) )))
+    (return (global.get $$class@supermethodcall.I1))
    )
   )
-  (return (global.get $f_$class__supermethodcall_I1))
- )
-)
-
-;;; String I1.$getString_|supermethodc...|()
-(func $$getString_|supermethodc...|__java_lang_String@supermethodcall.I1
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|supermethodc...|__supermethodcall_I1))
-   (then
-    (global.set $f_$string_|supermethodc...|__supermethodcall_I1 (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "supermethodcall.I1")))
-   )
-  )
-  (return (global.get $f_$string_|supermethodc...|__supermethodcall_I1))
+  (global.set $$class@supermethodcall.I1 (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.I1 )))
+  (return (global.get $$class@supermethodcall.I1))
  )
 )
 
 ;;; Code for supermethodcall.I2 [methods]
 
 ;;; void I2.$clinit()
-(func $$clinit__void@supermethodcall.I2
- ;;@ supermethodcall/Child.java:102:10
+(func $$clinit__void_<once>_@supermethodcall.I2
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:102:10
  (block
-  ;;@ supermethodcall/Child.java:102:10
-  (if (global.get $f_$initialized__supermethodcall_I2)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:102:10
+  (if (global.get $$class-initialized@supermethodcall.I2)
    (then
-    ;;@ supermethodcall/Child.java:102:10
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:102:10
     (return )
    )
   )
-  ;;@ supermethodcall/Child.java:102:10
-  (global.set $f_$initialized__supermethodcall_I2 (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:102:10
+  (global.set $$class-initialized@supermethodcall.I2 (i32.const 1))
  )
 )
 
 ;;; Class<T> I2.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@supermethodcall.I2
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.I2
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__supermethodcall_I2))
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.I2)))
    (then
-    (global.set $f_$class__supermethodcall_I2 (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|supermethodc...|__java_lang_String (ref.func $$getString_|supermethodc...|__java_lang_String@supermethodcall.I2) )))
+    (return (global.get $$class@supermethodcall.I2))
    )
   )
-  (return (global.get $f_$class__supermethodcall_I2))
- )
-)
-
-;;; String I2.$getString_|supermethodc...|()
-(func $$getString_|supermethodc...|__java_lang_String@supermethodcall.I2
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|supermethodc...|__supermethodcall_I2))
-   (then
-    (global.set $f_$string_|supermethodc...|__supermethodcall_I2 (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "supermethodcall.I2")))
-   )
-  )
-  (return (global.get $f_$string_|supermethodc...|__supermethodcall_I2))
- )
-)
-
-;;; Code for supermethodcall.I3 [methods]
-
-;;; void I3.$clinit()
-(func $$clinit__void@supermethodcall.I3
- ;;@ supermethodcall/Child.java:106:10
- (block
-  ;;@ supermethodcall/Child.java:106:10
-  (if (global.get $f_$initialized__supermethodcall_I3)
-   (then
-    ;;@ supermethodcall/Child.java:106:10
-    (return )
-   )
-  )
-  ;;@ supermethodcall/Child.java:106:10
-  (global.set $f_$initialized__supermethodcall_I3 (i32.const 1))
-  ;;@ supermethodcall/Child.java:106:10
-  (call $$clinit__void@supermethodcall.I1 )
- )
-)
-
-;;; Class<T> I3.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@supermethodcall.I3
- (result (ref null $java.lang.Class))
- (block
-  (if (ref.is_null (global.get $f_$class__supermethodcall_I3))
-   (then
-    (global.set $f_$class__supermethodcall_I3 (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|supermethodc...|__java_lang_String (ref.func $$getString_|supermethodc...|__java_lang_String@supermethodcall.I3) )))
-   )
-  )
-  (return (global.get $f_$class__supermethodcall_I3))
- )
-)
-
-;;; String I3.$getString_|supermethodc...|()
-(func $$getString_|supermethodc...|__java_lang_String@supermethodcall.I3
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|supermethodc...|__supermethodcall_I3))
-   (then
-    (global.set $f_$string_|supermethodc...|__supermethodcall_I3 (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "supermethodcall.I3")))
-   )
-  )
-  (return (global.get $f_$string_|supermethodc...|__supermethodcall_I3))
+  (global.set $$class@supermethodcall.I2 (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.I2 )))
+  (return (global.get $$class@supermethodcall.I2))
  )
 )
 
@@ -711,16 +541,16 @@
 ;;; GrandParent GrandParent.$create()
 (func $$create__@supermethodcall.GrandParent
  (result (ref null $supermethodcall.GrandParent))
- ;;@ supermethodcall/Child.java:26:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
  (local $$instance (ref null $supermethodcall.GrandParent))
  (block
-  ;;@ supermethodcall/Child.java:26:6
-  (call $$clinit__void@supermethodcall.GrandParent )
-  ;;@ supermethodcall/Child.java:26:6
-  (local.set $$instance (struct.new $supermethodcall.GrandParent (ref.as_non_null (global.get $supermethodcall.GrandParent.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ supermethodcall/Child.java:26:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
+  (call $$clinit__void_<once>_@supermethodcall.GrandParent )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
+  (local.set $$instance (struct.new $supermethodcall.GrandParent (global.get $supermethodcall.GrandParent.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
   (call $$ctor__void_$p_supermethodcall_GrandParent@supermethodcall.GrandParent (ref.as_non_null (local.get $$instance)))
-  ;;@ supermethodcall/Child.java:26:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
   (return (local.get $$instance))
  )
 )
@@ -728,9 +558,9 @@
 ;;; void GrandParent.$ctor()
 (func $$ctor__void_$p_supermethodcall_GrandParent@supermethodcall.GrandParent
  (param $this (ref null $supermethodcall.GrandParent))
- ;;@ supermethodcall/Child.java:26:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
  (block
-  ;;@ supermethodcall/Child.java:26:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -739,7 +569,7 @@
 (func $m_grandParentSimplest__void@supermethodcall.GrandParent
  (type $function.m_grandParentSimplest__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ supermethodcall/Child.java:27:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:27:14
  (local $this (ref null $supermethodcall.GrandParent))
  (local.set $this (ref.cast (ref $supermethodcall.GrandParent) (local.get $this.untyped)))
  (block
@@ -752,7 +582,7 @@
  (type $function.m_grandParentWithParams__int__void)
  (param $this.untyped (ref $java.lang.Object))
  (param $foo i32)
- ;;@ supermethodcall/Child.java:30:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:30:14
  (local $this (ref null $supermethodcall.GrandParent))
  (local.set $this (ref.cast (ref $supermethodcall.GrandParent) (local.get $this.untyped)))
  (block
@@ -765,11 +595,11 @@
  (type $function.m_grandParentWithChangingReturn__java_lang_Object)
  (param $this.untyped (ref $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ supermethodcall/Child.java:32:16
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:32:16
  (local $this (ref null $supermethodcall.GrandParent))
  (local.set $this (ref.cast (ref $supermethodcall.GrandParent) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:33:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:33:4
   (return (ref.null $java.lang.Object))
  )
 )
@@ -779,7 +609,7 @@
 (func $m_defaultParent__void@supermethodcall.GrandParent
  (type $function.m_defaultParent__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ supermethodcall/Child.java:36:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:36:14
  (local $this (ref null $supermethodcall.GrandParent))
  (local.set $this (ref.cast (ref $supermethodcall.GrandParent) (local.get $this.untyped)))
  (block
@@ -791,7 +621,7 @@
 (func $m_defaultGrandParent__void@supermethodcall.GrandParent
  (type $function.m_defaultGrandParent__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ supermethodcall/Child.java:38:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:38:14
  (local $this (ref null $supermethodcall.GrandParent))
  (local.set $this (ref.cast (ref $supermethodcall.GrandParent) (local.get $this.untyped)))
  (block
@@ -800,33 +630,34 @@
 (elem declare func $m_defaultGrandParent__void@supermethodcall.GrandParent)
 
 ;;; void GrandParent.$clinit()
-(func $$clinit__void@supermethodcall.GrandParent
- ;;@ supermethodcall/Child.java:26:6
+(func $$clinit__void_<once>_@supermethodcall.GrandParent
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
  (block
-  ;;@ supermethodcall/Child.java:26:6
-  (if (global.get $f_$initialized__supermethodcall_GrandParent)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
+  (if (global.get $$class-initialized@supermethodcall.GrandParent)
    (then
-    ;;@ supermethodcall/Child.java:26:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
     (return )
    )
   )
-  ;;@ supermethodcall/Child.java:26:6
-  (global.set $f_$initialized__supermethodcall_GrandParent (i32.const 1))
-  ;;@ supermethodcall/Child.java:26:6
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
+  (global.set $$class-initialized@supermethodcall.GrandParent (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:26:6
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> GrandParent.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@supermethodcall.GrandParent
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.GrandParent
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__supermethodcall_GrandParent))
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.GrandParent)))
    (then
-    (global.set $f_$class__supermethodcall_GrandParent (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|supermethodc...|__java_lang_String (ref.func $$getString_|supermethodc...|__java_lang_String@supermethodcall.GrandParent) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@supermethodcall.GrandParent))
    )
   )
-  (return (global.get $f_$class__supermethodcall_GrandParent))
+  (global.set $$class@supermethodcall.GrandParent (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.GrandParent )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@supermethodcall.GrandParent))
  )
 )
 
@@ -838,21 +669,42 @@
  (local $this (ref null $supermethodcall.GrandParent))
  (local.set $this (ref.cast (ref $supermethodcall.GrandParent) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@supermethodcall.GrandParent) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.GrandParent ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@supermethodcall.GrandParent)
 
-;;; String GrandParent.$getString_|supermethodc...|()
-(func $$getString_|supermethodc...|__java_lang_String@supermethodcall.GrandParent
- (result (ref null $java.lang.String))
+;;; Code for supermethodcall.I3 [methods]
+
+;;; void I3.$clinit()
+(func $$clinit__void_<once>_@supermethodcall.I3
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:106:10
  (block
-  (if (ref.is_null (global.get $f_$string_|supermethodc...|__supermethodcall_GrandParent))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:106:10
+  (if (global.get $$class-initialized@supermethodcall.I3)
    (then
-    (global.set $f_$string_|supermethodc...|__supermethodcall_GrandParent (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "supermethodcall.GrandParent")))
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:106:10
+    (return )
    )
   )
-  (return (global.get $f_$string_|supermethodc...|__supermethodcall_GrandParent))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:106:10
+  (global.set $$class-initialized@supermethodcall.I3 (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:106:10
+  (call $$clinit__void_<once>_@supermethodcall.I1 )
+ )
+)
+
+;;; Class<T> I3.$getClassMetadata()
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.I3
+ (result (ref null $java.lang.Class))
+ (block
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.I3)))
+   (then
+    (return (global.get $$class@supermethodcall.I3))
+   )
+  )
+  (global.set $$class@supermethodcall.I3 (call $m_createForInterface__java_lang_String__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.I3 )))
+  (return (global.get $$class@supermethodcall.I3))
  )
 )
 
@@ -861,16 +713,16 @@
 ;;; Super Super.$create()
 (func $$create__@supermethodcall.Super
  (result (ref null $supermethodcall.Super))
- ;;@ supermethodcall/Child.java:108:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
  (local $$instance (ref null $supermethodcall.Super))
  (block
-  ;;@ supermethodcall/Child.java:108:6
-  (call $$clinit__void@supermethodcall.Super )
-  ;;@ supermethodcall/Child.java:108:6
-  (local.set $$instance (struct.new $supermethodcall.Super (ref.as_non_null (global.get $supermethodcall.Super.vtable)) (ref.as_non_null (global.get $itable.empty)) (i32.const 0)))
-  ;;@ supermethodcall/Child.java:108:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
+  (call $$clinit__void_<once>_@supermethodcall.Super )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
+  (local.set $$instance (struct.new $supermethodcall.Super (global.get $supermethodcall.Super.vtable) (global.get $itable.empty) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
   (call $$ctor__void_$p_supermethodcall_Super@supermethodcall.Super (ref.as_non_null (local.get $$instance)))
-  ;;@ supermethodcall/Child.java:108:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
   (return (local.get $$instance))
  )
 )
@@ -878,9 +730,9 @@
 ;;; void Super.$ctor()
 (func $$ctor__void_$p_supermethodcall_Super@supermethodcall.Super
  (param $this (ref null $supermethodcall.Super))
- ;;@ supermethodcall/Child.java:108:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
  (block
-  ;;@ supermethodcall/Child.java:108:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -889,7 +741,7 @@
 (func $m_m__void@supermethodcall.Super
  (type $function.m_m__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ supermethodcall/Child.java:109:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:109:14
  (local $this (ref null $supermethodcall.Super))
  (local.set $this (ref.cast (ref $supermethodcall.Super) (local.get $this.untyped)))
  (block
@@ -898,33 +750,34 @@
 (elem declare func $m_m__void@supermethodcall.Super)
 
 ;;; void Super.$clinit()
-(func $$clinit__void@supermethodcall.Super
- ;;@ supermethodcall/Child.java:108:6
+(func $$clinit__void_<once>_@supermethodcall.Super
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
  (block
-  ;;@ supermethodcall/Child.java:108:6
-  (if (global.get $f_$initialized__supermethodcall_Super)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
+  (if (global.get $$class-initialized@supermethodcall.Super)
    (then
-    ;;@ supermethodcall/Child.java:108:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
     (return )
    )
   )
-  ;;@ supermethodcall/Child.java:108:6
-  (global.set $f_$initialized__supermethodcall_Super (i32.const 1))
-  ;;@ supermethodcall/Child.java:108:6
-  (call $$clinit__void@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
+  (global.set $$class-initialized@supermethodcall.Super (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:108:6
+  (call $$clinit__void_<once>_@java.lang.Object )
  )
 )
 
 ;;; Class<T> Super.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@supermethodcall.Super
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.Super
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__supermethodcall_Super))
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.Super)))
    (then
-    (global.set $f_$class__supermethodcall_Super (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|supermethodc...|__java_lang_String (ref.func $$getString_|supermethodc...|__java_lang_String@supermethodcall.Super) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@supermethodcall.Super))
    )
   )
-  (return (global.get $f_$class__supermethodcall_Super))
+  (global.set $$class@supermethodcall.Super (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.Super )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@supermethodcall.Super))
  )
 )
 
@@ -936,32 +789,19 @@
  (local $this (ref null $supermethodcall.Super))
  (local.set $this (ref.cast (ref $supermethodcall.Super) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@supermethodcall.Super) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.Super ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@supermethodcall.Super)
-
-;;; String Super.$getString_|supermethodc...|()
-(func $$getString_|supermethodc...|__java_lang_String@supermethodcall.Super
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|supermethodc...|__supermethodcall_Super))
-   (then
-    (global.set $f_$string_|supermethodc...|__supermethodcall_Super (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "supermethodcall.Super")))
-   )
-  )
-  (return (global.get $f_$string_|supermethodc...|__supermethodcall_Super))
- )
-)
 
 ;;; Code for supermethodcall.SuperToStringTest [methods]
 
 ;;; void SuperToStringTest.$ctor()
 (func $$ctor__void_$p_supermethodcall_SuperToStringTest@supermethodcall.SuperToStringTest
  (param $this (ref null $supermethodcall.SuperToStringTest))
- ;;@ supermethodcall/Child.java:118:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:118:15
  (block
-  ;;@ supermethodcall/Child.java:118:15
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:118:15
   (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
  )
 )
@@ -971,11 +811,11 @@
  (type $function.m_toString__java_lang_String)
  (param $this.untyped (ref $java.lang.Object))
  (result (ref null $java.lang.String))
- ;;@ supermethodcall/Child.java:120:16
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:120:16
  (local $this (ref null $supermethodcall.SuperToStringTest))
  (local.set $this (ref.cast (ref $supermethodcall.SuperToStringTest) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:121:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:121:4
   (return (call $m_toString__java_lang_String@java.lang.Object (ref.as_non_null (local.get $this))))
  )
 )
@@ -985,77 +825,135 @@
 (func $m_m__void@supermethodcall.SuperToStringTest
  (type $function.m_m__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ supermethodcall/Child.java:118:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:118:15
  (local $this (ref null $supermethodcall.SuperToStringTest))
  (local.set $this (ref.cast (ref $supermethodcall.SuperToStringTest) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:118:15
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:118:15
   (call $m_m__void@supermethodcall.I1 (ref.as_non_null (local.get $this)))
  )
 )
 (elem declare func $m_m__void@supermethodcall.SuperToStringTest)
 
 ;;; void SuperToStringTest.$clinit()
-(func $$clinit__void@supermethodcall.SuperToStringTest
- ;;@ supermethodcall/Child.java:118:15
+(func $$clinit__void_<once>_@supermethodcall.SuperToStringTest
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:118:15
  (block
-  ;;@ supermethodcall/Child.java:118:15
-  (if (global.get $f_$initialized__supermethodcall_SuperToStringTest)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:118:15
+  (if (global.get $$class-initialized@supermethodcall.SuperToStringTest)
    (then
-    ;;@ supermethodcall/Child.java:118:15
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:118:15
     (return )
    )
   )
-  ;;@ supermethodcall/Child.java:118:15
-  (global.set $f_$initialized__supermethodcall_SuperToStringTest (i32.const 1))
-  ;;@ supermethodcall/Child.java:118:15
-  (call $$clinit__void@java.lang.Object )
-  ;;@ supermethodcall/Child.java:118:15
-  (call $$clinit__void@supermethodcall.I1 )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:118:15
+  (global.set $$class-initialized@supermethodcall.SuperToStringTest (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:118:15
+  (call $$clinit__void_<once>_@java.lang.Object )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:118:15
+  (call $$clinit__void_<once>_@supermethodcall.I1 )
  )
 )
 
 ;;; Class<T> SuperToStringTest.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@supermethodcall.SuperToStringTest
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.SuperToStringTest
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__supermethodcall_SuperToStringTest))
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.SuperToStringTest)))
    (then
-    (global.set $f_$class__supermethodcall_SuperToStringTest (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|supermethodc...|__java_lang_String (ref.func $$getString_|supermethodc...|__java_lang_String@supermethodcall.SuperToStringTest) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@java.lang.Object) )))
+    (return (global.get $$class@supermethodcall.SuperToStringTest))
    )
   )
-  (return (global.get $f_$class__supermethodcall_SuperToStringTest))
+  (global.set $$class@supermethodcall.SuperToStringTest (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.SuperToStringTest )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@supermethodcall.SuperToStringTest))
  )
 )
 
-;;; String SuperToStringTest.$getString_|supermethodc...|()
-(func $$getString_|supermethodc...|__java_lang_String@supermethodcall.SuperToStringTest
- (result (ref null $java.lang.String))
+;;; Class<?> SuperToStringTest.$getClassImpl()
+(func $$getClassImpl__java_lang_Class@supermethodcall.SuperToStringTest
+ (type $function.$getClassImpl__java_lang_Class)
+ (param $this.untyped (ref $java.lang.Object))
+ (result (ref null $java.lang.Class))
+ (local $this (ref null $supermethodcall.SuperToStringTest))
+ (local.set $this (ref.cast (ref $supermethodcall.SuperToStringTest) (local.get $this.untyped)))
  (block
-  (if (ref.is_null (global.get $f_$string_|supermethodc...|__supermethodcall_SuperToStringTest))
-   (then
-    (global.set $f_$string_|supermethodc...|__supermethodcall_SuperToStringTest (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "supermethodcall.SuperToStringTest")))
-   )
-  )
-  (return (global.get $f_$string_|supermethodc...|__supermethodcall_SuperToStringTest))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.SuperToStringTest ))
  )
 )
+(elem declare func $$getClassImpl__java_lang_Class@supermethodcall.SuperToStringTest)
+
+;;; Code for supermethodcall.I2.$LambdaAdaptor [methods]
+
+;;; void $LambdaAdaptor.$ctor()
+(func $$ctor__void_$p_supermethodcall_I2_$LambdaAdaptor@supermethodcall.I2.$LambdaAdaptor
+ (param $this (ref null $supermethodcall.I2.$LambdaAdaptor))
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:102:10
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:102:10
+  (call $$ctor__void_$p_java_lang_Object@java.lang.Object (ref.as_non_null (local.get $this)))
+ )
+)
+
+;;; void $LambdaAdaptor.$clinit()
+(func $$clinit__void_<once>_@supermethodcall.I2.$LambdaAdaptor
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:102:10
+ (block
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:102:10
+  (if (global.get $$class-initialized@supermethodcall.I2.$LambdaAdaptor)
+   (then
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:102:10
+    (return )
+   )
+  )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:102:10
+  (global.set $$class-initialized@supermethodcall.I2.$LambdaAdaptor (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:102:10
+  (call $$clinit__void_<once>_@java.lang.Object )
+ )
+)
+
+;;; Class<T> $LambdaAdaptor.$getClassMetadata()
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.I2.$LambdaAdaptor
+ (result (ref null $java.lang.Class))
+ (block
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.I2.$LambdaAdaptor)))
+   (then
+    (return (global.get $$class@supermethodcall.I2.$LambdaAdaptor))
+   )
+  )
+  (global.set $$class@supermethodcall.I2.$LambdaAdaptor (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.I2.$LambdaAdaptor )(call $$getClassMetadata__java_lang_Class_<once>_@java.lang.Object )))
+  (return (global.get $$class@supermethodcall.I2.$LambdaAdaptor))
+ )
+)
+
+;;; Class<?> $LambdaAdaptor.$getClassImpl()
+(func $$getClassImpl__java_lang_Class@supermethodcall.I2.$LambdaAdaptor
+ (type $function.$getClassImpl__java_lang_Class)
+ (param $this.untyped (ref $java.lang.Object))
+ (result (ref null $java.lang.Class))
+ (local $this (ref null $supermethodcall.I2.$LambdaAdaptor))
+ (local.set $this (ref.cast (ref $supermethodcall.I2.$LambdaAdaptor) (local.get $this.untyped)))
+ (block
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.I2.$LambdaAdaptor ))
+ )
+)
+(elem declare func $$getClassImpl__java_lang_Class@supermethodcall.I2.$LambdaAdaptor)
 
 ;;; Code for supermethodcall.Parent [methods]
 
 ;;; Parent Parent.$create()
 (func $$create__@supermethodcall.Parent
  (result (ref null $supermethodcall.Parent))
- ;;@ supermethodcall/Child.java:41:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
  (local $$instance (ref null $supermethodcall.Parent))
  (block
-  ;;@ supermethodcall/Child.java:41:6
-  (call $$clinit__void@supermethodcall.Parent )
-  ;;@ supermethodcall/Child.java:41:6
-  (local.set $$instance (struct.new $supermethodcall.Parent (ref.as_non_null (global.get $supermethodcall.Parent.vtable)) (ref.as_non_null (global.get $supermethodcall.Parent.itable)) (i32.const 0)))
-  ;;@ supermethodcall/Child.java:41:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
+  (call $$clinit__void_<once>_@supermethodcall.Parent )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
+  (local.set $$instance (struct.new $supermethodcall.Parent (global.get $supermethodcall.Parent.vtable) (global.get $supermethodcall.Parent.itable) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
   (call $$ctor__void_$p_supermethodcall_Parent@supermethodcall.Parent (ref.as_non_null (local.get $$instance)))
-  ;;@ supermethodcall/Child.java:41:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
   (return (local.get $$instance))
  )
 )
@@ -1063,9 +961,9 @@
 ;;; void Parent.$ctor()
 (func $$ctor__void_$p_supermethodcall_Parent@supermethodcall.Parent
  (param $this (ref null $supermethodcall.Parent))
- ;;@ supermethodcall/Child.java:41:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
  (block
-  ;;@ supermethodcall/Child.java:41:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
   (call $$ctor__void_$p_supermethodcall_GrandParent@supermethodcall.GrandParent (ref.as_non_null (local.get $this)))
  )
 )
@@ -1074,7 +972,7 @@
 (func $m_parentSimplest__void@supermethodcall.Parent
  (type $function.m_parentSimplest__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ supermethodcall/Child.java:42:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:42:14
  (local $this (ref null $supermethodcall.Parent))
  (local.set $this (ref.cast (ref $supermethodcall.Parent) (local.get $this.untyped)))
  (block
@@ -1087,7 +985,7 @@
  (type $function.m_parentWithParams__int__void)
  (param $this.untyped (ref $java.lang.Object))
  (param $foo i32)
- ;;@ supermethodcall/Child.java:45:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:45:14
  (local $this (ref null $supermethodcall.Parent))
  (local.set $this (ref.cast (ref $supermethodcall.Parent) (local.get $this.untyped)))
  (block
@@ -1100,11 +998,11 @@
  (type $function.m_parentWithChangingReturn__java_lang_Object)
  (param $this.untyped (ref $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ supermethodcall/Child.java:47:16
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:47:16
  (local $this (ref null $supermethodcall.Parent))
  (local.set $this (ref.cast (ref $supermethodcall.Parent) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:48:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:48:4
   (return (ref.null $java.lang.Object))
  )
 )
@@ -1114,48 +1012,49 @@
 (func $m_defaultParent__void@supermethodcall.Parent
  (type $function.m_defaultParent__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ supermethodcall/Child.java:52:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:52:14
  (local $this (ref null $supermethodcall.Parent))
  (local.set $this (ref.cast (ref $supermethodcall.Parent) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:53:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:53:4
   (call $m_defaultParent__void@supermethodcall.GrandParent (ref.as_non_null (local.get $this)))
-  ;;@ supermethodcall/Child.java:54:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:54:4
   (call $m_defaultParent__void@supermethodcall.ParentInterface (ref.as_non_null (local.get $this)))
  )
 )
 (elem declare func $m_defaultParent__void@supermethodcall.Parent)
 
 ;;; void Parent.$clinit()
-(func $$clinit__void@supermethodcall.Parent
- ;;@ supermethodcall/Child.java:41:6
+(func $$clinit__void_<once>_@supermethodcall.Parent
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
  (block
-  ;;@ supermethodcall/Child.java:41:6
-  (if (global.get $f_$initialized__supermethodcall_Parent)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
+  (if (global.get $$class-initialized@supermethodcall.Parent)
    (then
-    ;;@ supermethodcall/Child.java:41:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
     (return )
    )
   )
-  ;;@ supermethodcall/Child.java:41:6
-  (global.set $f_$initialized__supermethodcall_Parent (i32.const 1))
-  ;;@ supermethodcall/Child.java:41:6
-  (call $$clinit__void@supermethodcall.GrandParent )
-  ;;@ supermethodcall/Child.java:41:6
-  (call $$clinit__void@supermethodcall.ParentInterface )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
+  (global.set $$class-initialized@supermethodcall.Parent (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
+  (call $$clinit__void_<once>_@supermethodcall.GrandParent )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:41:6
+  (call $$clinit__void_<once>_@supermethodcall.ParentInterface )
  )
 )
 
 ;;; Class<T> Parent.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@supermethodcall.Parent
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.Parent
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__supermethodcall_Parent))
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.Parent)))
    (then
-    (global.set $f_$class__supermethodcall_Parent (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|supermethodc...|__java_lang_String (ref.func $$getString_|supermethodc...|__java_lang_String@supermethodcall.Parent) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@supermethodcall.GrandParent) )))
+    (return (global.get $$class@supermethodcall.Parent))
    )
   )
-  (return (global.get $f_$class__supermethodcall_Parent))
+  (global.set $$class@supermethodcall.Parent (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.Parent )(call $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.GrandParent )))
+  (return (global.get $$class@supermethodcall.Parent))
  )
 )
 
@@ -1167,39 +1066,26 @@
  (local $this (ref null $supermethodcall.Parent))
  (local.set $this (ref.cast (ref $supermethodcall.Parent) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@supermethodcall.Parent) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.Parent ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@supermethodcall.Parent)
-
-;;; String Parent.$getString_|supermethodc...|()
-(func $$getString_|supermethodc...|__java_lang_String@supermethodcall.Parent
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|supermethodc...|__supermethodcall_Parent))
-   (then
-    (global.set $f_$string_|supermethodc...|__supermethodcall_Parent (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "supermethodcall.Parent")))
-   )
-  )
-  (return (global.get $f_$string_|supermethodc...|__supermethodcall_Parent))
- )
-)
 
 ;;; Code for supermethodcall.Sub [methods]
 
 ;;; Sub Sub.$create()
 (func $$create__@supermethodcall.Sub
  (result (ref null $supermethodcall.Sub))
- ;;@ supermethodcall/Child.java:112:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
  (local $$instance (ref null $supermethodcall.Sub))
  (block
-  ;;@ supermethodcall/Child.java:112:6
-  (call $$clinit__void@supermethodcall.Sub )
-  ;;@ supermethodcall/Child.java:112:6
-  (local.set $$instance (struct.new $supermethodcall.Sub (ref.as_non_null (global.get $supermethodcall.Sub.vtable)) (ref.as_non_null (global.get $supermethodcall.Sub.itable)) (i32.const 0)))
-  ;;@ supermethodcall/Child.java:112:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
+  (call $$clinit__void_<once>_@supermethodcall.Sub )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
+  (local.set $$instance (struct.new $supermethodcall.Sub (global.get $supermethodcall.Sub.vtable) (global.get $supermethodcall.Sub.itable) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
   (call $$ctor__void_$p_supermethodcall_Sub@supermethodcall.Sub (ref.as_non_null (local.get $$instance)))
-  ;;@ supermethodcall/Child.java:112:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
   (return (local.get $$instance))
  )
 )
@@ -1207,9 +1093,9 @@
 ;;; void Sub.$ctor()
 (func $$ctor__void_$p_supermethodcall_Sub@supermethodcall.Sub
  (param $this (ref null $supermethodcall.Sub))
- ;;@ supermethodcall/Child.java:112:6
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
  (block
-  ;;@ supermethodcall/Child.java:112:6
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
   (call $$ctor__void_$p_supermethodcall_Super@supermethodcall.Super (ref.as_non_null (local.get $this)))
  )
 )
@@ -1218,46 +1104,47 @@
 (func $m_m__void@supermethodcall.Sub
  (type $function.m_m__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ supermethodcall/Child.java:113:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:113:14
  (local $this (ref null $supermethodcall.Sub))
  (local.set $this (ref.cast (ref $supermethodcall.Sub) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:114:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:114:4
   (call $m_m__void@supermethodcall.I1 (ref.as_non_null (local.get $this)))
  )
 )
 (elem declare func $m_m__void@supermethodcall.Sub)
 
 ;;; void Sub.$clinit()
-(func $$clinit__void@supermethodcall.Sub
- ;;@ supermethodcall/Child.java:112:6
+(func $$clinit__void_<once>_@supermethodcall.Sub
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
  (block
-  ;;@ supermethodcall/Child.java:112:6
-  (if (global.get $f_$initialized__supermethodcall_Sub)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
+  (if (global.get $$class-initialized@supermethodcall.Sub)
    (then
-    ;;@ supermethodcall/Child.java:112:6
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
     (return )
    )
   )
-  ;;@ supermethodcall/Child.java:112:6
-  (global.set $f_$initialized__supermethodcall_Sub (i32.const 1))
-  ;;@ supermethodcall/Child.java:112:6
-  (call $$clinit__void@supermethodcall.Super )
-  ;;@ supermethodcall/Child.java:112:6
-  (call $$clinit__void@supermethodcall.I1 )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
+  (global.set $$class-initialized@supermethodcall.Sub (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
+  (call $$clinit__void_<once>_@supermethodcall.Super )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:112:6
+  (call $$clinit__void_<once>_@supermethodcall.I1 )
  )
 )
 
 ;;; Class<T> Sub.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@supermethodcall.Sub
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.Sub
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__supermethodcall_Sub))
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.Sub)))
    (then
-    (global.set $f_$class__supermethodcall_Sub (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|supermethodc...|__java_lang_String (ref.func $$getString_|supermethodc...|__java_lang_String@supermethodcall.Sub) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@supermethodcall.Super) )))
+    (return (global.get $$class@supermethodcall.Sub))
    )
   )
-  (return (global.get $f_$class__supermethodcall_Sub))
+  (global.set $$class@supermethodcall.Sub (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.Sub )(call $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.Super )))
+  (return (global.get $$class@supermethodcall.Sub))
  )
 )
 
@@ -1269,39 +1156,26 @@
  (local $this (ref null $supermethodcall.Sub))
  (local.set $this (ref.cast (ref $supermethodcall.Sub) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@supermethodcall.Sub) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.Sub ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@supermethodcall.Sub)
-
-;;; String Sub.$getString_|supermethodc...|()
-(func $$getString_|supermethodc...|__java_lang_String@supermethodcall.Sub
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|supermethodc...|__supermethodcall_Sub))
-   (then
-    (global.set $f_$string_|supermethodc...|__supermethodcall_Sub (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "supermethodcall.Sub")))
-   )
-  )
-  (return (global.get $f_$string_|supermethodc...|__supermethodcall_Sub))
- )
-)
 
 ;;; Code for supermethodcall.Child [methods]
 
 ;;; Child Child.$create()
 (func $$create__@supermethodcall.Child
  (result (ref null $supermethodcall.Child))
- ;;@ supermethodcall/Child.java:58:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
  (local $$instance (ref null $supermethodcall.Child))
  (block
-  ;;@ supermethodcall/Child.java:58:13
-  (call $$clinit__void@supermethodcall.Child )
-  ;;@ supermethodcall/Child.java:58:13
-  (local.set $$instance (struct.new $supermethodcall.Child (ref.as_non_null (global.get $supermethodcall.Child.vtable)) (ref.as_non_null (global.get $supermethodcall.Child.itable)) (i32.const 0)))
-  ;;@ supermethodcall/Child.java:58:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
+  (call $$clinit__void_<once>_@supermethodcall.Child )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
+  (local.set $$instance (struct.new $supermethodcall.Child (global.get $supermethodcall.Child.vtable) (global.get $supermethodcall.Child.itable) (i32.const 0)))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
   (call $$ctor__void_$p_supermethodcall_Child@supermethodcall.Child (ref.as_non_null (local.get $$instance)))
-  ;;@ supermethodcall/Child.java:58:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
   (return (local.get $$instance))
  )
 )
@@ -1309,9 +1183,9 @@
 ;;; void Child.$ctor()
 (func $$ctor__void_$p_supermethodcall_Child@supermethodcall.Child
  (param $this (ref null $supermethodcall.Child))
- ;;@ supermethodcall/Child.java:58:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
  (block
-  ;;@ supermethodcall/Child.java:58:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
   (call $$ctor__void_$p_supermethodcall_Parent@supermethodcall.Parent (ref.as_non_null (local.get $this)))
  )
 )
@@ -1320,11 +1194,11 @@
 (func $m_parentSimplest__void@supermethodcall.Child
  (type $function.m_parentSimplest__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ supermethodcall/Child.java:60:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:60:14
  (local $this (ref null $supermethodcall.Child))
  (local.set $this (ref.cast (ref $supermethodcall.Child) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:61:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:61:4
   (call $m_parentSimplest__void@supermethodcall.Parent (ref.as_non_null (local.get $this)))
  )
 )
@@ -1335,11 +1209,11 @@
  (type $function.m_parentWithParams__int__void)
  (param $this.untyped (ref $java.lang.Object))
  (param $foo i32)
- ;;@ supermethodcall/Child.java:65:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:65:14
  (local $this (ref null $supermethodcall.Child))
  (local.set $this (ref.cast (ref $supermethodcall.Child) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:66:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:66:4
   (call $m_parentWithParams__int__void@supermethodcall.Parent (ref.as_non_null (local.get $this))(local.get $foo))
  )
 )
@@ -1350,13 +1224,13 @@
  (type $function.m_parentWithChangingReturn__supermethodcall_Child)
  (param $this.untyped (ref $java.lang.Object))
  (result (ref null $supermethodcall.Child))
- ;;@ supermethodcall/Child.java:70:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:70:15
  (local $this (ref null $supermethodcall.Child))
  (local.set $this (ref.cast (ref $supermethodcall.Child) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:71:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:71:4
   (drop (call $m_parentWithChangingReturn__java_lang_Object@supermethodcall.Parent (ref.as_non_null (local.get $this))))
-  ;;@ supermethodcall/Child.java:72:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:72:4
   (return (local.get $this))
  )
 )
@@ -1366,11 +1240,11 @@
 (func $m_grandParentSimplest__void@supermethodcall.Child
  (type $function.m_grandParentSimplest__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ supermethodcall/Child.java:76:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:76:14
  (local $this (ref null $supermethodcall.Child))
  (local.set $this (ref.cast (ref $supermethodcall.Child) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:77:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:77:4
   (call $m_grandParentSimplest__void@supermethodcall.GrandParent (ref.as_non_null (local.get $this)))
  )
 )
@@ -1381,11 +1255,11 @@
  (type $function.m_grandParentWithParams__int__void)
  (param $this.untyped (ref $java.lang.Object))
  (param $foo i32)
- ;;@ supermethodcall/Child.java:81:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:81:14
  (local $this (ref null $supermethodcall.Child))
  (local.set $this (ref.cast (ref $supermethodcall.Child) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:82:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:82:4
   (call $m_grandParentWithParams__int__void@supermethodcall.GrandParent (ref.as_non_null (local.get $this))(local.get $foo))
  )
 )
@@ -1396,13 +1270,13 @@
  (type $function.m_grandParentWithChangingReturn__supermethodcall_Child)
  (param $this.untyped (ref $java.lang.Object))
  (result (ref null $supermethodcall.Child))
- ;;@ supermethodcall/Child.java:86:15
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:86:15
  (local $this (ref null $supermethodcall.Child))
  (local.set $this (ref.cast (ref $supermethodcall.Child) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:87:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:87:4
   (drop (call $m_grandParentWithChangingReturn__java_lang_Object@supermethodcall.GrandParent (ref.as_non_null (local.get $this))))
-  ;;@ supermethodcall/Child.java:88:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:88:4
   (return (local.get $this))
  )
 )
@@ -1412,13 +1286,13 @@
 (func $m_defaultGrandParent__void@supermethodcall.Child
  (type $function.m_defaultGrandParent__void)
  (param $this.untyped (ref $java.lang.Object))
- ;;@ supermethodcall/Child.java:92:14
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:92:14
  (local $this (ref null $supermethodcall.Child))
  (local.set $this (ref.cast (ref $supermethodcall.Child) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:93:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:93:4
   (call $m_defaultGrandParent__void@supermethodcall.GrandParent (ref.as_non_null (local.get $this)))
-  ;;@ supermethodcall/Child.java:94:4
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:94:4
   (call $m_defaultGrandParent__void@supermethodcall.GrandParentInterface (ref.as_non_null (local.get $this)))
  )
 )
@@ -1429,11 +1303,11 @@
  (type $function.m_grandParentWithChangingReturn__java_lang_Object)
  (param $this.untyped (ref $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ supermethodcall/Child.java:58:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
  (local $this (ref null $supermethodcall.Child))
  (local.set $this (ref.cast (ref $supermethodcall.Child) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:58:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
   (return (call_ref $function.m_grandParentWithChangingReturn__supermethodcall_Child (ref.as_non_null (local.get $this))(struct.get $supermethodcall.Child.vtable $m_grandParentWithChangingReturn__supermethodcall_Child (struct.get $supermethodcall.Child $vtable(local.get $this)))))
  )
 )
@@ -1444,46 +1318,47 @@
  (type $function.m_parentWithChangingReturn__java_lang_Object)
  (param $this.untyped (ref $java.lang.Object))
  (result (ref null $java.lang.Object))
- ;;@ supermethodcall/Child.java:58:13
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
  (local $this (ref null $supermethodcall.Child))
  (local.set $this (ref.cast (ref $supermethodcall.Child) (local.get $this.untyped)))
  (block
-  ;;@ supermethodcall/Child.java:58:13
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
   (return (call_ref $function.m_parentWithChangingReturn__supermethodcall_Child (ref.as_non_null (local.get $this))(struct.get $supermethodcall.Child.vtable $m_parentWithChangingReturn__supermethodcall_Child (struct.get $supermethodcall.Child $vtable(local.get $this)))))
  )
 )
 (elem declare func $m_parentWithChangingReturn__java_lang_Object@supermethodcall.Child)
 
 ;;; void Child.$clinit()
-(func $$clinit__void@supermethodcall.Child
- ;;@ supermethodcall/Child.java:58:13
+(func $$clinit__void_<once>_@supermethodcall.Child
+ ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
  (block
-  ;;@ supermethodcall/Child.java:58:13
-  (if (global.get $f_$initialized__supermethodcall_Child)
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
+  (if (global.get $$class-initialized@supermethodcall.Child)
    (then
-    ;;@ supermethodcall/Child.java:58:13
+    ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
     (return )
    )
   )
-  ;;@ supermethodcall/Child.java:58:13
-  (global.set $f_$initialized__supermethodcall_Child (i32.const 1))
-  ;;@ supermethodcall/Child.java:58:13
-  (call $$clinit__void@supermethodcall.Parent )
-  ;;@ supermethodcall/Child.java:58:13
-  (call $$clinit__void@supermethodcall.GrandParentInterface )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
+  (global.set $$class-initialized@supermethodcall.Child (i32.const 1))
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
+  (call $$clinit__void_<once>_@supermethodcall.Parent )
+  ;;@ transpiler/javatests/com/google/j2cl/readable/java/supermethodcall/readable-j2wasm.js/supermethodcall/Child.java:58:13
+  (call $$clinit__void_<once>_@supermethodcall.GrandParentInterface )
  )
 )
 
 ;;; Class<T> Child.$getClassMetadata()
-(func $$getClassMetadata__java_lang_Class@supermethodcall.Child
+(func $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.Child
  (result (ref null $java.lang.Class))
  (block
-  (if (ref.is_null (global.get $f_$class__supermethodcall_Child))
+  (if (i32.eqz (ref.is_null (global.get $$class@supermethodcall.Child)))
    (then
-    (global.set $f_$class__supermethodcall_Child (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $function.no.side.effects.$getString_|supermethodc...|__java_lang_String (ref.func $$getString_|supermethodc...|__java_lang_String@supermethodcall.Child) )(call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@supermethodcall.Parent) )))
+    (return (global.get $$class@supermethodcall.Child))
    )
   )
-  (return (global.get $f_$class__supermethodcall_Child))
+  (global.set $$class@supermethodcall.Child (call $m_createForClass__java_lang_String__java_lang_Class__java_lang_Class@java.lang.Class (call $$getString_|supermethodc...|__java_lang_String_<once>_@supermethodcall.Child )(call $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.Parent )))
+  (return (global.get $$class@supermethodcall.Child))
  )
 )
 
@@ -1495,20 +1370,7 @@
  (local $this (ref null $supermethodcall.Child))
  (local.set $this (ref.cast (ref $supermethodcall.Child) (local.get $this.untyped)))
  (block
-  (return (call $function.no.side.effects.$getClassMetadata__java_lang_Class (ref.func $$getClassMetadata__java_lang_Class@supermethodcall.Child) ))
+  (return (call $$getClassMetadata__java_lang_Class_<once>_@supermethodcall.Child ))
  )
 )
 (elem declare func $$getClassImpl__java_lang_Class@supermethodcall.Child)
-
-;;; String Child.$getString_|supermethodc...|()
-(func $$getString_|supermethodc...|__java_lang_String@supermethodcall.Child
- (result (ref null $java.lang.String))
- (block
-  (if (ref.is_null (global.get $f_$string_|supermethodc...|__supermethodcall_Child))
-   (then
-    (global.set $f_$string_|supermethodc...|__supermethodcall_Child (call $m_fromJsString__java_lang_String_NativeString__java_lang_String@java.lang.String (string.const "supermethodcall.Child")))
-   )
-  )
-  (return (global.get $f_$string_|supermethodc...|__supermethodcall_Child))
- )
-)

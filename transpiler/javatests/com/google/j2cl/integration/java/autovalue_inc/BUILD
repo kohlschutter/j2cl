@@ -8,11 +8,10 @@ package(
     licenses = ["notice"],
 )
 
+# TODO(b/264934554): Port this test to Kotlin when AutoValue is supported.
 integration_test(
-    name = "autovalue",
     srcs = glob(["*.java"]),
     closure_defines = {"jre.classMetadata": "'STRIPPED'"},
-    enable_kt = False,
     deps = [
         "//third_party:auto_value",
         "//transpiler/javatests/com/google/j2cl/integration/java/autovalue",

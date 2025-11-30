@@ -13,15 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e
+set -ex
+
+function bazel_workspace() {
+  # Test in its own workspace with local (head) j2cl version.
+  (cd $2 &&  bazel $1 --override_module=j2cl=../.. ...)
+}
 
 # Build and test Hello World sample in its own workspace
-(cd samples/helloworld && bazel test ...)
+bazel_workspace test "samples/helloworld"
+
+bazel_workspace test "samples/wasm"
 
 if [[ $1 == "CI" ]]; then
-  # Build Guava sample in its own workspace
-  (cd samples/guava && bazel build ...)
-
-  # Build wasm Hello World sample in its own workspace
-  (cd samples/wasm && bazel test ...)
+  bazel_workspace build "samples/guava"
 fi

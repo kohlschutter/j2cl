@@ -31,13 +31,14 @@ import javax.annotation.Nullable;
  */
 @Visitable
 public class NewArray extends Expression {
-  private final ArrayTypeDescriptor typeDescriptor;
+  @Visitable ArrayTypeDescriptor typeDescriptor;
   @Visitable List<Expression> dimensionExpressions = new ArrayList<>();
+
   /**
    * An optional initializer for the array being constructed.
    *
-   * <p>If present it should statisfy one of: 1. Be an {@link ArrayLiteral} that has the same type
-   * as the array being constructed. 2. Be a {@link FunctionExpression} or a {@link MethodReference}
+   * <p>If present it should satisfy one of: 1. Be an {@link ArrayLiteral} that has the same type as
+   * the array being constructed. 2. Be a {@link FunctionExpression} or a {@link MethodReference}
    * whose SAM type accepts a single int param (index) and returns the component type of the array
    * being constructed.
    */
@@ -80,6 +81,11 @@ public class NewArray extends Expression {
   public Precedence getPrecedence() {
     // Treated exactly as new, which is modeled as a member access.
     return Precedence.MEMBER_ACCESS;
+  }
+
+  @Override
+  public boolean canBeNull() {
+    return false;
   }
 
   @Override
@@ -138,8 +144,8 @@ public class NewArray extends Expression {
 
   private static boolean isValidInitializer(
       Expression initializer, ArrayTypeDescriptor typeDescriptor) {
-    if (initializer instanceof ArrayLiteral) {
-      return ((ArrayLiteral) initializer).getTypeDescriptor().hasSameRawType(typeDescriptor);
+    if (initializer instanceof ArrayLiteral literal) {
+      return literal.getTypeDescriptor().hasSameRawType(typeDescriptor);
     }
 
     DeclaredTypeDescriptor functionalInterface =
@@ -157,6 +163,6 @@ public class NewArray extends Expression {
             .hasSameRawType(typeDescriptor.getComponentTypeDescriptor())
         && methodDescriptor.getParameterDescriptors().size() == 1
         && TypeDescriptors.isPrimitiveInt(
-            methodDescriptor.getParameterDescriptors().get(0).getTypeDescriptor());
+            methodDescriptor.getParameterDescriptors().getFirst().getTypeDescriptor());
   }
 }

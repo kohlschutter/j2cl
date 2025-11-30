@@ -1,6 +1,7 @@
 """Macro for generating binary targets for j2cl apps."""
 
-load(":j2cl_js_common.bzl", "J2CL_OPTIMIZED_DEFS", "js_binary", "js_devserver")
+load("@rules_closure//closure:defs.bzl", "closure_js_binary")
+load(":j2cl_js_common.bzl", "J2CL_OPTIMIZED_DEFS", "js_devserver")
 
 def j2cl_application(
         name,
@@ -94,7 +95,7 @@ def j2cl_application(
         "//conditions:default": extra_production_args,
     })
 
-    js_binary(
+    closure_js_binary(
         name = name,
         defs = J2CL_OPTIMIZED_DEFS + entry_point_defs + define_prod_defs + [
             "--rewrite_polyfills=%s" % rewrite_polyfills,
@@ -111,15 +112,13 @@ def j2cl_application(
     # uncompiled code. As a workaround we load it via script tag just before
     # dev.js (see below).
     define_dev = {
-        # closure debug loader is slow and complains about cyclic deps.
-        "goog.ENABLE_DEBUG_LOADER": False,
         # checks are  always enabled in debug but setting it make sure user code
         # doesn't accidentally rely on exceptions to be thrown by converting them
         # to assertion errors.
         "jre.checks.checkLevel": jre_checks_check_level,
     }
     define_dev.update(closure_defines)
-    define_dev_content = "var CLOSURE_DEFINES = %s;" % struct(**define_dev).to_json()
+    define_dev_content = "var CLOSURE_DEFINES = %s;" % json.encode(struct(**define_dev))
 
     index_html = """
 <head><script>

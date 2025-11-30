@@ -17,7 +17,7 @@ j2cl_test(
     ],
 )
 
-# Similiar usage to java_test without sources:
+# Similar usage to java_test without sources:
 j2cl_library(
     name = "MyTestLib",
     srcs = ["MyTest.java"],
@@ -61,6 +61,7 @@ rather than on jsunit runner with browsers. For j2kt_jvm_test j2cl_library/j2cl_
 will be replaced with j2kt_jvm_library/j2kt_jvm_test counterparts.
 """
 
+load("@rules_java//java:defs.bzl", "java_test")
 load(":j2cl_generate_jsunit_suite.bzl", "j2cl_generate_jsunit_suite")
 load(":j2cl_js_common.bzl", "J2CL_TEST_DEFS", "j2cl_web_test")
 load(":j2cl_library.bzl", "j2cl_library")
@@ -72,6 +73,8 @@ load(":j2wasm_library.bzl", "j2wasm_library")
 
 _JS_UNIT_TEST_PARAMETERS = [
     "args",
+    "browsers",
+    "browser_overrides",
     "compiler",
     "default_browser",
     "deprecation",
@@ -94,6 +97,8 @@ _JS_UNIT_TEST_PARAMETERS = [
 
 _STRIP_JSUNIT_PARAMETERS = [
     "args",
+    "browsers",
+    "browser_overrides",
     "compiler",
     "default_browser",
     "deps_mgmt",
@@ -170,9 +175,7 @@ def j2cl_test_common(
         compile = 0,
         platform = "CLOSURE",
         optimize_wasm = False,
-        use_legacy_wasm_spec = True,
         wasm_defs = {},
-        browsers = None,
         extra_defs = [],
         jvm_flags = [],
         tags = [],
@@ -214,7 +217,7 @@ def j2cl_test_common(
             testonly = 1,
             # Safe here as this is for tests only and there are no downstream users.
             experimental_enable_jspecify_support_do_not_enable_without_jspecify_static_checking_or_you_might_cause_an_outage = 1,
-            tags = tags,
+            tags = tags + ["ide-test-intermediate"],
             **j2cl_parameters
         )
 
@@ -223,7 +226,7 @@ def j2cl_test_common(
             name = generated_suite_name,
             test_class = test_class,
             deps = [":%s_testlib" % name],
-            tags = tags,
+            tags = tags + ["ide-test-intermediate"],
         )
 
         deps = [
@@ -233,9 +236,7 @@ def j2cl_test_common(
             # in jsunit_test if user provided only in bootstrap_files).
             ":%s_testlib" % name,
             ":%s_lib" % generated_suite_name,
-            Label("//build_defs/internal_do_not_use:closure_testsuite"),
-            Label("//build_defs/internal_do_not_use:closure_testcase"),
-            Label("//build_defs/internal_do_not_use:internal_parametrized_test_suite"),
+            Label("//build_defs/internal_do_not_use:internal_j2cl_test_suite"),
         ]
 
     elif platform == "WASM":
@@ -243,7 +244,7 @@ def j2cl_test_common(
             name = "%s_testlib" % name,
             exports = exports,
             testonly = 1,
-            tags = tags,
+            tags = tags + ["ide-test-intermediate"],
             **j2cl_parameters
         )
 
@@ -252,16 +253,14 @@ def j2cl_test_common(
             name = generated_suite_name,
             test_class = test_class,
             deps = [":%s_testlib" % name],
-            tags = tags,
+            tags = tags + ["ide-test-intermediate"],
             optimize = optimize_wasm,
             defines = wasm_defs,
-            exec_properties = kwargs.get("exec_properties") or {},
-            use_legacy_wasm_spec = use_legacy_wasm_spec,
         )
 
         deps = [
             ":%s_dep" % generated_suite_name,
-            Label("//build_defs/internal_do_not_use:closure_testsuite"),
+            Label("//build_defs/internal_do_not_use:internal_j2cl_test_suite"),
             Label("//build_defs/internal_do_not_use:closure_testcase"),
         ]
 
@@ -283,9 +282,7 @@ def j2cl_test_common(
         "//testing/web/js/browser_services:console_poster.js",
     ]
 
-    if compile:
-        defs.append("--define=goog.ENABLE_DEBUG_LOADER=true")
-    else:
+    if not compile:
         # enforce bundled mode since the debug loader is disabled
         jvm_flags.append("-Djsrunner.net.useJsBundles=true")
 
@@ -300,9 +297,8 @@ def j2cl_test_common(
         name = name,
         src = ":" + generated_suite_name,
         deps = deps,
-        browsers = browsers,
         data = data,
-        tags = tags,
+        tags = tags + ["ide-test-intermediate"],
         flaky = flaky,
         test_class = test_class,
         **jsunit_parameters

@@ -44,15 +44,24 @@ public class Type extends Node implements HasSourcePosition, HasJsNameInfo, HasR
   private final SourcePosition sourcePosition;
   private boolean isAbstract;
   private DeclaredTypeDescriptor superTypeDescriptor;
+  private final boolean isJavaRecord;
   private boolean isOptimizedEnum;
 
-  public Type(SourcePosition sourcePosition, TypeDeclaration typeDeclaration) {
+  // TODO(b/446955307): Model records as a Kind.RECORD in TypeDeclaration and remove this ctor.
+  public Type(
+      SourcePosition sourcePosition, TypeDeclaration typeDeclaration, boolean isJavaRecord) {
     this.sourcePosition = checkNotNull(sourcePosition);
     checkArgument(
         typeDeclaration.isInterface() || typeDeclaration.isClass() || typeDeclaration.isEnum());
+    checkArgument(!isJavaRecord || typeDeclaration.isClass());
     this.typeDeclaration = typeDeclaration;
     this.isAbstract = typeDeclaration.isAbstract();
     this.superTypeDescriptor = typeDeclaration.getSuperTypeDescriptor();
+    this.isJavaRecord = isJavaRecord;
+  }
+
+  public Type(SourcePosition sourcePosition, TypeDeclaration typeDeclaration) {
+    this(sourcePosition, typeDeclaration, /* isJavaRecord= */ false);
   }
 
   /**
@@ -60,7 +69,7 @@ public class Type extends Node implements HasSourcePosition, HasJsNameInfo, HasR
    * declaration.
    */
   public DeclaredTypeDescriptor getTypeDescriptor() {
-    return getDeclaration().toUnparameterizedTypeDescriptor();
+    return getDeclaration().toDescriptor();
   }
 
   public boolean containsMethod(String mangledName) {
@@ -104,6 +113,10 @@ public class Type extends Node implements HasSourcePosition, HasJsNameInfo, HasR
     return typeDeclaration.isClass();
   }
 
+  public boolean isJavaRecord() {
+    return isJavaRecord;
+  }
+
   public TypeDeclaration getOverlaidTypeDeclaration() {
     return typeDeclaration.getOverlaidTypeDeclaration();
   }
@@ -138,6 +151,10 @@ public class Type extends Node implements HasSourcePosition, HasJsNameInfo, HasR
 
   public void addType(Type type) {
     types.add(type);
+  }
+
+  public void addTypes(List<Type> types) {
+    types.forEach(this::addType);
   }
 
   public List<Member> getMembers() {
@@ -187,7 +204,7 @@ public class Type extends Node implements HasSourcePosition, HasJsNameInfo, HasR
   public void addInstanceInitializerBlock(Block instanceInitializer) {
     members.add(
         InitializerBlock.newBuilder()
-            .setBlock(instanceInitializer)
+            .setBody(instanceInitializer)
             .setSourcePosition(instanceInitializer.getSourcePosition())
             .setDescriptor(getTypeDescriptor().getInitMethodDescriptor())
             .build());
@@ -196,7 +213,7 @@ public class Type extends Node implements HasSourcePosition, HasJsNameInfo, HasR
   public void addStaticInitializerBlock(Block staticInitializer) {
     members.add(
         InitializerBlock.newBuilder()
-            .setBlock(staticInitializer)
+            .setBody(staticInitializer)
             .setSourcePosition(staticInitializer.getSourcePosition())
             .setDescriptor(getTypeDescriptor().getClinitMethodDescriptor())
             .build());
@@ -206,7 +223,7 @@ public class Type extends Node implements HasSourcePosition, HasJsNameInfo, HasR
     members.add(
         index,
         InitializerBlock.newBuilder()
-            .setBlock(staticInitializer)
+            .setBody(staticInitializer)
             .setSourcePosition(staticInitializer.getSourcePosition())
             .setDescriptor(getTypeDescriptor().getClinitMethodDescriptor())
             .build());
@@ -294,7 +311,7 @@ public class Type extends Node implements HasSourcePosition, HasJsNameInfo, HasR
 
   @Nullable
   public Method getDefaultConstructor() {
-    // TODO(b/215777271): This doesn't consider varags constructors as a default constructor.
+    // TODO(b/215777271): This doesn't consider varargs constructors as a default constructor.
     return getMethods().stream()
         .filter(m -> m.isConstructor() && m.getParameters().isEmpty())
         .findFirst()
@@ -349,9 +366,10 @@ public class Type extends Node implements HasSourcePosition, HasJsNameInfo, HasR
 
     // Synthesizes the getter:
     // $get<fieldName>() {
-    //   if (<fieldName> == null) {
-    //      <fieldName> = <initializationExpression>;
+    //   if (<fieldName> != null) {
+    //     return <fieldName>;
     //   }
+    //   <fieldName> = <initializationExpression>;
     //   return <fieldName>;
     // }
     addMember(
@@ -360,14 +378,20 @@ public class Type extends Node implements HasSourcePosition, HasJsNameInfo, HasR
             .addStatements(
                 IfStatement.newBuilder()
                     .setConditionExpression(
-                        FieldAccess.Builder.from(holderFieldDescriptor).build().infixEqualsNull())
-                    .setThenStatement(
-                        BinaryExpression.Builder.asAssignmentTo(holderFieldDescriptor)
-                            .setRightOperand(initializationExpression)
+                        FieldAccess.Builder.from(holderFieldDescriptor)
                             .build()
-                            .makeStatement(SourcePosition.NONE))
+                            .infixNotEqualsNull())
+                    .setThenStatement(
+                        ReturnStatement.newBuilder()
+                            .setExpression(FieldAccess.Builder.from(holderFieldDescriptor).build())
+                            .setSourcePosition(SourcePosition.NONE)
+                            .build())
                     .setSourcePosition(SourcePosition.NONE)
                     .build(),
+                BinaryExpression.Builder.asAssignmentTo(holderFieldDescriptor)
+                    .setRightOperand(initializationExpression)
+                    .build()
+                    .makeStatement(SourcePosition.NONE),
                 ReturnStatement.newBuilder()
                     .setExpression(FieldAccess.Builder.from(holderFieldDescriptor).build())
                     .setSourcePosition(SourcePosition.NONE)

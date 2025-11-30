@@ -15,14 +15,18 @@
  */
 package j2kt;
 
-import org.jspecify.nullness.NullMarked;
-import org.jspecify.nullness.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public class VoidType {
   interface NullableBounds<T extends @Nullable Object> {}
 
   interface NonNullBounds<T> {}
+
+  interface Consumer<V extends @Nullable Void> {
+    void accept(V v);
+  }
 
   static void testVoid() {
     Void nonNullVoid;
@@ -31,5 +35,9 @@ public class VoidType {
     NullableBounds<@Nullable Void> nullableBoundsWithNullableVoid;
     NonNullBounds<Void> nonNullBoundsWithNonNullVoid;
     Class<Void> voidClass;
+    Consumer<Void> nonNullVoidConsumer = v -> v.hashCode();
+    Consumer<@Nullable Void> nullableVoidConsumer = v -> v.hashCode();
+    Consumer<?> nonNullVoidConsumerWildcard = (Void v) -> v.hashCode();
+    Consumer<?> nullableVoidConsumerWildcard = (@Nullable Void v) -> v.hashCode();
   }
 }

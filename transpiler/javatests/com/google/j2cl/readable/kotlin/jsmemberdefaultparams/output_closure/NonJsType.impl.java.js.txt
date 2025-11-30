@@ -1,0 +1,62 @@
+goog.module('jsmemberdefaultparams.NonJsType$impl');
+
+const j_l_Object = goog.require('java.lang.Object$impl');
+const $Util = goog.require('nativebootstrap.Util$impl');
+
+let DefaultConstructorMarker = goog.forwardDeclare('kotlin.jvm.internal.DefaultConstructorMarker$impl');
+
+/**
+ * @final
+ */
+class NonJsType extends j_l_Object {
+ //JsConstructor 'NonJsType(int)'.
+ 
+ constructor(/** number */ param) {
+  NonJsType.$clinit();
+  super();
+  this.$ctor__jsmemberdefaultparams_NonJsType__int__void(param);
+ }
+ //Initialization from constructor 'NonJsType(int)'.
+ /** @nodts */
+ $ctor__jsmemberdefaultparams_NonJsType__int__void(/** number */ param) {
+  this.$ctor__java_lang_Object__void();
+ }
+ //Factory method corresponding to constructor 'NonJsType(int, DefaultConstructorMarker)'.
+ /** @nodts @return {!NonJsType} */
+ static $create__int__kotlin_jvm_internal_DefaultConstructorMarker(/** number= */ param, /** DefaultConstructorMarker= */ $marker) {
+  NonJsType.$clinit();
+  let param$defaulted = $Util.$isUndefined(param) ? 1 : param;
+  let $instance = new NonJsType(param$defaulted);
+  $instance.$ctor__jsmemberdefaultparams_NonJsType__int__kotlin_jvm_internal_DefaultConstructorMarker__void(param, $marker);
+  return $instance;
+ }
+ //Initialization from constructor 'NonJsType(int, DefaultConstructorMarker)'.
+ /** @nodts */
+ $ctor__jsmemberdefaultparams_NonJsType__int__kotlin_jvm_internal_DefaultConstructorMarker__void(/** number= */ param, /** DefaultConstructorMarker= */ $marker) {}
+ /** @final */
+ jsMethod(/** number */ param) {}
+ /** @nodts */
+ static m_jsMethod$default__jsmemberdefaultparams_NonJsType__int__void(/** !NonJsType */ $this, /** number= */ param) {
+  let param$defaulted = $Util.$isUndefined(param) ? 2 : param;
+  $this.jsMethod(param$defaulted);
+  return;
+ }
+ /** @nodts */
+ static $clinit() {
+  NonJsType.$clinit = () =>{};
+  NonJsType.$loadModules();
+  j_l_Object.$clinit();
+ }
+ /** @nodts @return {boolean} */
+ static $isInstance(/** ? */ instance) {
+  return instance instanceof NonJsType;
+ }
+ 
+ /** @nodts */
+ static $loadModules() {}
+}
+$Util.$setClassMetadata(NonJsType, 'jsmemberdefaultparams.NonJsType');
+
+exports = NonJsType;
+
+//# sourceMappingURL=NonJsType.js.map

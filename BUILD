@@ -1,9 +1,10 @@
+load("@rules_closure//closure:defs.bzl", "closure_js_library")
+load("@rules_license//rules:license.bzl", "license")
+load("//build_defs:rules.bzl", "j2cl_alias")
+
 # Description:
 #  Public targets available externally. Also see build_defs/rules.bzl for the provided rules.
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
-load("//build_defs:rules.bzl", "j2cl_alias")
-load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_library")
-load("@rules_license//rules:license.bzl", "license")
 
 package(
     default_applicable_licenses = [":j2cl_license"],
@@ -25,16 +26,14 @@ closure_js_library(
     exports = ["//jre/java:jre"],
 )
 
-# Note that JsInterop targets may disappear after jsinterop-annotations get its own repo.
-
 alias(
     name = "jsinterop-annotations",
-    actual = "//third_party:gwt-jsinterop-annotations",
+    actual = "//third_party:jsinterop-annotations",
 )
 
 j2cl_alias(
     name = "jsinterop-annotations-j2cl",
-    actual = "//third_party:gwt-jsinterop-annotations-j2cl",
+    actual = "//third_party:jsinterop-annotations-j2cl",
 )
 
 # JUnit library emulation
@@ -65,8 +64,9 @@ alias(
 # J2CL this will be removed.
 string_flag(
     name = "experimental_java_frontend",
-    build_setting_default = "jdt",
+    build_setting_default = "",
     values = [
+        "",  # Default: let compiler itself decide.
         "jdt",
         "javac",
     ],
@@ -76,4 +76,19 @@ string_flag(
 bool_flag(
     name = "experimental_enable_j2kt_web",
     build_setting_default = False,
+)
+
+# Flag to enable klibs experiment. Please talk to j2cl-team@ before using it.
+bool_flag(
+    name = "experimental_enable_klibs",
+    build_setting_default = False,
+)
+
+# Flag to enable profiling for particular targets.
+# Example usage:
+#   blaze build <my_binary> --//:profiling_filter=<target_pattern>
+#   pprof --flame blaze-bin/<target>.profile
+string_flag(
+    name = "profiling_filter",
+    build_setting_default = "<disabled>",
 )

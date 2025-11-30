@@ -22,20 +22,20 @@ import junit.framework.TestCase;
 public class CharacterTest extends TestCase {
 
   private static class CharSequenceAdapter implements CharSequence {
-    private char[] charArray;
-    private int start;
-    private int end;
+    private final char[] charArray;
+    private final int start;
+    private final int end;
 
     public CharSequenceAdapter(char[] charArray) {
       this(charArray, 0, charArray.length);
     }
-    
+
     public CharSequenceAdapter(char[] charArray, int start, int end) {
       this.charArray = charArray;
       this.start = start;
       this.end = end;
     }
-    
+
     @Override
     public char charAt(int index) {
       return charArray[index + start];
@@ -47,18 +47,16 @@ public class CharacterTest extends TestCase {
     }
 
     @Override
-    public java.lang.CharSequence subSequence(int start, int end) {
-      return new CharSequenceAdapter(charArray, this.start + start,
-          this.start + end);
+    public CharSequence subSequence(int start, int end) {
+      return new CharSequenceAdapter(charArray, this.start + start, this.start + end);
     }
   }
 
   /**
-   * Helper class which applies some arbitrary char mutation function
-   * to a string and returns it.
+   * Helper class which applies some arbitrary char mutation function to a string and returns it.
    */
-  public abstract class Changer {
-    String original;
+  private abstract static class Changer {
+    final String original;
 
     public Changer(String o) {
       original = o;
@@ -67,19 +65,19 @@ public class CharacterTest extends TestCase {
     public abstract char change(char c);
 
     public String changed() {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       for (int i = 0; i < original.length(); i++) {
         buf.append(change(original.charAt(i)));
       }
       return buf.toString();
     }
   }
+
   /**
-   * Helper class which collects the set of characters which pass some
-   * arbitrary boolean function. 
+   * Helper class which collects the set of characters which pass some arbitrary boolean function.
    */
-  public abstract class Judge {
-    String original;
+  private abstract static class Judge {
+    final String original;
 
     public Judge(String o) {
       original = o;
@@ -98,7 +96,7 @@ public class CharacterTest extends TestCase {
     public abstract boolean pass(char c);
   }
 
-  class LowerCaseJudge extends Judge {
+  private static class LowerCaseJudge extends Judge {
     public LowerCaseJudge(String s) {
       super(s);
     }
@@ -109,7 +107,7 @@ public class CharacterTest extends TestCase {
     }
   }
 
-  class UpperCaseJudge extends Judge {
+  private static class UpperCaseJudge extends Judge {
     public UpperCaseJudge(String s) {
       super(s);
     }
@@ -120,122 +118,139 @@ public class CharacterTest extends TestCase {
     }
   }
 
-  public static String allChars;
-
-  public static final int NUM_CHARS_HANDLED = 127;
+  private static final int NUM_CHARS_HANDLED = 127;
+  private static final String ALL_CHARS;
 
   static {
-    StringBuffer b = new StringBuffer();
+    StringBuilder b = new StringBuilder();
     for (char c = 0; c < NUM_CHARS_HANDLED; c++) {
       b.append(c);
     }
-    allChars = b.toString();
+    ALL_CHARS = b.toString();
   }
 
-  Judge digitJudge = new Judge(allChars) {
-    @Override
-    public boolean pass(char c) {
-      return Character.isDigit(c);
-    }
-  };
-  Judge letterJudge = new Judge(allChars) {
-    @Override
-    public boolean pass(char c) {
-      return Character.isLetter(c);
-    }
-  };
-  Judge letterOrDigitJudge = new Judge(allChars) {
-    @Override
-    public boolean pass(char c) {
-      return Character.isLetterOrDigit(c);
-    }
-  };
-  Changer lowerCaseChanger = new Changer(allChars) {
-    @Override
-    public char change(char c) {
-      return Character.toLowerCase(c);
-    }
-  };
-  Judge lowerCaseJudge = new LowerCaseJudge(allChars);
-  Judge spaceJudge = new Judge(allChars) {
-    @Override
-    @SuppressWarnings("deprecation") // Character.isSpace()
-    public boolean pass(char c) {
-      return Character.isSpace(c); // suppress deprecation
-    }
-  };
-  Changer upperCaseChanger = new Changer(allChars) {
-    @Override
-    public char change(char c) {
-      return Character.toUpperCase(c);
-    }
-  };
-  Judge upperCaseJudge = new UpperCaseJudge(allChars);
+  private static final Judge digitJudge =
+      new Judge(ALL_CHARS) {
+        @Override
+        public boolean pass(char c) {
+          return Character.isDigit(c);
+        }
+      };
+  private static final Judge letterJudge =
+      new Judge(ALL_CHARS) {
+        @Override
+        public boolean pass(char c) {
+          return Character.isLetter(c);
+        }
+      };
+  private static final Judge letterOrDigitJudge =
+      new Judge(ALL_CHARS) {
+        @Override
+        public boolean pass(char c) {
+          return Character.isLetterOrDigit(c);
+        }
+      };
+  private static final Changer lowerCaseChanger =
+      new Changer(ALL_CHARS) {
+        @Override
+        public char change(char c) {
+          return Character.toLowerCase(c);
+        }
+      };
+  private static final Judge lowerCaseJudge = new LowerCaseJudge(ALL_CHARS);
+  private static final Judge spaceJudge =
+      new Judge(ALL_CHARS) {
+        @Override
+        @SuppressWarnings("deprecation") // Character.isSpace()
+        public boolean pass(char c) {
+          return Character.isSpace(c); // suppress deprecation
+        }
+      };
+  private static final Changer upperCaseChanger =
+      new Changer(ALL_CHARS) {
+        @Override
+        public char change(char c) {
+          return Character.toUpperCase(c);
+        }
+      };
+  private static final Judge upperCaseJudge = new UpperCaseJudge(ALL_CHARS);
 
   public void testCharValue() {
     assertEquals((char) 32, new Character((char) 32).charValue());
   }
 
   public void testCodePoint() {
-    assertEquals(1, Character.charCount(65));
+    assertEquals("65 is a single character", 1, Character.charCount(65));
     assertEquals(2, Character.charCount(Character.MIN_SUPPLEMENTARY_CODE_POINT));
-    char[] testPlain = new char[] { 'C', 'A', 'T' };
-    char[] testUnicode = new char[] { 'C', '\uD801', '\uDF00', 'T' };
+    char[] testPlain = new char[] {'C', 'A', 'T'};
+    char[] testUnicode = new char[] {'C', '\uD801', '\uDF00', 'T'};
     CharSequence plainSequence = new CharSequenceAdapter(testPlain);
     CharSequence unicodeSequence = new CharSequenceAdapter(testUnicode);
     assertEquals(65, Character.codePointAt(testPlain, 1));
     assertEquals(65, Character.codePointAt(plainSequence, 1));
-    assertEquals("codePointAt fails on surrogate pair", 67328,
-        Character.codePointAt(testUnicode, 1));
-    assertEquals("codePointAt fails on surrogate pair", 67328,
-        Character.codePointAt(unicodeSequence, 1));
-    assertEquals("codePointAt fails on first char of surrogate pair", 0xD801,
+    assertEquals(
+        "codePointAt fails on surrogate pair", 67328, Character.codePointAt(testUnicode, 1));
+    assertEquals(
+        "codePointAt fails on surrogate pair", 67328, Character.codePointAt(unicodeSequence, 1));
+    assertEquals(
+        "codePointAt fails on first char of surrogate pair",
+        0xD801,
         Character.codePointAt(testUnicode, 1, 2));
     assertEquals(65, Character.codePointBefore(testPlain, 2));
     assertEquals(65, Character.codePointBefore(plainSequence, 2));
-    assertEquals("codePointBefore fails on surrogate pair", 67328,
+    assertEquals(
+        "codePointBefore fails on surrogate pair",
+        67328,
         Character.codePointBefore(testUnicode, 3));
-    assertEquals("codePointBefore fails on surrogate pair", 67328,
+    assertEquals(
+        "codePointBefore fails on surrogate pair",
+        67328,
         Character.codePointBefore(unicodeSequence, 3));
-    assertEquals("codePointBefore fails on second char of surrogate pair",
-        0xDF00, Character.codePointBefore(testUnicode, 3, 2));
-    assertEquals("codePointCount(plain): ", 3,
-        Character.codePointCount(testPlain, 0, 3));
-    assertEquals("codePointCount(plain): ", 3,
-        Character.codePointCount(plainSequence, 0, 3));
-    assertEquals("codePointCount(unicode): ", 3,
-        Character.codePointCount(testUnicode, 0, 4));
-    assertEquals("codePointCount(unicode): ", 3,
-        Character.codePointCount(unicodeSequence, 0, 4));
-    assertEquals(1, Character.codePointCount(testPlain, 1, 1));
-    assertEquals(1, Character.codePointCount(plainSequence, 1, 2));
+    assertEquals(
+        "codePointBefore fails on second char of surrogate pair",
+        0xDF00,
+        Character.codePointBefore(testUnicode, 3, 2));
+    assertEquals("codePointCount(testPlain): ", 3, Character.codePointCount(testPlain, 0, 3));
+    assertEquals(
+        "codePointCount(plainSequence): ", 3, Character.codePointCount(plainSequence, 0, 3));
+    assertEquals("codePointCount(unicode): ", 3, Character.codePointCount(testUnicode, 0, 4));
+    assertEquals("codePointCount(unicode): ", 3, Character.codePointCount(unicodeSequence, 0, 4));
+    assertEquals("codePointCount(testPlain): ", 1, Character.codePointCount(testPlain, 1, 1));
+    assertEquals(
+        "codePoinntCount(plainSequence): ", 1, Character.codePointCount(plainSequence, 1, 2));
     assertEquals(1, Character.codePointCount(testUnicode, 1, 2));
     assertEquals(1, Character.codePointCount(unicodeSequence, 1, 3));
     assertEquals(2, Character.codePointCount(testUnicode, 2, 2));
     assertEquals(2, Character.codePointCount(unicodeSequence, 2, 4));
     assertEquals(1, Character.offsetByCodePoints(testUnicode, 0, 4, 0, 1));
     assertEquals(1, Character.offsetByCodePoints(unicodeSequence, 0, 1));
-    assertEquals("offsetByCodePoints(1,1): ", 3,
-        Character.offsetByCodePoints(testUnicode, 0, 4, 1, 1));
-    assertEquals("offsetByCodePoints(1,1): ", 3,
-        Character.offsetByCodePoints(unicodeSequence, 1, 1));
-    assertEquals("offsetByCodePoints(2,1): ", 3,
-        Character.offsetByCodePoints(testUnicode, 0, 4, 2, 1));
-    assertEquals("offsetByCodePoints(2,1): ", 3,
-        Character.offsetByCodePoints(unicodeSequence, 2, 1));
-    assertEquals(4, Character.offsetByCodePoints(testUnicode, 0, 4, 3, 1));
-    assertEquals(4, Character.offsetByCodePoints(unicodeSequence, 3, 1));
+    assertEquals(
+        "offsetByCodePoints(1,1): ", 3, Character.offsetByCodePoints(testUnicode, 0, 4, 1, 1));
+    assertEquals(
+        "offsetByCodePoints(1,1): ", 3, Character.offsetByCodePoints(unicodeSequence, 1, 1));
+    assertEquals(
+        "offsetByCodePoints(2,1): ", 3, Character.offsetByCodePoints(testUnicode, 0, 4, 2, 1));
+    assertEquals(
+        "offsetByCodePoints(2,1): ", 3, Character.offsetByCodePoints(unicodeSequence, 2, 1));
+    assertEquals(
+        "offsetByCodePoints(testUnicode, 0, 4, 3, 1)",
+        4,
+        Character.offsetByCodePoints(testUnicode, 0, 4, 3, 1));
+    assertEquals(
+        "offsetByCodePoints(unicodeSequence, 3, 1)",
+        4,
+        Character.offsetByCodePoints(unicodeSequence, 3, 1));
     assertEquals(1, Character.offsetByCodePoints(testUnicode, 0, 4, 2, -1));
     assertEquals(1, Character.offsetByCodePoints(unicodeSequence, 2, -1));
     assertEquals(1, Character.offsetByCodePoints(testUnicode, 0, 4, 3, -1));
     assertEquals(1, Character.offsetByCodePoints(unicodeSequence, 3, -1));
-    assertEquals("offsetByCodePoints(4.-1): ", 3,
-        Character.offsetByCodePoints(testUnicode, 0, 4, 4, -1));
-    assertEquals("offsetByCodePoints(4.-1): ", 3,
-        Character.offsetByCodePoints(unicodeSequence, 4, -1));
+    assertEquals(
+        "offsetByCodePoints(4.-1): ", 3, Character.offsetByCodePoints(testUnicode, 0, 4, 4, -1));
+    assertEquals(
+        "offsetByCodePoints(4.-1): ", 3, Character.offsetByCodePoints(unicodeSequence, 4, -1));
     assertEquals(0, Character.offsetByCodePoints(testUnicode, 0, 4, 3, -2));
     assertEquals(0, Character.offsetByCodePoints(unicodeSequence, 3, -2));
-    char[] nonBmpChar = new char[] { '\uD800', '\uDF46' };
+    char[] nonBmpChar = new char[] {'\uD800', '\uDF46'};
     assertEquals(0x10346, Character.codePointAt(nonBmpChar, 0));
     assertEquals(1, Character.codePointCount(nonBmpChar, 0, 2));
   }
@@ -261,7 +276,7 @@ public class CharacterTest extends TestCase {
   public void testDigit() {
     assertEquals("wrong number of digits", 10, digitJudge.allPass().length());
   }
-  
+
   public void testSurrogates() {
     assertFalse(Character.isHighSurrogate('\uDF46'));
     assertTrue(Character.isLowSurrogate('\uDF46'));
@@ -279,9 +294,13 @@ public class CharacterTest extends TestCase {
     char[] chars = Character.toChars(0x10346);
     assertEquals(0xD800, chars[0]);
     assertEquals(0xDF46, chars[1]);
+    assertEquals(0xD800, Character.highSurrogate(0x10346));
+    assertEquals(0xDF46, Character.lowSurrogate(0x10346));
     assertEquals(2, Character.toChars(67328, chars, 0));
     assertEquals(0xD801, chars[0]);
     assertEquals(0xDF00, chars[1]);
+    assertEquals(0xD801, Character.highSurrogate(67328));
+    assertEquals(0xDF00, Character.lowSurrogate(67328));
     assertEquals(1, Character.toChars(65, chars, 0));
     assertEquals('A', chars[0]);
     assertTrue(Character.isSupplementaryCodePoint(0x10346));
@@ -290,6 +309,9 @@ public class CharacterTest extends TestCase {
     assertTrue(Character.isValidCodePoint(65));
     assertFalse(Character.isValidCodePoint(0x1FFFFFFF));
     assertEquals(0x10346, Character.toCodePoint('\uD800', '\uDF46'));
+    assertEquals(
+        0x10346,
+        Character.toCodePoint(Character.highSurrogate(0x10346), Character.lowSurrogate(0x10346)));
   }
 
   public void testLetter() {
@@ -297,14 +319,14 @@ public class CharacterTest extends TestCase {
   }
 
   public void testLetterOrDigit() {
-    assertEquals("wrong number of letters", 62,
-        letterOrDigitJudge.allPass().length());
+    assertEquals("wrong number of letters", 62, letterOrDigitJudge.allPass().length());
   }
 
   public void testLowerCase() {
-    assertEquals("wrong number of lowercase letters", 26,
-        lowerCaseJudge.allPass().length());
-    assertEquals("wrong number of lowercase letters after toLowerCase", 52,
+    assertEquals("wrong number of lowercase letters", 26, lowerCaseJudge.allPass().length());
+    assertEquals(
+        "wrong number of lowercase letters after toLowerCase",
+        52,
         new LowerCaseJudge(lowerCaseChanger.changed()).allPass().length());
 
     assertEquals('t', Character.toLowerCase((int) 'T'));
@@ -435,28 +457,28 @@ public class CharacterTest extends TestCase {
 
   public void testIsWhitepace() {
     char[] separators = {
-        '\u0020', // SPACE.
-        '\u1680', // OGHAM SPACE MARK.
-        '\u2000', // EN QUAD.
-        '\u2001', // EM QUAD.
-        '\u2002', // EN SPACE.
-        '\u2003', // EM SPACE.
-        '\u2004', // THREE-PER-EM SPACE.
-        '\u2005', // FOUR-PER-EM SPACE.
-        '\u2006', // SIX-PER-EM SPACE.
-        '\u2008', // PUNCTUATION SPACE.
-        '\u2009', // THIN SPACE.
-        '\u200A', // HAIR SPACE.
-        '\u2028', // LINE SEPARATOR.
-        '\u2029', // PARAGRAPH SEPARATOR.
-        '\u205F', // MEDIUM MATHEMATICAL SPACE.
-        '\u3000' // IDEOGRAPHIC SPACE.
+      '\u0020', // SPACE.
+      '\u1680', // OGHAM SPACE MARK.
+      '\u2000', // EN QUAD.
+      '\u2001', // EM QUAD.
+      '\u2002', // EN SPACE.
+      '\u2003', // EM SPACE.
+      '\u2004', // THREE-PER-EM SPACE.
+      '\u2005', // FOUR-PER-EM SPACE.
+      '\u2006', // SIX-PER-EM SPACE.
+      '\u2008', // PUNCTUATION SPACE.
+      '\u2009', // THIN SPACE.
+      '\u200A', // HAIR SPACE.
+      '\u2028', // LINE SEPARATOR.
+      '\u2029', // PARAGRAPH SEPARATOR.
+      '\u205F', // MEDIUM MATHEMATICAL SPACE.
+      '\u3000' // IDEOGRAPHIC SPACE.
     };
 
     char[] nonBreakingSpaceSeparators = {
-        '\u00A0', // NO-BREAK SPACE.
-        '\u2007', // FIGURE SPACE.
-        '\u202F' // NARROW NO-BREAK SPACE.
+      '\u00A0', // NO-BREAK SPACE.
+      '\u2007', // FIGURE SPACE.
+      '\u202F' // NARROW NO-BREAK SPACE.
     };
 
     char[] specialCases = {
@@ -472,16 +494,16 @@ public class CharacterTest extends TestCase {
     };
 
     char[] typicalCounterExamples = {
-        'a', // LATIN SMALL LETTER A.
-        'B', // LATIN CAPITAL LETTER B.
-        '_', // LOW LINE.
-        '\u2500' // BOX DRAWINGS LIGHT HORIZONTAL.
+      'a', // LATIN SMALL LETTER A.
+      'B', // LATIN CAPITAL LETTER B.
+      '_', // LOW LINE.
+      '\u2500' // BOX DRAWINGS LIGHT HORIZONTAL.
     };
 
     int[] supplementaryCounterExamples = {
-        0x2070E, // UNICODE HAN CHARACTER 'to castrate a fowl, a capon'.
-        0x20731, // UNICODE HAN CHARACTER 'to peel, pare'.
-        0x29D98, // UNICODE HAN CHARACTER 'a general name for perch, etc.'.
+      0x2070E, // UNICODE HAN CHARACTER 'to castrate a fowl, a capon'.
+      0x20731, // UNICODE HAN CHARACTER 'to peel, pare'.
+      0x29D98, // UNICODE HAN CHARACTER 'a general name for perch, etc.'.
     };
 
     int[] otherNonWhitespaceInts = {
@@ -588,9 +610,10 @@ public class CharacterTest extends TestCase {
   }
 
   public void testUpperCase() {
-    assertEquals("wrong number of uppercase letters", 26,
-        upperCaseJudge.allPass().length());
-    assertEquals("wrong number of uppercase letters after toUpperCase", 52,
+    assertEquals("wrong number of uppercase letters", 26, upperCaseJudge.allPass().length());
+    assertEquals(
+        "wrong number of uppercase letters after toUpperCase",
+        52,
         new UpperCaseJudge(upperCaseChanger.changed()).allPass().length());
 
     assertEquals('A', Character.toUpperCase((int) 'a'));

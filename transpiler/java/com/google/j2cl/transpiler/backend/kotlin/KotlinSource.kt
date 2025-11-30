@@ -59,8 +59,10 @@ internal object KotlinSource {
   val TIMES_OPERATOR = source("*")
 
   val ABSTRACT_KEYWORD = source("abstract")
+  val ANNOTATION_KEYWORD = source("annotation")
   val AS_KEYWORD = source("as")
   val BREAK_KEYWORD = source("break")
+  val CAPTURE_KEYWORD = source("capture")
   val CATCH_KEYWORD = source("catch")
   val CLASS_KEYWORD = source("class")
   val COMPANION_KEYWORD = source("companion")
@@ -71,6 +73,7 @@ internal object KotlinSource {
   val ELSE_KEYWORD = source("else")
   val ENUM_KEYWORD = source("enum")
   val EXTERNAL_KEYWORD = source("external")
+  val FINAL_KEYWORD = source("final")
   val FINALLY_KEYWORD = source("finally")
   val FILE_KEYWORD = source("file")
   val FOR_KEYWORD = source("for")
@@ -89,6 +92,7 @@ internal object KotlinSource {
   val NATIVE_KEYWORD = source("native")
   val NULL_KEYWORD = source("null")
   val OBJECT_KEYWORD = source("object")
+  val OF_KEYWORD = source("of")
   val OPEN_KEYWORD = source("open")
   val OUT_KEYWORD = source("out")
   val OVERRIDE_KEYWORD = source("override")
@@ -119,12 +123,7 @@ internal object KotlinSource {
 
   fun literal(it: Int): Source = source("$it")
 
-  fun literal(it: Long): Source =
-    when (it) {
-      // Long.MIN_VALUE can not be represented as a literal in Kotlin.
-      Long.MIN_VALUE -> inParentheses(infix(literal(Long.MAX_VALUE), PLUS_OPERATOR, literal(1L)))
-      else -> source("${it}L")
-    }
+  fun literal(it: Long): Source = source("${it}L")
 
   fun literal(it: Float): Source =
     if (it.isNaN()) inParentheses(infix(literal(0f), DIVIDE_OPERATOR, literal(0f)))
@@ -178,11 +177,13 @@ internal object KotlinSource {
         } else {
           indented(inNewLine(commaAndNewLineSeparated(parameters)))
         }
-      )
+      ),
     )
 
   fun fileAnnotation(name: Source, parameters: List<Source>): Source =
     annotation(join(FILE_KEYWORD, COLON, name), parameters)
+
+  fun blockComment(source: Source): Source = spaceSeparated(source("/*"), source, source("*/"))
 }
 
 internal val Visibility.source: Source

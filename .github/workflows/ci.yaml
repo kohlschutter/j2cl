@@ -16,8 +16,8 @@
 
 name: CI
 
-# Declare default permissions as read only.
-permissions: read-all
+permissions:
+  contents: read
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#on
 on:
@@ -28,11 +28,17 @@ on:
   schedule:
     # Daily at 12pm UTC
     - cron: '0 12 * * *'
+  # Can be called from other workflow to run the tests
+  workflow_call:
+    inputs:
+      git_ref:
+        description: 'The git ref used to checkout the repository and run the tests.'
+        type: string
+        required: false
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobs
 jobs:
   build:
-
     strategy:
       fail-fast: false
       matrix:
@@ -43,25 +49,27 @@ jobs:
 
     steps:
       - name: Setup Java
-        uses: actions/setup-java@5ffc13f4174014e2d4d4572b3d74c3fa61aeb2c2 # v3.11.0
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
         with:
-          java-version: '11'
+          java-version: '21'
           distribution: 'zulu'
           java-package: jdk
 
-      - name: Checkout current commit
-        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - name: Checkout the repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ inputs.git_ref || github.ref }}
 
       - name: Cache Bazel repositories
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/bazel-repository-cache
-          key: bazel-repositories-${{hashFiles('**/WORKSPACE', '**.bzl')}}
+          key: bazel-repositories-${{hashFiles('**/MODULE.bazel')}}
           restore-keys: |
             bazel-repositories-
 
       - name: Cache Bazel results
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/bazel-action-cache
           key: bazel-actions-${{runner.os}}-${{github.sha}}
@@ -72,8 +80,18 @@ jobs:
         run: |
           echo "build --repository_cache=~/bazel-repository-cache" >> ~/.bazelrc
           echo "build --disk_cache=~/bazel-action-cache" >> ~/.bazelrc
+          echo "build -c opt" >> ~/.bazelrc
           echo "build --verbose_failures" >> ~/.bazelrc
           bazel info
+
+      # Fake the host name to cause name lookups fail and fallback to localhost in WTL:
+      # rules_webtesting/go/httphelper/http_helper.go#FQDN()
+      # This prevents potential 'underscore' in resolved name which later used by
+      # WebDriver that inherits a JDK bug (https://bugs.openjdk.org/browse/JDK-8221675).
+      - name: Fake host name
+        if: matrix.os == 'macos-latest'
+        run: sudo scutil --set HostName unknown
+
       - name: Run tests
         if: matrix.test-target == 'default'
         run: ./build_test.sh CI

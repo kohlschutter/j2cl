@@ -15,6 +15,7 @@ let Long = goog.forwardDeclare('java.lang.Long$impl');
 let Number = goog.forwardDeclare('java.lang.Number$impl');
 let Short = goog.forwardDeclare('java.lang.Short$impl');
 let j_l_String = goog.forwardDeclare('java.lang.String$impl');
+let $Long = goog.forwardDeclare('nativebootstrap.Long$impl');
 let $Casts = goog.forwardDeclare('vmbootstrap.Casts$impl');
 
 class Casts extends j_l_Object {
@@ -41,7 +42,7 @@ class Casts extends j_l_Object {
  /** @nodts */
  m_testCasToInterface__void() {
   let o = j_l_Object.$create__();
-  let s = /**@type {(Serializable|Array)}*/ ($Casts.$to(o, Serializable));
+  let s = /**@type {(Serializable|Array)}*/ ($Casts.$to(o, /**@type {Function}*/ (Serializable)));
  }
  /** @nodts */
  m_testCastToBoxedType__void() {
@@ -50,9 +51,9 @@ class Casts extends j_l_Object {
   let d = /**@type {?number}*/ ($Casts.$to(o, Double));
   let f = /**@type {Float}*/ ($Casts.$to(o, Float));
   let i = /**@type {Integer}*/ ($Casts.$to(o, Integer));
-  let l = /**@type {Long}*/ ($Casts.$to(o, Long));
+  let l = /**@type {$Long}*/ ($Casts.$to(o, Long));
   let s = /**@type {Short}*/ ($Casts.$to(o, Short));
-  let n = /**@type {(Number|number)}*/ ($Casts.$to(o, Number));
+  let n = /**@type {(Number|number|!$Long)}*/ ($Casts.$to(o, Number));
   let c = /**@type {Character}*/ ($Casts.$to(o, Character));
   let bool = /**@type {?boolean}*/ ($Casts.$to(o, Boolean));
  }
@@ -64,7 +65,7 @@ class Casts extends j_l_Object {
  /** @nodts */
  m_functionForInstanceofTest__void_$p_cast_Casts() {}
  /** @nodts */
- m_testCastObjectAfterInstanceOf__void() {
+ m_testCastVariableAfterInstanceOf__void() {
   let o = j_l_Object.$create__();
   if (Casts.$isInstance(o)) {
    let c = /**@type {Casts}*/ (o);
@@ -89,6 +90,7 @@ class Casts extends j_l_Object {
    this.m_functionForInstanceofTest__void_$p_cast_Casts();
    let cNotAvoidCastsTo_2 = /**@type {Casts}*/ ($Casts.$to(o, Casts));
   }
+  let c_1 = Casts.$isInstance(o) ? /**@type {Casts}*/ (o) : null;
  }
  /** @nodts */
  m_testCastFieldAfterInstanceOf__void() {
@@ -111,6 +113,7 @@ class Casts extends j_l_Object {
    this.m_functionForInstanceofTest__void_$p_cast_Casts();
    let cNotAvoidCastsTo_2 = /**@type {Casts}*/ ($Casts.$to(foo.f_field__cast_Casts_Foo, Casts));
   }
+  let c_1 = Casts.$isInstance(foo.f_field__cast_Casts_Foo) ? /**@type {Casts}*/ (foo.f_field__cast_Casts_Foo) : null;
  }
  /** @nodts */
  m_testCaseMethodAfterInstanceOf__void() {
@@ -118,12 +121,15 @@ class Casts extends j_l_Object {
   if (Casts.$isInstance(foo.m_method__java_lang_Object())) {
    let cNotAvoidCastsTo = /**@type {Casts}*/ ($Casts.$to(foo.m_method__java_lang_Object(), Casts));
   }
+  let c = Casts.$isInstance(foo.m_method__java_lang_Object()) ? /**@type {Casts}*/ ($Casts.$to(foo.m_method__java_lang_Object(), Casts)) : null;
  }
  /** @nodts */
  m_testPrecedence__void() {
   let foo = 'foo';
   let bar = 'bar';
-  let s = /**@type {?string}*/ ($Casts.$to(false ? foo : bar, j_l_String));
+  let notString = Integer.valueOf(123);
+  let s1 = /**@type {?string}*/ ($Casts.$to(false ? foo : bar, j_l_String));
+  let s2 = /**@type {string}*/ ('foo' + j_l_String.m_valueOf__java_lang_Object__java_lang_String(notString));
  }
  /** @nodts */
  static $clinit() {

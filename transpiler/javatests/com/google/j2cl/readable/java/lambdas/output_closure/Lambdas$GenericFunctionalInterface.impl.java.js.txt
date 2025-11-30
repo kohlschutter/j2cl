@@ -11,7 +11,7 @@ let $LambdaAdaptor = goog.forwardDeclare('lambdas.Lambdas.GenericFunctionalInter
 class GenericFunctionalInterface {
  /** @abstract @nodts @return {T} */
  m_m__java_lang_Object__java_lang_Object(/** T */ i) {}
- /** @nodts @template T @return {GenericFunctionalInterface<T>} */
+ /** @nodts @template T @return {!GenericFunctionalInterface<T>} */
  static $adapt(/** ?function(T):T */ fn) {
   GenericFunctionalInterface.$clinit();
   return /**@type {!$LambdaAdaptor<T>}*/ (new $LambdaAdaptor(fn));
@@ -36,7 +36,7 @@ class GenericFunctionalInterface {
  }
 }
 GenericFunctionalInterface.$markImplementor(/**@type {Function}*/ (GenericFunctionalInterface));
-$Util.$setClassMetadataForInterface(GenericFunctionalInterface, 'lambdas.Lambdas$GenericFunctionalInterface');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (GenericFunctionalInterface), 'lambdas.Lambdas$GenericFunctionalInterface');
 
 exports = GenericFunctionalInterface;
 

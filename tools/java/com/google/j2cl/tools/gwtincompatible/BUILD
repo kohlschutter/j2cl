@@ -3,6 +3,9 @@
 #   annotations on source code elements and comments them out so that they do not get parsed by
 #   J2CL.
 
+load("@rules_java//java:defs.bzl", "java_binary", "java_library")
+load("//transpiler/java/com/google/j2cl/common/bazel:jvm_flags.bzl", "JVM_FLAGS")
+
 package(
     default_applicable_licenses = ["//:j2cl_license"],
     licenses = ["notice"],
@@ -26,10 +29,8 @@ java_library(
 
 java_binary(
     name = "GwtIncompatibleStripper",
-    jvm_flags = [
-        "-Dj2cl.deterministicTimestamps=true",
-    ],
     main_class = "com.google.j2cl.tools.gwtincompatible.GwtIncompatibleStripperCommandLineRunner",
+    use_launcher = False,
     runtime_deps = [":gwtincompatible_lib"],
 )
 
@@ -46,10 +47,9 @@ java_library(
 
 java_binary(
     name = "GwtIncompatibleStripper_worker",
-    jvm_flags = [
-        "-Dj2cl.deterministicTimestamps=true",
-    ],
+    jvm_flags = JVM_FLAGS,
     main_class = "com.google.j2cl.tools.gwtincompatible.BazelGwtIncompatibleStripper",
-    visibility = ["//build_defs/internal_do_not_use:__pkg__"],
+    use_launcher = False,
+    visibility = ["//build_defs:toolchain_users"],
     runtime_deps = [":gwtincompatible_worker_lib"],
 )

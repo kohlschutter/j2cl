@@ -30,23 +30,8 @@ class SourceTest {
   }
 
   @Test
-  fun sourceSemicolonEnded() {
-    semicolonEnded(source("foo")).assertBuilds("foo;")
-  }
-
-  @Test
-  fun sourceAssignment() {
-    assignment(source("foo"), source("bar")).assertBuilds("foo = bar")
-  }
-
-  @Test
-  fun sourceParameter() {
-    parameter(source("name"), source("value")).assertBuilds("name:value")
-  }
-
-  @Test
-  fun sourcePointer() {
-    pointer(source("foo")).assertBuilds("foo*")
+  fun sourcePlusSemicolon() {
+    source("foo").plusSemicolon().assertBuilds("foo;")
   }
 
   @Test
@@ -57,12 +42,6 @@ class SourceTest {
   @Test
   fun sourceMacroDefine() {
     macroDefine(source("foo")).assertBuilds("#define foo")
-  }
-
-  @Test
-  fun sourceCompatibilityAlias() {
-    compatibilityAlias(source("alias"), source("target"))
-      .assertBuilds("@compatibility_alias alias target")
   }
 
   @Test
@@ -101,7 +80,7 @@ class SourceTest {
         Dependency.of(Import.local("local_1.h")),
         Dependency.of(Import.system("system_1.h")),
         Dependency.of(ForwardDeclaration.ofClass("Class1")),
-        Dependency.of(ForwardDeclaration.ofProtocol("Protocol1"))
+        Dependency.of(ForwardDeclaration.ofProtocol("Protocol1")),
       )
 
     dependenciesSource(dependencies)
@@ -126,7 +105,7 @@ class SourceTest {
   @Test
   fun rendererSourceWithDependencies() {
     rendererOf(source("void main() {}"))
-      .plus(Dependency.of(Import.system("std.h")))
+      .with(Dependency.of(Import.system("std.h")))
       .sourceWithDependencies
       .assertBuilds(
         """

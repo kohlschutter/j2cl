@@ -83,6 +83,7 @@ public class MathTest extends TestCase {
   }
 
   public void testFloorDiv() {
+    assertEquals(-1, Math.floorDiv(1, -1));
     assertEquals(0, Math.floorDiv(0, 1));
     assertEquals(1, Math.floorDiv(4, 3));
     assertEquals(-2, Math.floorDiv(4, -3));
@@ -90,6 +91,8 @@ public class MathTest extends TestCase {
     assertEquals(1, Math.floorDiv(-4, -3));
     assertEquals(1, Math.floorDiv(Integer.MIN_VALUE, Integer.MIN_VALUE));
     assertEquals(1, Math.floorDiv(Integer.MAX_VALUE, Integer.MAX_VALUE));
+    assertEquals(-1, Math.floorDiv(Integer.MAX_VALUE, Integer.MIN_VALUE));
+    assertEquals(-2, Math.floorDiv(Integer.MIN_VALUE, Integer.MAX_VALUE));
     assertEquals(Integer.MIN_VALUE, Math.floorDiv(Integer.MIN_VALUE, 1));
     assertEquals(Integer.MAX_VALUE, Math.floorDiv(Integer.MAX_VALUE, 1));
 
@@ -104,6 +107,7 @@ public class MathTest extends TestCase {
   }
 
   public void testFloorDivLongs() {
+    assertEquals(-1L, Math.floorDiv(1L, -1L));
     assertEquals(0L, Math.floorDiv(0L, 1L));
     assertEquals(1L, Math.floorDiv(4L, 3L));
     assertEquals(-2L, Math.floorDiv(4L, -3L));
@@ -111,6 +115,8 @@ public class MathTest extends TestCase {
     assertEquals(1L, Math.floorDiv(-4L, -3L));
     assertEquals(1L, Math.floorDiv(Long.MIN_VALUE, Long.MIN_VALUE));
     assertEquals(1L, Math.floorDiv(Long.MAX_VALUE, Long.MAX_VALUE));
+    assertEquals(-1L, Math.floorDiv(Long.MAX_VALUE, Long.MIN_VALUE));
+    assertEquals(-2L, Math.floorDiv(Long.MIN_VALUE, Long.MAX_VALUE));
     assertEquals(Long.MIN_VALUE, Math.floorDiv(Long.MIN_VALUE, 1L));
     assertEquals(Long.MAX_VALUE, Math.floorDiv(Long.MAX_VALUE, 1L));
 
@@ -134,6 +140,8 @@ public class MathTest extends TestCase {
     assertEquals(0, Math.floorMod(Integer.MAX_VALUE, Integer.MAX_VALUE));
     assertEquals(0, Math.floorMod(Integer.MIN_VALUE, 1));
     assertEquals(0, Math.floorMod(Integer.MAX_VALUE, 1));
+    assertEquals(Integer.MAX_VALUE - 1, Math.floorMod(Integer.MAX_VALUE - 1, Integer.MAX_VALUE));
+    assertEquals(1, Math.floorMod(Integer.MAX_VALUE, Integer.MAX_VALUE - 1));
 
     try {
       Math.floorMod(1, 0);
@@ -152,6 +160,8 @@ public class MathTest extends TestCase {
     assertEquals(0L, Math.floorMod(Long.MAX_VALUE, Long.MAX_VALUE));
     assertEquals(0L, Math.floorMod(Long.MIN_VALUE, 1L));
     assertEquals(0L, Math.floorMod(Long.MAX_VALUE, 1L));
+    assertEquals(Long.MAX_VALUE - 1L, Math.floorMod(Long.MAX_VALUE - 1L, Long.MAX_VALUE));
+    assertEquals(1L, Math.floorMod(Long.MAX_VALUE, Long.MAX_VALUE - 1L));
 
     try {
       Math.floorMod(1L, 0L);
@@ -273,8 +283,17 @@ public class MathTest extends TestCase {
   }
 
   public void testToIntExact() {
-    final long[] longs = {0, -1, 1, Integer.MIN_VALUE, Integer.MAX_VALUE,
-        Integer.MIN_VALUE - 1L, Integer.MAX_VALUE + 1L, Long.MIN_VALUE, Long.MAX_VALUE};
+    final long[] longs = {
+      0,
+      -1,
+      1,
+      Integer.MIN_VALUE,
+      Integer.MAX_VALUE,
+      Integer.MIN_VALUE - 1L,
+      Integer.MAX_VALUE + 1L,
+      Long.MIN_VALUE,
+      Long.MAX_VALUE
+    };
     for (long a : longs) {
       boolean expectedSuccess = (int) a == a;
       try {
@@ -301,10 +320,8 @@ public class MathTest extends TestCase {
     candidates.add(1);
     candidates.add(Integer.MAX_VALUE / 2);
     candidates.add(Integer.MAX_VALUE / 2 - 1);
-    candidates.add(Integer.MAX_VALUE / 2 + 1);
     candidates.add(Integer.MIN_VALUE / 2);
     candidates.add(Integer.MIN_VALUE / 2 - 1);
-    candidates.add(Integer.MIN_VALUE / 2 + 1);
     candidates.add(Integer.MAX_VALUE - 1);
     candidates.add(Integer.MAX_VALUE);
     candidates.add(Integer.MIN_VALUE + 1);
@@ -321,10 +338,8 @@ public class MathTest extends TestCase {
 
     candidates.add(Long.MAX_VALUE / 2);
     candidates.add(Long.MAX_VALUE / 2 - 1);
-    candidates.add(Long.MAX_VALUE / 2 + 1);
     candidates.add(Long.MIN_VALUE / 2);
     candidates.add(Long.MIN_VALUE / 2 - 1);
-    candidates.add(Long.MIN_VALUE / 2 + 1);
     candidates.add(Integer.MAX_VALUE + 1L);
     candidates.add(Long.MAX_VALUE - 1L);
     candidates.add(Long.MAX_VALUE);

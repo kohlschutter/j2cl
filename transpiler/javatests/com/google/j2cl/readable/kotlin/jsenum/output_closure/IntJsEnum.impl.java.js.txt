@@ -1,0 +1,13 @@
+goog.module('jsenum.IntJsEnum$impl');
+
+/** @enum {number} */
+const IntJsEnum = {
+ MINUSONE : -1,
+ TWENTY : 20,
+ ELEVEN : 11,
+ 
+};
+
+exports = IntJsEnum;
+
+//# sourceMappingURL=IntJsEnum.js.map

@@ -4,11 +4,12 @@ const j2wasm_DoubleUtils = goog.require('j2wasm.DoubleUtils');
 const j2wasm_ExceptionUtils = goog.require('j2wasm.ExceptionUtils');
 const j2wasm_StringUtils = goog.require('j2wasm.StringUtils');
 
-/** @return {!Object<string, !Object<string, !*>>} Wasm import object */
+/** @return {!Object<string, *>} Wasm import object */
 function getImports() {
  return {
+  'WebAssembly': WebAssembly,
   'imports': {
-   'j2wasm.ExceptionUtils.tag': j2wasm_ExceptionUtils.tag,
+   '?.toString': (/** ? */ $instance, ) => $instance.toString(),
    'Date.UTC': Date.UTC,
    'Date.constructor': () => new Date(),
    'Date.constructor$1': (/** number */ milliseconds, ) => new Date(milliseconds, ),
@@ -41,6 +42,9 @@ function getImports() {
    'Date.setSeconds$1': (/** !Date */ $instance, /** number */ seconds, ) => $instance.setSeconds(seconds, ),
    'Date.setTime$1': (/** !Date */ $instance, /** number */ milliseconds, ) => $instance.setTime(milliseconds, ),
    'Date.toLocaleString': (/** !Date */ $instance, ) => $instance.toLocaleString(),
+   'Error': Error,
+   'Error.captureStackTrace': Error.captureStackTrace,
+   'Error.constructor': () => new Error(),
    'Math.acos': Math.acos,
    'Math.asin': Math.asin,
    'Math.atan': Math.atan,
@@ -72,6 +76,11 @@ function getImports() {
    'RegExp.test$1': (/** !RegExp */ $instance, /** string */ value, ) => $instance.test(value, ),
    'RegExp.toString': (/** !RegExp */ $instance, ) => $instance.toString(),
    'RegExpResult.at$1': (/** !RegExpResult */ $instance, /** number */ index, ) => $instance.at(index, ),
+   'atob': atob,
+   'btoa': btoa,
+   'get Array.length': (/** !Array<T> */ $instance, ) => $instance.length,
+   'get Error.captureStackTrace': () => Error.captureStackTrace,
+   'get Error.stack': (/** !Error */ $instance, ) => $instance.stack,
    'get RegExpResult.index': (/** !RegExpResult */ $instance, ) => $instance.index,
    'get RegExpResult.length': (/** !RegExpResult */ $instance, ) => $instance.length,
    'j2wasm.CharUtils.charToLowerCase': j2wasm_CharUtils.charToLowerCase,
@@ -81,13 +90,15 @@ function getImports() {
    'j2wasm.ConsoleUtils.log': j2wasm_ConsoleUtils.log,
    'j2wasm.DoubleUtils.dmod': j2wasm_DoubleUtils.dmod,
    'j2wasm.DoubleUtils.isValidDouble': j2wasm_DoubleUtils.isValidDouble,
-   'j2wasm.ExceptionUtils.create': j2wasm_ExceptionUtils.create,
-   'j2wasm.ExceptionUtils.throwException': j2wasm_ExceptionUtils.throwException,
+   'j2wasm.ExceptionUtils.getJavaThrowable': j2wasm_ExceptionUtils.getJavaThrowable,
+   'j2wasm.ExceptionUtils.isError': j2wasm_ExceptionUtils.isError,
+   'j2wasm.ExceptionUtils.setJavaThrowable': j2wasm_ExceptionUtils.setJavaThrowable,
    'j2wasm.StringUtils.compareToIgnoreCase': j2wasm_StringUtils.compareToIgnoreCase,
    'j2wasm.StringUtils.equalsIgnoreCase': j2wasm_StringUtils.equalsIgnoreCase,
    'j2wasm.StringUtils.generateClassName': j2wasm_StringUtils.generateClassName,
    'parseFloat': parseFloat,
    'performance.now': () => performance.now(),
+   'set Error.stack': (/** !Error */ $instance, /** string */ value, ) => $instance.stack = value,
    'set RegExp.lastIndex': (/** !RegExp */ $instance, /** number */ index, ) => $instance.lastIndex = index,
    'string.indexOf$1': (/** string */ $instance, /** string */ str, ) => $instance.indexOf(str, ),
    'string.indexOf$2': (/** string */ $instance, /** string */ str, /** number */ startIndex, ) => $instance.indexOf(str, startIndex, ),
@@ -102,3 +113,4 @@ function getImports() {
   }
  };
 }
+

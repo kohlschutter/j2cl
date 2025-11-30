@@ -219,7 +219,7 @@ public class NormalizeConstructors extends NormalizationPass {
                 .count()
             > 1;
     return hasMultipleConstructors
-        ? String.format(message + " '%s'.", constructor.getDescriptor().getReadableDescription())
+        ? String.format("%s '%s'.", message, constructor.getDescriptor().getReadableDescription())
         : null;
   }
 
@@ -251,12 +251,30 @@ public class NormalizeConstructors extends NormalizationPass {
     if (!type.getSuperTypeDescriptor().hasJsConstructor()) {
       superConstructorInvocation = synthesizeEmptySuperCall(type.getSuperTypeDescriptor());
     }
-    body.add(
-        0,
+    body.addFirst(
         AstUtils.replaceDeclarations(
             jsConstructor.getParameters(),
             jsConstructorParameters,
             superConstructorInvocation.makeStatement(jsConstructorSourcePosition)));
+
+    if (type.getSuperTypeDescriptor().hasJsConstructor()) {
+      // Move any statements that occurred before the super() call into the synthesized constructor.
+      // These are generally expressions that were originally in the super() call that may have been
+      // lowered into preceding statements. This is generally allowable so long as they never
+      // reference the instance before the super() call occurs.
+      int superConstructorStatementIndex =
+          jsConstructor
+              .getBody()
+              .getStatements()
+              .indexOf(AstUtils.getConstructorInvocationStatement(jsConstructor));
+      var preSuperCallStatements =
+          jsConstructor.getBody().getStatements().subList(0, superConstructorStatementIndex);
+      body.addAll(
+          0,
+          AstUtils.replaceDeclarations(
+              jsConstructor.getParameters(), jsConstructorParameters, preSuperCallStatements));
+      preSuperCallStatements.clear();
+    }
 
     if (type.getTypeDescriptor().isAssignableTo(TypeDescriptors.get().javaLangThrowable)) {
       // $instance.privateInitError(new Error);
@@ -284,10 +302,10 @@ public class NormalizeConstructors extends NormalizationPass {
     List<Statement> body = generateInstanceFieldDeclarationStatements(type, sourcePosition);
 
     if (type.getSuperTypeDescriptor() != null) {
-      body.add(
-          0, synthesizeEmptySuperCall(type.getSuperTypeDescriptor()).makeStatement(sourcePosition));
+      body.addFirst(
+          synthesizeEmptySuperCall(type.getSuperTypeDescriptor()).makeStatement(sourcePosition));
     } else {
-      body.add(0, synthesizeAssertClinit(type).makeStatement(sourcePosition));
+      body.addFirst(synthesizeAssertClinit(type).makeStatement(sourcePosition));
     }
 
     MethodDescriptor constructorDescriptor =
@@ -405,6 +423,7 @@ public class NormalizeConstructors extends NormalizationPass {
     MethodDescriptor javascriptConstructor =
         getImplicitJavascriptConstructorDescriptor(type.getTypeDescriptor());
     List<Expression> javascriptConstructorArguments = ImmutableList.of();
+    List<Statement> preConstructorCallStatements = ImmutableList.of();
 
     if (type.getDeclaration().hasJsConstructor()) {
       // Use JsConstructor instead.
@@ -416,6 +435,19 @@ public class NormalizeConstructors extends NormalizationPass {
       javascriptConstructor =
           getPrimaryConstructorDescriptor(primaryConstructorInvocation.getTarget());
       javascriptConstructorArguments = AstUtils.clone(primaryConstructorInvocation.getArguments());
+
+      // Move any statements that occurred before the this() call into the factory method. These are
+      // generally expressions that were originally in the this() call that may have been lowered
+      // into preceding statements. This is generally allowable so long as they never reference the
+      // instance before the this() call occurs.
+      var constructorStatements = constructor.getBody().getStatements();
+      var originalPreConstructorCallStatements =
+          constructorStatements.subList(
+              0,
+              constructorStatements.indexOf(
+                  AstUtils.getConstructorInvocationStatement(constructor)));
+      preConstructorCallStatements = ImmutableList.copyOf(originalPreConstructorCallStatements);
+      originalPreConstructorCallStatements.clear();
     }
 
     return synthesizeFactoryMethod(
@@ -424,7 +456,8 @@ public class NormalizeConstructors extends NormalizationPass {
             "Factory method corresponding to constructor", constructor, type),
         type.getTypeDescriptor(),
         javascriptConstructor,
-        javascriptConstructorArguments);
+        javascriptConstructorArguments,
+        preConstructorCallStatements);
   }
 
   /**
@@ -442,12 +475,15 @@ public class NormalizeConstructors extends NormalizationPass {
       String jsDocDescription,
       DeclaredTypeDescriptor enclosingType,
       MethodDescriptor javascriptConstructor,
-      List<Expression> javascriptConstructorArguments) {
-
-    List<Statement> statements = new ArrayList<>();
+      List<Expression> javascriptConstructorArguments,
+      List<Statement> preCtorCallStatements) {
 
     List<Variable> factoryMethodParameters = AstUtils.clone(constructor.getParameters());
     List<Expression> relayArguments = AstUtils.getReferences(factoryMethodParameters);
+    List<Statement> statements =
+        new ArrayList<>(
+            AstUtils.replaceDeclarations(
+                constructor.getParameters(), factoryMethodParameters, preCtorCallStatements));
     javascriptConstructorArguments =
         AstUtils.replaceDeclarations(
             constructor.getParameters(), factoryMethodParameters, javascriptConstructorArguments);

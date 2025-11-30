@@ -1,6 +1,8 @@
 # Description:
 #   This package contains backend driver code.
 
+load("@rules_java//java:defs.bzl", "java_library")
+
 package(
     default_applicable_licenses = ["//:j2cl_license"],
     default_visibility = [
@@ -20,6 +22,7 @@ java_library(
         "//transpiler/java/com/google/j2cl/transpiler/backend/closure",
         "//transpiler/java/com/google/j2cl/transpiler/backend/kotlin",
         "//transpiler/java/com/google/j2cl/transpiler/backend/wasm",
+        "//transpiler/java/com/google/j2cl/transpiler/frontend",
         "//transpiler/java/com/google/j2cl/transpiler/passes",
     ],
 )

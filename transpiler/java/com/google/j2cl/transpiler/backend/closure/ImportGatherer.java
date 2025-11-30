@@ -33,12 +33,13 @@ import com.google.j2cl.transpiler.ast.FieldDescriptor;
 import com.google.j2cl.transpiler.ast.FunctionExpression;
 import com.google.j2cl.transpiler.ast.InstanceOfExpression;
 import com.google.j2cl.transpiler.ast.IntersectionTypeDescriptor;
-import com.google.j2cl.transpiler.ast.JavaScriptConstructorReference;
+import com.google.j2cl.transpiler.ast.JsConstructorReference;
 import com.google.j2cl.transpiler.ast.JsDocCastExpression;
 import com.google.j2cl.transpiler.ast.MemberDescriptor;
 import com.google.j2cl.transpiler.ast.Method;
 import com.google.j2cl.transpiler.ast.MethodCall;
 import com.google.j2cl.transpiler.ast.MethodDescriptor;
+import com.google.j2cl.transpiler.ast.MethodDescriptor.ParameterDescriptor;
 import com.google.j2cl.transpiler.ast.NewInstance;
 import com.google.j2cl.transpiler.ast.Type;
 import com.google.j2cl.transpiler.ast.TypeDeclaration;
@@ -78,9 +79,13 @@ class ImportGatherer extends AbstractVisitor {
 
   @Override
   public void exitFunctionExpression(FunctionExpression functionExpression) {
-    for (Variable parameter : functionExpression.getParameters()) {
-      collectForJsDoc(parameter.getTypeDescriptor());
+    // Collect types from method descriptor since these are used to emit
+    // parameter and return typing.
+    for (ParameterDescriptor parameterDescriptor :
+        functionExpression.getDescriptor().getParameterDescriptors()) {
+      collectForJsDoc(parameterDescriptor.getTypeDescriptor());
     }
+    collectForJsDoc(functionExpression.getDescriptor().getReturnTypeDescriptor());
   }
 
   @Override
@@ -119,9 +124,8 @@ class ImportGatherer extends AbstractVisitor {
     // one can access devirtualized overlay methods and static methods, and those need a direct
     // reference to the declaring class at the usage site. In order of AJD to preserve those,
     // wherever they are exposed they need to be required.
-    nativeType
-        .toUnparameterizedTypeDescriptor()
-        .getDeclaredMemberDescriptors()
+    nativeType.toDescriptor().getDeclaredMemberDescriptors().stream()
+        .filter(m -> !m.isJsOverlay())
         .forEach(
             m -> {
               maybeAddNativeReference(m);
@@ -213,8 +217,7 @@ class ImportGatherer extends AbstractVisitor {
 
   @SuppressWarnings("ReferenceEquality")
   @Override
-  public void exitJavaScriptConstructorReference(
-      JavaScriptConstructorReference constructorReference) {
+  public void exitJsConstructorReference(JsConstructorReference constructorReference) {
     TypeDeclaration referencedTypeDeclaration = constructorReference.getReferencedTypeDeclaration();
     if (referencedTypeDeclaration == TypeDescriptors.get().globalNamespace.getTypeDeclaration()) {
       // We don't need to record global since it doesn't have a name but we still want the rest of
@@ -231,8 +234,15 @@ class ImportGatherer extends AbstractVisitor {
       return;
     }
 
+    // Number/Comparable are a type union that always includes Long, add it, but keep going.
+    if (TypeDescriptors.isJavaLangNumber(typeDescriptor)
+        || TypeDescriptors.isJavaLangComparable(typeDescriptor)) {
+      collectForJsDoc(BootstrapType.NATIVE_LONG.getDescriptor());
+    }
+
     // JsDoc for {@code long} uses NATIVE_LONG.
-    if (TypeDescriptors.isPrimitiveLong(typeDescriptor)) {
+    if (TypeDescriptors.isPrimitiveLong(typeDescriptor)
+        || TypeDescriptors.isJavaLangLong(typeDescriptor)) {
       collectForJsDoc(BootstrapType.NATIVE_LONG.getDescriptor());
       return;
     }
@@ -255,8 +265,8 @@ class ImportGatherer extends AbstractVisitor {
       return;
     }
 
-    if (typeDescriptor instanceof TypeVariable) {
-      collectTypeDescriptorsIntroducedByTypeBounds((TypeVariable) typeDescriptor);
+    if (typeDescriptor instanceof TypeVariable typeVariable) {
+      collectTypeDescriptorsIntroducedByTypeBounds(typeVariable);
       return;
     }
 

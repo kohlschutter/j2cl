@@ -10,7 +10,7 @@ let $LambdaAdaptor = goog.forwardDeclare('abstractinterfaceimpl.MyInterface.$Lam
 class MyInterface {
  /** @abstract @nodts @return {number} */
  m_foo__int() {}
- /** @nodts @return {MyInterface} */
+ /** @nodts @return {!MyInterface} */
  static $adapt(/** ?function():number */ fn) {
   MyInterface.$clinit();
   return new $LambdaAdaptor(fn);
@@ -35,7 +35,7 @@ class MyInterface {
  }
 }
 MyInterface.$markImplementor(/**@type {Function}*/ (MyInterface));
-$Util.$setClassMetadataForInterface(MyInterface, 'abstractinterfaceimpl.MyInterface');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (MyInterface), 'abstractinterfaceimpl.MyInterface');
 
 exports = MyInterface;
 

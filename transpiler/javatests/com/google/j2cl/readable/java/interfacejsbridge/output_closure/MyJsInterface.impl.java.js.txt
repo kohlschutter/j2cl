@@ -10,7 +10,7 @@ let $LambdaAdaptor = goog.forwardDeclare('interfacejsbridge.MyJsInterface.$Lambd
 class MyJsInterface {
  /** @abstract @return {number} */
  foo(/** number */ a) {}
- /** @nodts @return {MyJsInterface} */
+ /** @nodts @return {!MyJsInterface} */
  static $adapt(/** ?function(number):number */ fn) {
   MyJsInterface.$clinit();
   return new $LambdaAdaptor(fn);
@@ -35,7 +35,7 @@ class MyJsInterface {
  }
 }
 MyJsInterface.$markImplementor(/**@type {Function}*/ (MyJsInterface));
-$Util.$setClassMetadataForInterface(MyJsInterface, 'interfacejsbridge.MyJsInterface');
+$Util.$setClassMetadataForInterface(/**@type {Function}*/ (MyJsInterface), 'interfacejsbridge.MyJsInterface');
 
 exports = MyJsInterface;
 

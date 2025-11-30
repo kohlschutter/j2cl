@@ -15,6 +15,16 @@
  */
 package com.google.protobuf;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public class GeneratedMessage {
+  // Emulates Kotlin property
+  public final Parser<? extends GeneratedMessage> parserForType = null;
+
+  public Parser<? extends GeneratedMessage> getParserForType() {
+    throw new RuntimeException();
+  }
+
   public static class Builder {}
 }

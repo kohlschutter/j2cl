@@ -39,6 +39,13 @@ class ToStringRenderer {
       }
 
       @Override
+      public boolean enterArrayCreationReference(ArrayCreationReference arrayCreationReference) {
+        print(arrayCreationReference.targetTypeDescriptor);
+        print("::new");
+        return false;
+      }
+
+      @Override
       public boolean enterArrayLiteral(ArrayLiteral arrayLiteral) {
         print("[");
         printSeparated(",", arrayLiteral.getValueExpressions());
@@ -192,6 +199,12 @@ class ToStringRenderer {
       }
 
       @Override
+      public boolean enterEmbeddedStatement(EmbeddedStatement embeddedStatement) {
+        accept(embeddedStatement.getStatement());
+        return false;
+      }
+
+      @Override
       public boolean enterExpression(Expression expression) {
         print("<expr>");
         return false;
@@ -300,7 +313,7 @@ class ToStringRenderer {
         if (initializerBlock.isStatic()) {
           print("static ");
         }
-        accept(initializerBlock.getBlock());
+        accept(initializerBlock.getBody());
         return false;
       }
 
@@ -333,8 +346,14 @@ class ToStringRenderer {
 
       @Override
       public boolean enterMethod(Method method) {
-        print(method.getReadableDescription() + " ");
-        accept(method.body);
+        printMethod(method);
+        return false;
+      }
+
+      @Override
+      public boolean enterLocalFunctionDeclarationStatement(
+          LocalFunctionDeclarationStatement functionDeclarationStatement) {
+        printMethod(functionDeclarationStatement);
         return false;
       }
 
@@ -342,6 +361,23 @@ class ToStringRenderer {
       public boolean enterMethodCall(MethodCall methodCall) {
         printQualifier(methodCall);
         printInvocation(methodCall);
+        return false;
+      }
+
+      @Override
+      public boolean enterMethodReference(MethodReference methodReference) {
+        var referencedMethodDescriptor = methodReference.getReferencedMethodDescriptor();
+        var qualifier = methodReference.getQualifier();
+        if (qualifier == null) {
+          print(referencedMethodDescriptor.getEnclosingTypeDescriptor());
+        } else {
+          accept(qualifier);
+        }
+        print("::");
+        print(
+            referencedMethodDescriptor.isConstructor()
+                ? "new"
+                : referencedMethodDescriptor.getName());
         return false;
       }
 
@@ -419,6 +455,21 @@ class ToStringRenderer {
       }
 
       @Override
+      public boolean enterYieldStatement(YieldStatement yieldStatement) {
+        print("yield");
+        if (yieldStatement.getLabelReference() != null) {
+          print("@");
+          accept(yieldStatement.getLabelReference());
+        }
+        if (yieldStatement.getExpression() != null) {
+          print(" ");
+          accept(yieldStatement.getExpression());
+        }
+        print(";");
+        return false;
+      }
+
+      @Override
       public boolean enterStatement(Statement statement) {
         print("<statement>");
         return false;
@@ -436,13 +487,17 @@ class ToStringRenderer {
 
       @Override
       public boolean enterSwitchCase(SwitchCase switchCase) {
-        if (switchCase.getCaseExpression() != null) {
+        if (!switchCase.getCaseExpressions().isEmpty()) {
           print("case ");
-          accept(switchCase.getCaseExpression());
-        } else {
+          printSeparated(", ", switchCase.getCaseExpressions());
+          if (switchCase.isDefault()) {
+            print(",");
+          }
+        }
+        if (switchCase.isDefault()) {
           print("default");
         }
-        print(":");
+        print(switchCase.canFallthrough() ? ":" : " ->");
         indent();
         for (Statement statement : switchCase.getStatements()) {
           newLine();
@@ -454,9 +509,25 @@ class ToStringRenderer {
       }
 
       @Override
+      public boolean enterSwitchExpression(SwitchExpression switchExpression) {
+        print("when (");
+        accept(switchExpression.getExpression());
+        print(") {");
+        indent();
+        for (SwitchCase switchCase : switchExpression.getCases()) {
+          newLine();
+          accept(switchCase);
+        }
+        unIndent();
+        newLine();
+        print("}");
+        return false;
+      }
+
+      @Override
       public boolean enterSwitchStatement(SwitchStatement switchStatement) {
         print("switch (");
-        accept(switchStatement.getSwitchExpression());
+        accept(switchStatement.getExpression());
         print(") {");
         indent();
         for (SwitchCase switchCase : switchStatement.getCases()) {
@@ -537,8 +608,7 @@ class ToStringRenderer {
       }
 
       @Override
-      public boolean enterJavaScriptConstructorReference(
-          JavaScriptConstructorReference constructorReference) {
+      public boolean enterJsConstructorReference(JsConstructorReference constructorReference) {
         print(constructorReference.getReferencedTypeDeclaration().getQualifiedSourceName());
         return false;
       }
@@ -683,6 +753,11 @@ class ToStringRenderer {
         unIndent();
         newLine();
         print("}");
+      }
+
+      private void printMethod(MethodLike methodLike) {
+        print(methodLike.getReadableDescription() + " ");
+        accept(methodLike.getBody());
       }
 
       private void unIndent() {

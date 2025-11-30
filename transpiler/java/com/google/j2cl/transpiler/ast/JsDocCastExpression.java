@@ -17,6 +17,7 @@ package com.google.j2cl.transpiler.ast;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.j2cl.common.visitor.Processor;
 import com.google.j2cl.common.visitor.Visitable;
 
@@ -24,26 +25,35 @@ import com.google.j2cl.common.visitor.Visitable;
 @Visitable
 public class JsDocCastExpression extends Expression {
   @Visitable Expression expression;
-  private final TypeDescriptor castType;
+  @Visitable TypeDescriptor castTypeDescriptor;
 
-  private JsDocCastExpression(Expression expression, TypeDescriptor castType) {
+  private JsDocCastExpression(Expression expression, TypeDescriptor castTypeDescriptor) {
     this.expression = checkNotNull(expression);
-    this.castType = checkNotNull(castType);
+    this.castTypeDescriptor = checkNotNull(castTypeDescriptor);
   }
 
   public Expression getExpression() {
     return expression;
   }
 
+  public TypeDescriptor getCastTypeDescriptor() {
+    return castTypeDescriptor;
+  }
+
   @Override
   public TypeDescriptor getTypeDescriptor() {
-    return castType;
+    return castTypeDescriptor;
   }
 
   @Override
   public Precedence getPrecedence() {
-    // These are always emitted with parens.
-    return Precedence.HIGHEST;
+    // TODO(b/390642878): Review the precedence once jscompiler treats the construct consistently.
+    return Precedence.LOWEST;
+  }
+
+  @Override
+  public boolean isAlwaysNull() {
+    return expression.isAlwaysNull();
   }
 
   @Override
@@ -53,7 +63,7 @@ public class JsDocCastExpression extends Expression {
 
   @Override
   public JsDocCastExpression clone() {
-    return new JsDocCastExpression(expression.clone(), castType);
+    return new JsDocCastExpression(expression.clone(), castTypeDescriptor);
   }
 
   public static Builder newBuilder() {
@@ -63,29 +73,31 @@ public class JsDocCastExpression extends Expression {
   /** Builder for JsDocCastExpression */
   public static class Builder {
     private Expression expression;
-    private TypeDescriptor castType;
+    private TypeDescriptor castTypeDescriptor;
 
     public static Builder from(JsDocCastExpression annotation) {
       Builder builder = new Builder();
       builder.expression = annotation.getExpression();
-      builder.castType = annotation.getTypeDescriptor();
+      builder.castTypeDescriptor = annotation.getTypeDescriptor();
       return builder;
     }
 
+    @CanIgnoreReturnValue
     public Builder setExpression(Expression expression) {
       this.expression = expression;
       return this;
     }
 
-    public Builder setCastType(TypeDescriptor castType) {
-      this.castType = castType;
+    @CanIgnoreReturnValue
+    public Builder setCastTypeDescriptor(TypeDescriptor castTypeDescriptor) {
+      this.castTypeDescriptor = castTypeDescriptor;
       return this;
     }
 
     public JsDocCastExpression build() {
       return new JsDocCastExpression(
           // Avoid pointlessly nesting type annotations.
-          AstUtils.removeJsDocCastIfPresent(expression), castType);
+          AstUtils.removeJsDocCastIfPresent(expression), castTypeDescriptor);
     }
   }
 }

@@ -15,33 +15,19 @@
  */
 package com.google.j2cl.transpiler.frontend;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Iterables;
 import com.google.j2cl.common.Problems;
-import com.google.j2cl.transpiler.ast.CompilationUnit;
 import com.google.j2cl.transpiler.ast.Library;
-import com.google.j2cl.transpiler.frontend.common.PackageInfoCache;
+import com.google.j2cl.transpiler.frontend.common.FrontendOptions;
 import com.google.j2cl.transpiler.frontend.javac.JavacParser;
-import com.google.j2cl.transpiler.frontend.jdt.CompilationUnitBuilder;
-import com.google.j2cl.transpiler.frontend.jdt.CompilationUnitsAndTypeBindings;
 import com.google.j2cl.transpiler.frontend.jdt.JdtParser;
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.List;
+import com.google.j2cl.transpiler.frontend.kotlin.KotlinParser;
 
 /** Drives the frontend to parse, type check and resolve Java source code. */
 public enum Frontend {
   JDT {
     @Override
-    public List<CompilationUnit> compile(FrontendOptions options, Problems problems) {
-      JdtParser parser = new JdtParser(options.getClasspaths(), problems);
-      CompilationUnitsAndTypeBindings compilationUnitsAndTypeBindings =
-          parser.parseFiles(
-              options.getSources(),
-              /* useTargetPath= */ options.getGenerateKytheIndexingMetadata(),
-              options.getForbiddenAnnotations());
-      problems.abortIfHasErrors();
-      return CompilationUnitBuilder.build(compilationUnitsAndTypeBindings, parser);
+    public Library parse(FrontendOptions options, Problems problems) {
+      return new JdtParser(problems).parseFiles(options);
     }
 
     @Override
@@ -51,12 +37,8 @@ public enum Frontend {
   },
   JAVAC {
     @Override
-    public List<CompilationUnit> compile(FrontendOptions options, Problems problems) {
-      return new JavacParser(options.getClasspaths(), problems)
-          .parseFiles(
-              options.getSources(),
-              /* useTargetPath= */ options.getGenerateKytheIndexingMetadata(),
-              options.getForbiddenAnnotations());
+    public Library parse(FrontendOptions options, Problems problems) {
+      return new JavacParser(problems).parseFiles(options);
     }
 
     @Override
@@ -66,28 +48,8 @@ public enum Frontend {
   },
   KOTLIN {
     @Override
-    public List<CompilationUnit> compile(FrontendOptions options, Problems problems) {
-      try {
-        // Temporary workaround to turn Kotlin compiler dep into a soft runtime dependency.
-        // TODO(b/217287994): Remove after a regular dependency is allowed.
-        Class<?> kotlinParser =
-            Class.forName("com.google.j2cl.transpiler.frontend.kotlin.KotlinParser");
-        Constructor<?> parserCtor =
-            Iterables.getOnlyElement(Arrays.asList(kotlinParser.getDeclaredConstructors()));
-        Object parserInstance =
-            parserCtor.newInstance(options.getClasspaths(), options.getKotlincOptions(), problems);
-        @SuppressWarnings("unchecked")
-        List<CompilationUnit> compilationUnits =
-            (List<CompilationUnit>)
-                kotlinParser
-                    .getMethod("parseFiles", List.class)
-                    .invoke(parserInstance, options.getSources());
-        problems.abortIfHasErrors();
-        return compilationUnits;
-      } catch (Exception e) {
-        Throwables.throwIfUnchecked(e);
-        throw new RuntimeException(e);
-      }
+    public Library parse(FrontendOptions options, Problems problems) {
+      return new KotlinParser(problems).parseFiles(options);
     }
 
     @Override
@@ -96,13 +58,7 @@ public enum Frontend {
     }
   };
 
-  public Library getLibrary(FrontendOptions options, Problems problems) {
-    // Records information about package-info files supplied as byte code.
-    PackageInfoCache.init(options.getClasspaths(), problems);
-    return Library.newBuilder().setCompilationUnits(compile(options, problems)).build();
-  }
-
-  abstract List<CompilationUnit> compile(FrontendOptions options, Problems problems);
+  public abstract Library parse(FrontendOptions options, Problems problems);
 
   public abstract boolean isJavaFrontend();
 }

@@ -18,6 +18,8 @@ package com.google.j2cl.transpiler.passes;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.google.j2cl.transpiler.ast.AbstractVisitor;
+import com.google.j2cl.transpiler.ast.ArrayLiteral;
+import com.google.j2cl.transpiler.ast.AstUtils;
 import com.google.j2cl.transpiler.ast.BinaryExpression;
 import com.google.j2cl.transpiler.ast.BinaryOperator;
 import com.google.j2cl.transpiler.ast.BreakStatement;
@@ -28,24 +30,32 @@ import com.google.j2cl.transpiler.ast.FieldAccess;
 import com.google.j2cl.transpiler.ast.ForEachStatement;
 import com.google.j2cl.transpiler.ast.FunctionExpression;
 import com.google.j2cl.transpiler.ast.InitializerBlock;
-import com.google.j2cl.transpiler.ast.JavaScriptConstructorReference;
+import com.google.j2cl.transpiler.ast.InstanceOfExpression;
+import com.google.j2cl.transpiler.ast.JsConstructorReference;
+import com.google.j2cl.transpiler.ast.JsForInStatement;
 import com.google.j2cl.transpiler.ast.LabeledStatement;
+import com.google.j2cl.transpiler.ast.LocalFunctionDeclarationStatement;
 import com.google.j2cl.transpiler.ast.LoopStatement;
 import com.google.j2cl.transpiler.ast.Member;
 import com.google.j2cl.transpiler.ast.MemberDescriptor;
 import com.google.j2cl.transpiler.ast.MemberReference;
 import com.google.j2cl.transpiler.ast.Method;
 import com.google.j2cl.transpiler.ast.MethodCall;
+import com.google.j2cl.transpiler.ast.MethodReference;
 import com.google.j2cl.transpiler.ast.MultiExpression;
 import com.google.j2cl.transpiler.ast.NewArray;
 import com.google.j2cl.transpiler.ast.NumberLiteral;
+import com.google.j2cl.transpiler.ast.Statement;
 import com.google.j2cl.transpiler.ast.SwitchCase;
+import com.google.j2cl.transpiler.ast.SwitchExpression;
 import com.google.j2cl.transpiler.ast.TryStatement;
 import com.google.j2cl.transpiler.ast.Type;
 import com.google.j2cl.transpiler.ast.TypeDescriptors;
 import com.google.j2cl.transpiler.ast.TypeLiteral;
 import com.google.j2cl.transpiler.ast.UnaryExpression;
+import com.google.j2cl.transpiler.ast.Variable;
 import com.google.j2cl.transpiler.ast.VariableDeclarationExpression;
+import com.google.j2cl.transpiler.ast.YieldStatement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,13 +63,15 @@ import java.util.Map;
 public class VerifyNormalizedUnits extends NormalizationPass {
 
   private final boolean verifyForWasm;
+  private final boolean enableCustomDescriptorsJsInterop;
 
-  public VerifyNormalizedUnits(boolean verifyForWasm) {
+  public VerifyNormalizedUnits(boolean verifyForWasm, boolean enableCustomDescriptorsJsInterop) {
     this.verifyForWasm = verifyForWasm;
+    this.enableCustomDescriptorsJsInterop = enableCustomDescriptorsJsInterop;
   }
 
   public VerifyNormalizedUnits() {
-    this(false);
+    this(false, false);
   }
 
   @Override
@@ -83,7 +95,7 @@ public class VerifyNormalizedUnits extends NormalizationPass {
 
           @Override
           public void exitMethod(Method method) {
-            verifyMemberUniqueness(method);
+            checkMember(method);
             // All native methods should be empty.
             checkState(!method.isNative() || method.getBody().getStatements().isEmpty());
             // Concrete types shouldn't have abstract methods
@@ -91,11 +103,27 @@ public class VerifyNormalizedUnits extends NormalizationPass {
                 !method.isAbstract()
                     || getCurrentType().isAbstract()
                     || getCurrentType().isInterface());
+            checkState(method.getParameters().stream().allMatch(Variable::isParameter));
+          }
+
+          @Override
+          public void exitLocalFunctionDeclarationStatement(
+              LocalFunctionDeclarationStatement localFunctionDeclarationStatement) {
+            // Local functions are converted to variable assignments to a function expression.
+            throw new IllegalStateException();
+          }
+
+          @Override
+          public void exitMemberDescriptor(MemberDescriptor memberDescriptor) {
+            if (memberDescriptor.isLocalFunction()) {
+              // Local functions are converted to variable assignments to a function expression.
+              throw new IllegalStateException();
+            }
           }
 
           @Override
           public void exitField(Field field) {
-            verifyMemberUniqueness(field);
+            checkMember(field);
             if (verifyForWasm) {
               // This is only running for Wasm due to the transformations in Closure that result in
               // primitive long initializers to be method calls to the runtime.
@@ -105,8 +133,20 @@ public class VerifyNormalizedUnits extends NormalizationPass {
               // JsEnum only contains the enum fields.
               checkState(!getCurrentType().isJsEnum() || field.isStatic());
             }
-            // Non-native enum fields have a non negative ordinal.
-            checkState(field.isNative() || !field.isEnumField() || field.getEnumOrdinal() >= 0);
+          }
+
+          public void checkMember(Member member) {
+            verifyMemberUniqueness(member);
+            if (verifyForWasm && !enableCustomDescriptorsJsInterop) {
+              boolean isNative =
+                  member.isNative()
+                      // TODO(b/264676817): Consider refactoring to have MethodDescriptor.isNative
+                      // return true for native constructors, or exposing isNativeConstructor from
+                      // MethodDescriptor.
+                      || (member.isConstructor()
+                          && member.getDescriptor().getEnclosingTypeDescriptor().isNative());
+              checkState(isNative || !member.getDescriptor().isJsMember());
+            }
           }
 
           private final Map<String, MemberDescriptor> instanceMembersByMangledName =
@@ -143,6 +183,12 @@ public class VerifyNormalizedUnits extends NormalizationPass {
               checkState(
                   methodCall.getTarget().getEnclosingTypeDescriptor().isJsFunctionInterface());
             }
+          }
+
+          @Override
+          public void exitMethodReference(MethodReference methodReference) {
+            // Method references are desugared to lambda expressions.
+            throw new IllegalStateException();
           }
 
           @Override
@@ -183,12 +229,25 @@ public class VerifyNormalizedUnits extends NormalizationPass {
           }
 
           @Override
+          public void exitInstanceOfExpression(InstanceOfExpression instanceOfExpression) {
+            checkState(instanceOfExpression.getPattern() == null);
+          }
+
+          @Override
           public void exitNewArray(NewArray newArray) {
             if (verifyForWasm) {
               checkState(
                   newArray.getDimensionExpressions().size() == 1
                       && newArray.getInitializer() == null);
             }
+          }
+
+          @Override
+          public void exitArrayLiteral(ArrayLiteral arrayLiteral) {
+            // There are no direct nesting of array literals.
+            checkState(
+                !(getParent() instanceof ArrayLiteral)
+                    || AstUtils.shouldUseUntypedArray(arrayLiteral.getTypeDescriptor()));
           }
 
           @Override
@@ -223,19 +282,52 @@ public class VerifyNormalizedUnits extends NormalizationPass {
           }
 
           @Override
-          public void exitForEachStatement(ForEachStatement continueStatement) {
+          public void exitForEachStatement(ForEachStatement forEachStatement) {
             throw new IllegalStateException();
+          }
+
+          @Override
+          public void exitJsForInStatement(JsForInStatement jsForInStatement) {
+            if (verifyForWasm) {
+              // These statements should have been entirely desugared for WASM.
+              throw new IllegalStateException();
+            }
+            // In JS all objects can be iterated over in a for-in loop, however, this will simply
+            // return the enumerable properties of the object. We should just make sure that it's a
+            // reasonable type to iterate over, and that the iteration variable is always a String.
+            checkState(!jsForInStatement.getIterableExpression().getTypeDescriptor().isPrimitive());
+            checkState(
+                jsForInStatement
+                    .getLoopVariable()
+                    .getTypeDescriptor()
+                    .isSameBaseType(TypeDescriptors.get().javaLangString),
+                "JsForInStatement must use a String variable for iteration.");
           }
 
           @Override
           public void exitSwitchCase(SwitchCase switchCase) {
             if (verifyForWasm) {
-              // The only expressions allowed in a switch case are strings and number literals.
-              Expression caseExpression = switchCase.getCaseExpression();
-              checkState(
-                  switchCase.isDefault()
-                      || TypeDescriptors.isJavaLangString(caseExpression.getTypeDescriptor())
-                      || caseExpression instanceof NumberLiteral);
+              for (Expression caseExpression : switchCase.getCaseExpressions()) {
+                // The only expressions allowed in a switch case are strings and number literals.
+                checkState(
+                    switchCase.isDefault()
+                        || TypeDescriptors.isJavaLangString(caseExpression.getTypeDescriptor())
+                        || caseExpression instanceof NumberLiteral);
+              }
+            }
+          }
+
+          @Override
+          public void exitSwitchExpression(SwitchExpression switchExpression) {
+            // Switch expressions are expected to be normalized away.
+            throw new IllegalStateException();
+          }
+
+          @Override
+          public void exitYieldStatement(YieldStatement yieldStatement) {
+            if (!verifyForWasm) {
+              // Yield statements are expected to be normalized away.
+              throw new IllegalStateException();
             }
           }
 
@@ -256,9 +348,13 @@ public class VerifyNormalizedUnits extends NormalizationPass {
           @Override
           public void exitVariableDeclarationExpression(
               VariableDeclarationExpression variableDeclarationExpression) {
-            if (variableDeclarationExpression.getFragments().isEmpty()) {
-              throw new IllegalStateException();
+            if (!verifyForWasm) {
+              checkState(getParent() instanceof Statement);
             }
+            checkState(!variableDeclarationExpression.getFragments().isEmpty());
+            checkState(
+                variableDeclarationExpression.getFragments().stream()
+                    .noneMatch(f -> f.getVariable().isParameter()));
           }
 
           @Override
@@ -277,7 +373,7 @@ public class VerifyNormalizedUnits extends NormalizationPass {
     } else {
       checkState(
           !memberReference.getTarget().isStatic()
-              || memberReference.getQualifier() instanceof JavaScriptConstructorReference);
+              || memberReference.getQualifier() instanceof JsConstructorReference);
     }
   }
 }

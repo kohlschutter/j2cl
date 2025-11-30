@@ -22,6 +22,8 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.j2cl.transpiler.ast.AbstractRewriter;
 import com.google.j2cl.transpiler.ast.ArrayLiteral;
+import com.google.j2cl.transpiler.ast.ArrayTypeDescriptor;
+import com.google.j2cl.transpiler.ast.AstUtils;
 import com.google.j2cl.transpiler.ast.CompilationUnit;
 import com.google.j2cl.transpiler.ast.Expression;
 import com.google.j2cl.transpiler.ast.JsDocCastExpression;
@@ -44,21 +46,21 @@ public class NormalizeArrayCreations extends NormalizationPass {
           @Override
           public Expression rewriteNewArray(NewArray newArray) {
             if (newArray.getInitializer() instanceof ArrayLiteral) {
-              return rewriteArrayInit(newArray);
+              return implementArrayCreationFromArrayLiteral(newArray);
             } else if (newArray.getInitializer() != null) {
-              return rewriteArrayWithInitializer(newArray);
+              return implementArrayCreationWithInitializerFunction(newArray);
             } else {
-              return rewriteArrayCreate(newArray);
+              return implementArrayCreationWithDimensions(newArray);
             }
           }
         });
   }
 
   /** We transform new Object[100][100]; to Arrays.$create([100, 100], Object); */
-  private static Expression rewriteArrayCreate(NewArray newArrayExpression) {
+  private static Expression implementArrayCreationWithDimensions(NewArray newArrayExpression) {
     checkArgument(!(newArrayExpression.getInitializer() instanceof ArrayLiteral));
 
-    if (newArrayExpression.getTypeDescriptor().isUntypedArray()) {
+    if (AstUtils.shouldUseUntypedArray(newArrayExpression.getTypeDescriptor())) {
       if (newArrayExpression.getDimensionExpressions().size() == 1) {
         Expression dimensionExpression =
             Iterables.getOnlyElement(newArrayExpression.getDimensionExpressions());
@@ -79,9 +81,10 @@ public class NormalizeArrayCreations extends NormalizationPass {
       return createNonNullableAnnotation(
           RuntimeMethods.createArraysMethodCall(
               "$createNative",
-              new ArrayLiteral(
-                  TypeDescriptors.get().javaLangObjectArray,
-                  newArrayExpression.getDimensionExpressions())),
+              ArrayLiteral.newBuilder()
+                  .setTypeDescriptor(TypeDescriptors.get().javaLangObjectArray)
+                  .setValueExpressions(newArrayExpression.getDimensionExpressions())
+                  .build()),
           newArrayExpression.getTypeDescriptor());
     }
 
@@ -89,22 +92,25 @@ public class NormalizeArrayCreations extends NormalizationPass {
     return createNonNullableAnnotation(
         RuntimeMethods.createArraysMethodCall(
             "$create",
-            new ArrayLiteral(
-                TypeDescriptors.get().javaLangObjectArray,
-                newArrayExpression.getDimensionExpressions()),
+            ArrayLiteral.newBuilder()
+                .setTypeDescriptor(TypeDescriptors.get().javaLangObjectArray)
+                .setValueExpressions(newArrayExpression.getDimensionExpressions())
+                .build(),
             leafTypeDescriptor.getMetadataConstructorReference()),
         newArrayExpression.getTypeDescriptor());
   }
 
-  private static Expression rewriteArrayWithInitializer(NewArray newArrayExpression) {
+  /** Create Kotlin style initializations using function. */
+  private static Expression implementArrayCreationWithInitializerFunction(
+      NewArray newArrayExpression) {
     checkArgument(
         newArrayExpression.getInitializer() != null
             && !(newArrayExpression.getInitializer() instanceof ArrayLiteral));
 
     Expression dimensionLengthExpression =
-        checkNotNull(newArrayExpression.getDimensionExpressions().get(0));
+        checkNotNull(newArrayExpression.getDimensionExpressions().getFirst());
 
-    if (newArrayExpression.getTypeDescriptor().isUntypedArray()) {
+    if (AstUtils.shouldUseUntypedArray(newArrayExpression.getTypeDescriptor())) {
       return createNonNullableAnnotation(
           RuntimeMethods.createArraysMethodCall(
               "$createNativeWithInitializer",
@@ -135,30 +141,21 @@ public class NormalizeArrayCreations extends NormalizationPass {
   }
 
   /**
-   * We transform new Object[][] {{object, object}, {object, object}} to Arrays.$init([[object,
+   * We transform new Object[][] {{object, object}, {object, object}} to Arrays.$stampType([[object,
    * object], [object, object]], Object, 2);
    */
-  private static Expression rewriteArrayInit(NewArray newArrayExpression) {
-    checkArgument(newArrayExpression.getInitializer() instanceof ArrayLiteral);
+  private static Expression implementArrayCreationFromArrayLiteral(NewArray newArrayExpression) {
+    Expression initializer = newArrayExpression.getInitializer();
+    checkArgument(initializer instanceof ArrayLiteral);
 
-    if (newArrayExpression.getTypeDescriptor().isUntypedArray()) {
-      return newArrayExpression.getInitializer();
+    if (AstUtils.shouldUseUntypedArray(newArrayExpression.getTypeDescriptor())) {
+      return initializer;
     }
 
-    TypeDescriptor leafTypeDescriptor = newArrayExpression.getLeafTypeDescriptor();
-    List<Expression> arguments =
-        Lists.newArrayList(
-            newArrayExpression.getInitializer(),
-            leafTypeDescriptor.getMetadataConstructorReference());
-
-    int dimensionCount = newArrayExpression.getDimensionExpressions().size();
-    if (dimensionCount > 1) {
-      arguments.add(NumberLiteral.fromInt(dimensionCount));
-    }
-
+    ArrayTypeDescriptor arrayTypeDescriptor = newArrayExpression.getTypeDescriptor();
     return createNonNullableAnnotation(
-        RuntimeMethods.createArraysMethodCall("$init", arguments),
-        newArrayExpression.getTypeDescriptor());
+        RuntimeMethods.createArraysStampTypeMethodCall(initializer, arrayTypeDescriptor),
+        arrayTypeDescriptor);
   }
 
   /**
@@ -168,7 +165,7 @@ public class NormalizeArrayCreations extends NormalizationPass {
       Expression expression, TypeDescriptor typeDescriptor) {
     return JsDocCastExpression.newBuilder()
         .setExpression(expression)
-        .setCastType(typeDescriptor.toNonNullable())
+        .setCastTypeDescriptor(typeDescriptor.toNonNullable())
         .build();
   }
 }

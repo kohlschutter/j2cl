@@ -16,8 +16,11 @@
 package j2kt;
 
 import javaemul.internal.annotations.KtIn;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 // TODO(b/202428351): Move to typewildcards readable when generics are fully supported.
+@NullMarked
 class TypeWildCards {
   static class Parent {}
 
@@ -32,23 +35,27 @@ class TypeWildCards {
     Parent parent = supplier.get();
   }
 
-  interface Observer<E> {
+  static void testNullWithLowerBound(Observer<? super Child> observer) {
+    observer.on(null);
+  }
+
+  interface Observer<E extends @Nullable Object> {
     void on(E event);
   }
 
-  interface KtInObserver<@KtIn E> {
+  interface KtInObserver<@KtIn E extends @Nullable Object> {
     void on(E event);
   }
 
-  interface Observable<E> {
+  interface Observable<E extends @Nullable Object> {
     void addObserver(Observer<E> observer);
   }
 
-  interface SuperWildcardObservable<E> {
-    void addObserver(Observer<? super E> observer);
+  interface SuperWildcardObservable<E extends @Nullable Object> {
+    void addObserver(Observer<? super @Nullable E> observer);
   }
 
-  interface KtInObservable<E> {
+  interface KtInObservable<E extends @Nullable Object> {
     void addObserver(KtInObserver<E> observer);
   }
 
@@ -56,17 +63,12 @@ class TypeWildCards {
     void addObserver(Observer<E> observer);
   }
 
-  static class ObserverHolder<E> {
-    Observer<E> observer;
-  }
-
   public static void testObservable(Observable<?> observable) {
     observable.addObserver(e -> {});
   }
 
   public static <T extends Observable<?>> void testObservableParameterized(T observable) {
-    // TODO(b/261839232): "Expected Nothing" issue
-    // observable.addObserver(e -> {});
+    observable.addObserver(e -> {});
   }
 
   public static void testSuperWildcardObservable(SuperWildcardObservable<?> observable) {
@@ -78,11 +80,102 @@ class TypeWildCards {
   }
 
   public static void testRecursiveObservable(RecursiveObservable<?> observable) {
-    // TODO(b/261839232): No idea how to convert it to a correct Kotlin code.
-    // observable.addObserver(e -> {});
+    observable.addObserver(e -> {});
   }
 
-  public static void testObserverHolder(ObserverHolder<?> observerHolder) {
-    observerHolder.observer = e -> {};
+  static class WithoutBounds {
+    interface Observer<E extends @Nullable Object> {
+      void on(E event);
+    }
+
+    static class Holder<E extends @Nullable Object> {
+      @Nullable Observer<E> observer;
+
+      void set(Observer<E> observer) {}
+
+      static <E extends @Nullable Object> void setStatic(Holder<E> holder, Observer<E> observer) {}
+    }
+
+    public static void testSetField(Holder<?> holder) {
+      holder.observer = e -> {};
+    }
+
+    public static void testSetMethod(Holder<?> holder) {
+      holder.set(e -> {});
+    }
+
+    public static void testSetStaticMethod(Holder<?> holder) {
+      Holder.setStatic(holder, e -> {});
+    }
+  }
+
+  static class WithBounds {
+    interface Event {}
+
+    interface Observer<E extends Event> {
+      void on(E event);
+    }
+
+    static class Holder<E extends Event> {
+      @Nullable Observer<E> observer;
+
+      void set(Observer<E> observer) {}
+
+      static <E extends Event> void setStatic(Holder<E> holder, Observer<E> observer) {}
+    }
+
+    public static void testSetField(Holder<?> holder) {
+      holder.observer = e -> {};
+    }
+
+    public static void testSetMethod(Holder<?> holder) {
+      holder.set(e -> {});
+    }
+
+    public static void testSetStaticMethod(Holder<?> holder) {
+      Holder.setStatic(holder, e -> {});
+    }
+  }
+
+  static class WithDependentBounds {
+    interface Event {}
+
+    interface Collection<V extends @Nullable Object> {}
+
+    interface Observer<E extends Event, C extends Collection<E>> {
+      void on(C events);
+    }
+
+    static class Holder<E extends Event, C extends Collection<E>> {
+      @Nullable Observer<E, C> observer;
+
+      void set(Observer<E, C> observer) {}
+
+      static <E extends Event, C extends Collection<E>> void setStatic(
+          Holder<E, C> holder, Observer<E, C> observer) {}
+    }
+
+    public static void testSetField(Holder<?, ?> holder) {
+      holder.observer = e -> {};
+    }
+
+    public static void testSetMethod(Holder<?, ?> holder) {
+      holder.set(e -> {});
+    }
+
+    public static void testSetStaticMethod(Holder<?, ?> holder) {
+      Holder.setStatic(holder, e -> {});
+    }
+  }
+
+  static class Outer<T, V> {
+    interface ParameterizedInterface<T extends @Nullable Object, V extends @Nullable Object> {}
+
+    class Inner {
+      void testNullabilityOnWildcardBounds(
+          ParameterizedInterface<? super @Nullable T, ? extends @Nullable V> p) {
+        testNullabilityOnWildcardBounds(p);
+      }
+    }
   }
 }

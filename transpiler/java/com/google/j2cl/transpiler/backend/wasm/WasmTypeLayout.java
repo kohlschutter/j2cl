@@ -27,6 +27,7 @@ import com.google.j2cl.transpiler.ast.FieldDescriptor;
 import com.google.j2cl.transpiler.ast.MethodDescriptor;
 import com.google.j2cl.transpiler.ast.Type;
 import com.google.j2cl.transpiler.ast.TypeDeclaration;
+import com.google.j2cl.transpiler.ast.TypeDeclaration.Origin;
 import com.google.j2cl.transpiler.ast.TypeDescriptors;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,8 +50,7 @@ abstract class WasmTypeLayout {
   /** Create a layout for a type that is declared in a different library. */
   static WasmTypeLayout createFromTypeDeclaration(
       TypeDeclaration typeDeclaration, WasmTypeLayout wasmSupertypeLayout) {
-    return new AutoValue_WasmTypeLayout(
-        null, typeDeclaration.toUnparameterizedTypeDescriptor(), wasmSupertypeLayout);
+    return new AutoValue_WasmTypeLayout(null, typeDeclaration.toDescriptor(), wasmSupertypeLayout);
   }
 
   /**
@@ -61,6 +61,10 @@ abstract class WasmTypeLayout {
   abstract Type getJavaType();
 
   abstract DeclaredTypeDescriptor getTypeDescriptor();
+
+  TypeDeclaration getTypeDeclaration() {
+    return getTypeDescriptor().getTypeDeclaration();
+  }
 
   /** The wasm representation of the superclass for this Java class. */
   @Nullable
@@ -79,13 +83,13 @@ abstract class WasmTypeLayout {
     ImmutableList<FieldDescriptor> declaredInstanceFields = getDeclaredInstanceFields();
 
     if (TypeDescriptors.isWasmArraySubtype(getTypeDescriptor())) {
-      // TODO(b/296475021): Remove the hack to treat the field as overriden by subclass' field.
+      // TODO(b/296475021): Remove the hack to treat the field as overridden by subclass' field.
       // Override the type of the elements field in Wasm arrays by replacing the WasmArray elements
       // field with that of their subtype.
       // Relies on the elements field being the last declared filed in WasmArray and also being
       // the first in the WasmArray subclass.
-      checkState(declaredInstanceFields.get(0).getName().equals("elements"));
-      FieldDescriptor removedField = instanceFields.remove(instanceFields.size() - 1);
+      checkState(declaredInstanceFields.getFirst().getName().equals("elements"));
+      FieldDescriptor removedField = instanceFields.removeLast();
       checkState(removedField.getName().equals("elements"));
     }
 
@@ -152,21 +156,52 @@ abstract class WasmTypeLayout {
   Map<String, MethodDescriptor> getAllPolymorphicMethodsByMangledName() {
     Map<String, MethodDescriptor> instanceMethodsByMangledName = new LinkedHashMap<>();
     if (getWasmSupertypeLayout() != null) {
+      // Add all the methods from the super type layout to ensure that they appear in the same
+      // order as in the superclass.
       instanceMethodsByMangledName.putAll(
           getWasmSupertypeLayout().getAllPolymorphicMethodsByMangledName());
     }
     DeclaredTypeDescriptor typeDescriptor = getTypeDescriptor();
-    for (MethodDescriptor methodDescriptor : typeDescriptor.getPolymorphicMethods()) {
-      instanceMethodsByMangledName.put(methodDescriptor.getMangledName(), methodDescriptor);
-    }
-    // Patch entry for $getClassImpl, since it is explicitly overridden in every class but does not
-    // appear as overridden at the right target when calling getPolymorphicMethods().
+    typeDescriptor.getPolymorphicMethods().stream()
+        .filter(this::needsVtableEntry)
+        .sorted(Comparator.comparing(MethodDescriptor::getMangledName))
+        .forEach(md -> instanceMethodsByMangledName.put(md.getMangledName(), md));
+    // Patch entry for $getClassImpl. In the type model there is only `Object::$getClasImpl` and
+    // that is what is returned by `getPolymorphicMethod()`. But it is overridden in the AST
+    // in a predictable manner by the pass that synthesizes the overrides and needs to be explicitly
+    // patched here.
     if (!typeDescriptor.isInterface()) {
-      MethodDescriptor getClassMethodDescriptor = getGetClassMethodDescriptor(typeDescriptor);
+      MethodDescriptor getClassMethodDescriptor =
+          getGetClassMethodDescriptor(
+              typeDescriptor.getTypeDeclaration().getOrigin() == Origin.LAMBDA_IMPLEMENTOR
+                  ? typeDescriptor.getSuperTypeDescriptor()
+                  : typeDescriptor);
       instanceMethodsByMangledName.put(
           getClassMethodDescriptor.getMangledName(), getClassMethodDescriptor);
     }
     return instanceMethodsByMangledName;
+  }
+
+  private boolean needsVtableEntry(MethodDescriptor methodDescriptor) {
+    if (getTypeDescriptor().isInterface() && methodDescriptor.isOrOverridesJavaLangObjectMethod()) {
+      // `j.l.Object` methods and their overrides are never dispatched through interfaces.
+      // Hence they should not be included in any interface vtable (even if the interface
+      // redeclares them).
+      return false;
+    }
+    return !(methodDescriptor.getEnclosingTypeDescriptor().isFinal() || methodDescriptor.isFinal())
+        // TODO(b/342007699): Consider a separate method instead of
+        // getJsOverriddenMethodDescriptors.
+        || !methodDescriptor.getJsOverriddenMethodDescriptors().isEmpty()
+        || isAccidentalInterfaceOverride(methodDescriptor);
+  }
+
+  private boolean isAccidentalInterfaceOverride(MethodDescriptor methodDescriptor) {
+    return getTypeDescriptor().getInterfaceTypeDescriptors().stream()
+        .flatMap(i -> i.getPolymorphicMethods().stream())
+        // Skip the methods interfaces inherit from java.lang.Object.
+        .filter(m -> m.getEnclosingTypeDescriptor().isInterface())
+        .anyMatch(m -> m.getMangledName().equals(methodDescriptor.getMangledName()));
   }
 
   private static MethodDescriptor getGetClassMethodDescriptor(

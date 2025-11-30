@@ -15,11 +15,9 @@
  */
 package com.google.j2cl.transpiler.passes;
 
-import com.google.j2cl.transpiler.ast.ArrayLiteral;
 import com.google.j2cl.transpiler.ast.CastExpression;
 import com.google.j2cl.transpiler.ast.CompilationUnit;
 import com.google.j2cl.transpiler.ast.Expression;
-import com.google.j2cl.transpiler.ast.MethodDescriptor.ParameterDescriptor;
 import com.google.j2cl.transpiler.ast.TypeDescriptor;
 import com.google.j2cl.transpiler.passes.ConversionContextVisitor.ContextRewriter;
 
@@ -40,7 +38,7 @@ public class InsertExplicitArrayCoercionCasts extends NormalizationPass {
               @Override
               public Expression rewriteTypeConversionContext(
                   TypeDescriptor inferredTypeDescriptor,
-                  TypeDescriptor actualTypeDescriptor,
+                  TypeDescriptor declaredTypeDescriptor,
                   Expression expression) {
                 return needsCast(inferredTypeDescriptor, expression.getTypeDescriptor())
                     ? CastExpression.newBuilder()
@@ -48,18 +46,6 @@ public class InsertExplicitArrayCoercionCasts extends NormalizationPass {
                         .setCastTypeDescriptor(inferredTypeDescriptor)
                         .build()
                     : expression;
-              }
-
-              @Override
-              public Expression rewriteMethodInvocationContext(
-                  ParameterDescriptor inferredParameterDescriptor,
-                  ParameterDescriptor actualParameterDescriptor,
-                  Expression argument) {
-                // Don't rewrite vararg array literals.
-                return actualParameterDescriptor.isVarargs() && argument instanceof ArrayLiteral
-                    ? argument
-                    : super.rewriteMethodInvocationContext(
-                        inferredParameterDescriptor, actualParameterDescriptor, argument);
               }
             }));
   }

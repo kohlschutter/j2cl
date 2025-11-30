@@ -15,6 +15,7 @@
  */
 package com.google.j2cl.jre.java.lang;
 
+import com.google.j2cl.jre.testing.J2ktIncompatible;
 import java.util.Locale;
 import junit.framework.TestCase;
 
@@ -94,9 +95,8 @@ public class StringBufferTest extends TestCase {
     assertEquals("-2147483648", x.toString());
   }
 
-  /**
-   * Check that capacity methods are present, even though they do nothing.
-   */
+  /** Check that capacity methods are present, even though they do nothing. */
+  @J2ktIncompatible // ensureCapacity(), capacity() and trimToSize() unsupported
   public void testCapacity() {
     StringBuffer buf = new StringBuffer();
     buf.ensureCapacity(100);
@@ -104,16 +104,12 @@ public class StringBufferTest extends TestCase {
     buf.trimToSize();
   }
 
-  /**
-   * This method tests <code>charAt</code>.
-   */
+  /** This method tests <code>charAt</code>. */
   public void testCharAt() {
     assertEquals('b', new StringBuffer("abc").charAt(1));
   }
 
-  /**
-   * This method tests string creation and equality.
-   */
+  /** This method tests string creation and equality. */
   public void testContructor() {
     String constant = "abcdef";
     assertEquals(new StringBuffer(constant).toString(), constant);
@@ -121,9 +117,7 @@ public class StringBufferTest extends TestCase {
     assertEquals(new StringBuffer((CharSequence) constant).toString(), constant);
   }
 
-  /**
-   * This method tests <code>delete</code>.
-   */
+  /** This method tests <code>delete</code>. */
   public void testDelete() {
     StringBuffer haystack = new StringBuffer("abcdefghi");
     haystack.delete(2, 4);
@@ -134,9 +128,8 @@ public class StringBufferTest extends TestCase {
     assertEquals("bfghi", haystack.toString());
   }
 
-  /**
-   * Tests toCharArray.
-   */
+  /** Tests toCharArray. */
+  @J2ktIncompatible // getChars() unsupported
   public void testGetChars() {
     StringBuffer x = new StringBuffer("ABCDEFGHIJ");
     char[] a1 = "abcdefghij".toCharArray();
@@ -147,9 +140,7 @@ public class StringBufferTest extends TestCase {
     }
   }
 
-  /**
-   * This method tests <code>indexOf</code>.
-   */
+  /** This method tests <code>indexOf</code>. */
   public void testIndexOf() {
     String haystack = "abcdefghi";
     assertEquals(-1, haystack.indexOf("q"));
@@ -161,9 +152,7 @@ public class StringBufferTest extends TestCase {
     assertEquals(0, haystack.indexOf(""));
   }
 
-  /**
-   * This method tests <code>insert</code>.
-   */
+  /** This method tests <code>insert</code>. */
   public void testInsert() {
     StringBuffer x = new StringBuffer("!");
     x.insert(1, C.FLOAT_VALUE);
@@ -208,9 +197,7 @@ public class StringBufferTest extends TestCase {
     assertEquals("!nul", x.toString());
   }
 
-  /**
-   * This method does interleaved inserts and deletes.
-   */
+  /** This method does interleaved inserts and deletes. */
   public void testInterleavedInsertAndDelete() {
     StringBuffer x = new StringBuffer();
     for (int i = 0; i < 9; i++) {
@@ -222,9 +209,8 @@ public class StringBufferTest extends TestCase {
     assertEquals("12345", x.toString());
   }
 
-  /**
-   * This method tests <code>lastIndexOf</code>.
-   */
+  /** This method tests <code>lastIndexOf</code>. */
+  @J2ktIncompatible // lastIndexOf() unsupported
   public void testLastIndexOf() {
     StringBuffer x = new StringBuffer("abcdeabcdef");
     assertEquals(9, x.lastIndexOf("e"));
@@ -232,10 +218,7 @@ public class StringBufferTest extends TestCase {
     assertEquals(-1, x.lastIndexOf("f", 1));
   }
 
-  /**
-   * This method tests <code>length</code>, and tests moderately long
-   * StringBuffers.
-   */
+  /** This method tests <code>length</code>, and tests moderately long StringBuffers. */
   public void testLength() {
     assertEquals(3, new StringBuffer("abc").length());
     StringBuffer str = new StringBuffer("x");
@@ -245,18 +228,14 @@ public class StringBufferTest extends TestCase {
     assertEquals(1 << 16, str.length());
   }
 
-  /**
-   * This method tests <code>toLowerCase</code>.
-   */
+  /** This method tests <code>toLowerCase</code>. */
   public void testLowerCase() {
     assertEquals("abc", "AbC".toLowerCase(Locale.ROOT));
     assertEquals("abc", "abc".toLowerCase(Locale.ROOT));
     assertEquals("", "".toLowerCase(Locale.ROOT));
   }
 
-  /**
-   * Tests correctness under repeated insertion and append.
-   */
+  /** Tests correctness under repeated insertion and append. */
   public void testRepeatedAppendsAndInserts() {
     StringBuffer x = new StringBuffer();
     final int size = 1000;
@@ -289,9 +268,7 @@ public class StringBufferTest extends TestCase {
     assertEquals("size4", size * 4, x.length());
   }
 
-  /**
-   * This method tests <code>replace</code>.
-   */
+  /** This method tests <code>replace</code>. */
   public void testReplace() {
     StringBuffer x = new StringBuffer("xxyyxx");
     x.replace(2, 4, "YY");
@@ -327,9 +304,8 @@ public class StringBufferTest extends TestCase {
     assertEqualsReverse("\uD801\uDC00_123_\uD802\uDC01", "\uD802\uDC01_321_\uD801\uDC00");
   }
 
-  /**
-   * This method tests <code>setLength</code>.
-   */
+  /** This method tests <code>setLength</code>. */
+  @J2ktIncompatible // setLength() unsupported
   public void testSetLength() {
     StringBuffer x = new StringBuffer("abcdefghi");
     x.setLength(20);
@@ -340,9 +316,7 @@ public class StringBufferTest extends TestCase {
     assertEquals("abcde", x.toString());
   }
 
-  /**
-   * This method tests <code>startsWith</code>.
-   */
+  /** This method tests <code>startsWith</code>. */
   public void testStartsWith() {
     String haystack = "abcdefghi";
     assertTrue(haystack.startsWith("abc"));
@@ -352,10 +326,10 @@ public class StringBufferTest extends TestCase {
   }
 
   /**
-   * A smoke test that StringBuilder's methods are available and basically work.
-   * The implementation is currently shared with StringBuffer, so all the tricky
-   * test cases are not repeated.
+   * A smoke test that StringBuilder's methods are available and basically work. The implementation
+   * is currently shared with StringBuffer, so all the tricky test cases are not repeated.
    */
+  @J2ktIncompatible // getChars() unsupported
   public void testStringBuilder() {
     StringBuilder bld = new StringBuilder();
     bld = new StringBuilder(100);
@@ -407,12 +381,13 @@ public class StringBufferTest extends TestCase {
     assertEquals("5", bld.toString());
 
     bld = new StringBuilder();
-    bld.append(new Object() {
-      @Override
-      public String toString() {
-        return "obj";
-      }
-    });
+    bld.append(
+        new Object() {
+          @Override
+          public String toString() {
+            return "obj";
+          }
+        });
     assertEquals("obj", bld.toString());
 
     bld = new StringBuilder();
@@ -498,12 +473,14 @@ public class StringBufferTest extends TestCase {
     assertEquals("0199234", bld.toString());
 
     bld = new StringBuilder("01234");
-    bld.insert(2, new Object() {
-      @Override
-      public String toString() {
-        return "obj";
-      }
-    });
+    bld.insert(
+        2,
+        new Object() {
+          @Override
+          public String toString() {
+            return "obj";
+          }
+        });
     assertEquals("01obj234", bld.toString());
 
     bld = new StringBuilder("01234");
@@ -545,9 +522,8 @@ public class StringBufferTest extends TestCase {
     assertEquals("klm", bld.toString());
   }
 
-  /**
-   * This method tests <code>substring</code>.
-   */
+  /** This method tests <code>substring</code>. */
+  @J2ktIncompatible // substring() unsupported
   public void testSubstring() {
     StringBuffer haystack = new StringBuffer("abcdefghi");
     assertEquals("cd", haystack.substring(2, 4));

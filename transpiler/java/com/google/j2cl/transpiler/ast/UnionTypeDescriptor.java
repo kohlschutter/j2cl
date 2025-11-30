@@ -23,6 +23,8 @@ import com.google.auto.value.extension.memoized.Memoized;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.j2cl.common.ThreadLocalInterner;
+import com.google.j2cl.common.visitor.Processor;
+import com.google.j2cl.common.visitor.Visitable;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -45,8 +47,9 @@ import javax.annotation.Nullable;
  * </code>
  * </pre>
  */
+@Visitable
 @AutoValue
-public abstract class UnionTypeDescriptor extends TypeDescriptor {
+public abstract non-sealed class UnionTypeDescriptor extends TypeDescriptor {
 
   public abstract ImmutableList<TypeDescriptor> getUnionTypeDescriptors();
 
@@ -57,11 +60,15 @@ public abstract class UnionTypeDescriptor extends TypeDescriptor {
   }
 
   @Override
-  @Memoized
   public DeclaredTypeDescriptor toRawTypeDescriptor() {
+    return getClosestCommonSuperClass().toRawTypeDescriptor();
+  }
+
+  /** Returns the closest common super-type of all type descriptors in this union. */
+  @Memoized
+  public DeclaredTypeDescriptor getClosestCommonSuperClass() {
     DeclaredTypeDescriptor typeDescriptor =
-        (DeclaredTypeDescriptor) getUnionTypeDescriptors().get(0).toRawTypeDescriptor();
-    // Find the closest common ancestor of all the types in the union.
+        (DeclaredTypeDescriptor) getUnionTypeDescriptors().getFirst();
     while (typeDescriptor != null && !isAssignableTo(typeDescriptor)) {
       typeDescriptor = typeDescriptor.getSuperTypeDescriptor();
     }
@@ -80,15 +87,6 @@ public abstract class UnionTypeDescriptor extends TypeDescriptor {
   }
 
   @Override
-  @Memoized
-  public UnionTypeDescriptor toUnparameterizedTypeDescriptor() {
-    return newBuilder()
-        .setUnionTypeDescriptors(
-            TypeDescriptors.toUnparameterizedTypeDescriptors(getUnionTypeDescriptors()))
-        .build();
-  }
-
-  @Override
   public boolean isAssignableTo(TypeDescriptor that) {
     return getUnionTypeDescriptors()
         .stream()
@@ -103,6 +101,15 @@ public abstract class UnionTypeDescriptor extends TypeDescriptor {
         .map(TypeDescriptor::getAllTypeVariables)
         .flatMap(Set::stream)
         .collect(Collectors.toSet());
+  }
+
+  @Override
+  @Nullable
+  public MethodDescriptor getMethodDescriptor(String methodName, TypeDescriptor... parameters) {
+    // There might be different methods in the different components of the union with different
+    // parameterizations, so this method should return one with a parameterization that
+    // consistent with all components. For this reason the method is not supported.
+    throw new UnsupportedOperationException("getMethodDescriptor is unsupported in union types.");
   }
 
   @Override
@@ -190,6 +197,17 @@ public abstract class UnionTypeDescriptor extends TypeDescriptor {
   }
 
   @Override
+  @Nullable
+  public DeclaredTypeDescriptor findSupertype(TypeDeclaration supertypeDeclaration) {
+    return getUnionTypeDescriptors().stream()
+        .map(td -> td.findSupertype(supertypeDeclaration))
+        // Perform a reduction where if any value is null, the result is null.
+        // For union types, all types must have the given supertype in order to be considered.
+        .reduce((a, b) -> (a == null || b == null) ? null : a)
+        .orElse(null);
+  }
+
+  @Override
   boolean isDenotable(ImmutableSet<TypeVariable> seen) {
     return false;
   }
@@ -197,6 +215,18 @@ public abstract class UnionTypeDescriptor extends TypeDescriptor {
   @Override
   boolean hasReferenceTo(TypeVariable typeVariable, ImmutableSet<TypeVariable> seen) {
     return getUnionTypeDescriptors().stream().anyMatch(it -> it.hasReferenceTo(typeVariable, seen));
+  }
+
+  @Override
+  String toStringInternal(ImmutableSet<TypeVariable> seen) {
+    return getUnionTypeDescriptors().stream()
+        .map(t -> t.toStringInternal(seen))
+        .collect(joining(" | ", "(", ")"));
+  }
+
+  @Override
+  TypeDescriptor acceptInternal(Processor processor) {
+    return Visitor_UnionTypeDescriptor.visit(processor, this);
   }
 
   public static Builder newBuilder() {

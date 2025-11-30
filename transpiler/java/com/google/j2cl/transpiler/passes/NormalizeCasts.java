@@ -16,6 +16,7 @@
 package com.google.j2cl.transpiler.passes;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.j2cl.transpiler.ast.AstUtils.isBoxableJsEnumType;
 
 import com.google.common.collect.Iterables;
 import com.google.j2cl.transpiler.ast.AbstractRewriter;
@@ -34,6 +35,8 @@ import com.google.j2cl.transpiler.ast.MultiExpression;
 import com.google.j2cl.transpiler.ast.Node;
 import com.google.j2cl.transpiler.ast.NullLiteral;
 import com.google.j2cl.transpiler.ast.NumberLiteral;
+import com.google.j2cl.transpiler.ast.PostfixExpression;
+import com.google.j2cl.transpiler.ast.PostfixOperator;
 import com.google.j2cl.transpiler.ast.RuntimeMethods;
 import com.google.j2cl.transpiler.ast.TypeDescriptor;
 import com.google.j2cl.transpiler.ast.TypeDescriptors;
@@ -73,15 +76,7 @@ public class NormalizeCasts extends NormalizationPass {
   }
 
   private static boolean canRemoveCast(TypeDescriptor castTypeDescriptor, Expression expression) {
-    boolean isStaticallyGuaranteedToHoldAtRuntime =
-        expression instanceof NullLiteral
-            || expression
-                .getDeclaredTypeDescriptor()
-                .toRawTypeDescriptor()
-                .isAssignableTo(castTypeDescriptor);
-    return castTypeDescriptor.isNoopCast()
-        || isStaticallyGuaranteedToHoldAtRuntime
-        || isRedundantCast(castTypeDescriptor, expression);
+    return castTypeDescriptor.isNoopCast() || isRedundantCast(castTypeDescriptor, expression);
   }
 
   /**
@@ -105,14 +100,24 @@ public class NormalizeCasts extends NormalizationPass {
    *  </code></pre>
    */
   private static boolean isRedundantCast(TypeDescriptor typeDescriptor, Expression expression) {
+    if (isAssignableTo(typeDescriptor, expression)) {
+      return true;
+    }
     expression = skipPassThroughExpressions(expression);
 
-    if (expression instanceof CastExpression) {
-      CastExpression castExpression = (CastExpression) expression;
+    if (expression instanceof CastExpression castExpression) {
       return castExpression.getTypeDescriptor().isAssignableTo(typeDescriptor)
           || isRedundantCast(typeDescriptor, castExpression.getExpression());
     }
-    return false;
+    return isAssignableTo(typeDescriptor, expression);
+  }
+
+  private static boolean isAssignableTo(TypeDescriptor castTypeDescriptor, Expression expression) {
+    return expression instanceof NullLiteral
+        || expression
+            .getDeclaredTypeDescriptor()
+            .toRawTypeDescriptor()
+            .isAssignableTo(castTypeDescriptor);
   }
 
   private static Expression skipPassThroughExpressions(Expression expression) {
@@ -122,6 +127,10 @@ public class NormalizeCasts extends NormalizationPass {
     }
     if (expression instanceof JsDocCastExpression) {
       return skipPassThroughExpressions(((JsDocCastExpression) expression).getExpression());
+    }
+    if (expression instanceof PostfixExpression
+        && ((PostfixExpression) expression).getOperator() == PostfixOperator.NOT_NULL_ASSERTION) {
+      return skipPassThroughExpressions(((PostfixExpression) expression).getOperand());
     }
     return expression;
   }
@@ -160,12 +169,12 @@ public class NormalizeCasts extends NormalizationPass {
       // of an intersection cast is the erasure of its first component).
       castTypeDescriptor = ((IntersectionTypeDescriptor) castTypeDescriptor).getFirstType();
     }
-    if (AstUtils.isNonNativeJsEnum(castTypeDescriptor)) {
+    if (isBoxableJsEnumType(castTypeDescriptor)) {
       // TODO(b/118615488): Surface enum boxed types so that this hack is not needed.
       castTypeDescriptor = TypeDescriptors.getEnumBoxType(castTypeDescriptor);
     }
     return JsDocCastExpression.newBuilder()
-        .setCastType(castTypeDescriptor)
+        .setCastTypeDescriptor(castTypeDescriptor)
         .setExpression(expression)
         .build();
   }

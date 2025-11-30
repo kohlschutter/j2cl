@@ -19,7 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.j2cl.common.visitor.Processor;
 import com.google.j2cl.common.visitor.Visitable;
-import com.google.j2cl.transpiler.ast.Expression.Precedence;
+import javax.annotation.Nullable;
 
 /** A node that represent an expression that will be emitted with an explaining comment. */
 @Visitable
@@ -56,9 +56,25 @@ public class ExpressionWithComment extends Expression {
   }
 
   @Override
+  @Nullable
+  public Literal getConstantValue() {
+    return expression.getConstantValue();
+  }
+
+  @Override
+  public boolean isAlwaysNull() {
+    return expression.isAlwaysNull();
+  }
+
+  @Override
   public Precedence getPrecedence() {
     // The added comment does not affect the precedence of the underlying expression.
     return expression.getPrecedence();
+  }
+
+  @Override
+  public boolean canBeNull() {
+    return expression.canBeNull();
   }
 
   @Override

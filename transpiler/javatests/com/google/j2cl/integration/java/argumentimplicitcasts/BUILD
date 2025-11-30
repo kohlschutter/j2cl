@@ -1,3 +1,4 @@
+# Java test only: Kotlin does not support implicit conversions.
 load(
     "//transpiler/javatests/com/google/j2cl/integration:integration_test.bzl",
     "integration_test",
@@ -8,7 +9,4 @@ package(
     licenses = ["notice"],
 )
 
-integration_test(
-    name = "argumentimplicitcasts",
-    srcs = glob(["*.java"]),
-)
+integration_test(srcs = glob(["*.java"]))

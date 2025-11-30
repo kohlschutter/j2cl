@@ -19,11 +19,13 @@ package com.google.j2cl.transpiler.backend.kotlin.objc
  * Renderer of [V] and its dependencies.
  *
  * Renderers are designed to be combined using [map], [bind], [combine] and [flatten] functions.
- * Dependencies can be added with [plus] operator.
+ * Dependencies can be added using [with] function.
  *
  * The final rendering can be executed using [renderWithDependencies] function, which will return
  * the rendered [V] and a set containing all its dependencies.
  */
+// TODO(b/445386178): Rename to `Dependent<out V>` and remove usages of `render` term, because this
+// class is about tracking dependencies and not about rendering.
 class Renderer<out V>(
   /** A function which renders [V] adding its dependencies to a mutable set. */
   private val renderAddingDependenciesTo: (MutableSet<Dependency>) -> V
@@ -35,7 +37,7 @@ class Renderer<out V>(
     }
 
   /** Returns renderer of the same value including the given dependency. */
-  operator fun plus(dependency: Dependency): Renderer<V> = Renderer { dependencies ->
+  infix fun with(dependency: Dependency): Renderer<V> = Renderer { dependencies ->
     renderAddingDependenciesTo(dependencies).also { dependencies.add(dependency) }
   }
 
@@ -65,11 +67,11 @@ class Renderer<out V>(
     fun <I1, I2, O> combine(
       renderer1: Renderer<I1>,
       renderer2: Renderer<I2>,
-      fn: (I1, I2) -> O
+      fn: (I1, I2) -> O,
     ): Renderer<O> = Renderer { dependencies ->
       fn(
         renderer1.renderAddingDependenciesTo(dependencies),
-        renderer2.renderAddingDependenciesTo(dependencies)
+        renderer2.renderAddingDependenciesTo(dependencies),
       )
     }
 
@@ -81,12 +83,12 @@ class Renderer<out V>(
       renderer1: Renderer<I1>,
       renderer2: Renderer<I2>,
       renderer3: Renderer<I3>,
-      fn: (I1, I2, I3) -> O
+      fn: (I1, I2, I3) -> O,
     ): Renderer<O> = Renderer { dependencies ->
       fn(
         renderer1.renderAddingDependenciesTo(dependencies),
         renderer2.renderAddingDependenciesTo(dependencies),
-        renderer3.renderAddingDependenciesTo(dependencies)
+        renderer3.renderAddingDependenciesTo(dependencies),
       )
     }
 
@@ -99,13 +101,13 @@ class Renderer<out V>(
       renderer2: Renderer<I2>,
       renderer3: Renderer<I3>,
       renderer4: Renderer<I4>,
-      fn: (I1, I2, I3, I4) -> O
+      fn: (I1, I2, I3, I4) -> O,
     ): Renderer<O> = Renderer { dependencies ->
       fn(
         renderer1.renderAddingDependenciesTo(dependencies),
         renderer2.renderAddingDependenciesTo(dependencies),
         renderer3.renderAddingDependenciesTo(dependencies),
-        renderer4.renderAddingDependenciesTo(dependencies)
+        renderer4.renderAddingDependenciesTo(dependencies),
       )
     }
 

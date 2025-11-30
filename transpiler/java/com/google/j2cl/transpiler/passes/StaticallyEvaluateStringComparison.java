@@ -53,7 +53,8 @@ public class StaticallyEvaluateStringComparison extends NormalizationPass {
           public Expression rewriteMethodCall(MethodCall methodCall) {
             if (isStringComparisonMethod(methodCall.getTarget())) {
               Expression staticResult =
-                  tryEvaluateEquality(methodCall.getQualifier(), methodCall.getArguments().get(0));
+                  tryEvaluateEquality(
+                      methodCall.getQualifier(), methodCall.getArguments().getFirst());
               if (staticResult != null) {
                 return staticResult;
               }
@@ -65,8 +66,8 @@ public class StaticallyEvaluateStringComparison extends NormalizationPass {
 
   @Nullable
   private static Expression tryEvaluateEquality(Expression lhs, Expression rhs) {
-    if (lhs instanceof StringLiteral && rhs instanceof StringLiteral) {
-      return evaluateEquality((StringLiteral) lhs, (StringLiteral) rhs);
+    if (lhs instanceof StringLiteral lhsLiteral && rhs instanceof StringLiteral rhsLiteral) {
+      return evaluateEquality(lhsLiteral, rhsLiteral);
     }
     return null;
   }

@@ -32,7 +32,6 @@ import com.google.j2cl.transpiler.ast.LabeledStatement
 import com.google.j2cl.transpiler.ast.LocalClassDeclarationStatement
 import com.google.j2cl.transpiler.ast.ReturnStatement
 import com.google.j2cl.transpiler.ast.Statement
-import com.google.j2cl.transpiler.ast.SwitchStatement
 import com.google.j2cl.transpiler.ast.SynchronizedStatement
 import com.google.j2cl.transpiler.ast.ThrowStatement
 import com.google.j2cl.transpiler.ast.TryStatement
@@ -41,7 +40,7 @@ import com.google.j2cl.transpiler.ast.TypeDescriptor
 import com.google.j2cl.transpiler.ast.UnionTypeDescriptor
 import com.google.j2cl.transpiler.ast.Variable
 import com.google.j2cl.transpiler.ast.WhileStatement
-import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.ARROW_OPERATOR
+import com.google.j2cl.transpiler.ast.YieldStatement
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.AT_OPERATOR
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.BREAK_KEYWORD
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.CATCH_KEYWORD
@@ -55,7 +54,6 @@ import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.IN_KEYWORD
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.RETURN_KEYWORD
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.THROW_KEYWORD
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.TRY_KEYWORD
-import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.WHEN_KEYWORD
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.WHILE_KEYWORD
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.assignment
 import com.google.j2cl.transpiler.backend.kotlin.KotlinSource.at
@@ -64,7 +62,7 @@ import com.google.j2cl.transpiler.backend.kotlin.common.letIf
 import com.google.j2cl.transpiler.backend.kotlin.source.Source
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.block
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.colonSeparated
-import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.commaSeparated
+import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.inAngleBrackets
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.inParentheses
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.infix
 import com.google.j2cl.transpiler.backend.kotlin.source.Source.Companion.join
@@ -86,14 +84,15 @@ internal data class StatementRenderer(
   val enclosingType: Type,
   val currentReturnLabelIdentifier: String? = null,
   // TODO(b/252138814): Remove when KT-54349 is fixed
-  val renderThisReferenceWithLabel: Boolean = false
+  val renderThisReferenceWithLabel: Boolean = false,
 ) {
   private val expressionRenderer: ExpressionRenderer
     get() =
       ExpressionRenderer(
         nameRenderer,
         enclosingType,
-        renderThisReferenceWithLabel = renderThisReferenceWithLabel
+        currentReturnLabelIdentifier = currentReturnLabelIdentifier,
+        renderThisReferenceWithLabel = renderThisReferenceWithLabel,
       )
 
   private val typeRenderer: TypeRenderer
@@ -119,21 +118,21 @@ internal data class StatementRenderer(
       is LabeledStatement -> labeledStatementSource(statement)
       is LocalClassDeclarationStatement -> localClassDeclarationStatementSource(statement)
       is ReturnStatement -> returnStatementSource(statement)
-      is SwitchStatement -> switchStatementSource(statement)
       is SynchronizedStatement -> synchronizedStatementSource(statement)
       is WhileStatement -> whileStatementSource(statement)
       is ThrowStatement -> throwStatementSource(statement)
       is TryStatement -> tryStatementSource(statement)
+      is YieldStatement -> yieldStatementSource(statement)
       else -> throw InternalCompilerError("Unexpected ${statement::class.java.simpleName}")
-    }
+    }.withMapping(statement.sourcePosition)
 
   private fun assertStatementSource(assertStatement: AssertStatement): Source =
     spaceSeparated(
       join(
         nameRenderer.extensionMemberQualifiedNameSource("kotlin.assert"),
-        inParentheses(expressionSource(assertStatement.expression))
+        inParentheses(expressionSource(assertStatement.expression)),
       ),
-      assertStatement.message?.let { block(expressionSource(it)) }.orEmpty()
+      assertStatement.message?.let { block(expressionSource(it)) }.orEmpty(),
     )
 
   private fun blockSource(block: Block): Source = block(statementsSource(block.statements))
@@ -152,7 +151,7 @@ internal data class StatementRenderer(
       DO_KEYWORD,
       statementSource(doWhileStatement.body),
       WHILE_KEYWORD,
-      inParentheses(expressionSource(doWhileStatement.conditionExpression))
+      inParentheses(expressionSource(doWhileStatement.conditionExpression!!)),
     )
 
   private fun expressionStatementSource(expressionStatement: ExpressionStatement): Source =
@@ -165,10 +164,10 @@ internal data class StatementRenderer(
         infix(
           nameRenderer.nameSource(forEachStatement.loopVariable),
           IN_KEYWORD,
-          expressionSource(forEachStatement.iterableExpression)
+          expressionSource(forEachStatement.iterableExpression),
         )
       ),
-      statementSource(forEachStatement.body)
+      statementSource(forEachStatement.body),
     )
 
   private fun ifStatementSource(ifStatement: IfStatement): Source =
@@ -176,7 +175,7 @@ internal data class StatementRenderer(
       IF_KEYWORD,
       inParentheses(expressionSource(ifStatement.conditionExpression)),
       statementSource(ifStatement.thenStatement),
-      ifStatement.elseStatement?.let { spaceSeparated(ELSE_KEYWORD, statementSource(it)) }.orEmpty()
+      ifStatement.elseStatement?.let { spaceSeparated(ELSE_KEYWORD, statementSource(it)) }.orEmpty(),
     )
 
   private fun fieldDeclarationStatementSource(declaration: FieldDeclarationStatement): Source =
@@ -186,10 +185,10 @@ internal data class StatementRenderer(
         assignment(
           colonSeparated(
             identifierSource(fieldDescriptor.name!!),
-            nameRenderer.typeDescriptorSource(fieldDescriptor.typeDescriptor)
+            nameRenderer.typeDescriptorSource(fieldDescriptor.typeDescriptor),
           ),
-          expressionSource(declaration.expression)
-        )
+          expressionSource(declaration.expression),
+        ),
       )
     }
 
@@ -198,7 +197,7 @@ internal data class StatementRenderer(
       join(nameRenderer.nameSource(labelStatement.label), AT_OPERATOR),
       labelStatement.statement.let {
         statementSource(it).letIf(it is LabeledStatement) { block(it) }
-      }
+      },
     )
 
   private fun localClassDeclarationStatementSource(
@@ -208,63 +207,24 @@ internal data class StatementRenderer(
   private fun returnStatementSource(returnStatement: ReturnStatement): Source =
     spaceSeparated(
       join(RETURN_KEYWORD, currentReturnLabelIdentifier?.let { labelReference(it) }.orEmpty()),
-      returnStatement.expression?.let(::expressionSource).orEmpty()
-    )
-
-  private fun switchStatementSource(switchStatement: SwitchStatement): Source =
-    spaceSeparated(
-      WHEN_KEYWORD,
-      inParentheses(expressionSource(switchStatement.switchExpression)),
-      block(
-        newLineSeparated(
-          // TODO(b/263161219): Represent WhenStatement as a data class, convert from
-          // SwitchStatement
-          // and render as Source.
-          run {
-            val caseExpressions = mutableListOf<Expression>()
-            switchStatement.cases.map { case ->
-              val caseExpression = case.caseExpression
-              if (caseExpression == null) {
-                // It's OK to skip empty cases, since they will fall-through to the default case,
-                // and
-                // since
-                // these are case clauses from Java, their evaluation does never have side effects.
-                caseExpressions.clear()
-                infix(ELSE_KEYWORD, ARROW_OPERATOR, block(statementsSource(case.statements)))
-              } else {
-                caseExpressions.add(caseExpression)
-                val caseStatements = case.statements
-                if (caseStatements.isNotEmpty()) {
-                  infix(
-                      commaSeparated(caseExpressions.map(::expressionSource)),
-                      ARROW_OPERATOR,
-                      block(statementsSource(caseStatements))
-                    )
-                    .also { caseExpressions.clear() }
-                } else {
-                  Source.EMPTY
-                }
-              }
-            }
-          }
-        )
-      )
+      returnStatement.expression?.let(::expressionSource).orEmpty(),
     )
 
   private fun synchronizedStatementSource(synchronizedStatement: SynchronizedStatement): Source =
     spaceSeparated(
       join(
         nameRenderer.extensionMemberQualifiedNameSource("kotlin.synchronized"),
-        inParentheses(expressionSource(synchronizedStatement.expression))
+        inAngleBrackets(nameRenderer.topLevelQualifiedNameSource("kotlin.Unit")),
+        inParentheses(expressionSource(synchronizedStatement.expression)),
       ),
-      statementSource(synchronizedStatement.body)
+      statementSource(synchronizedStatement.body),
     )
 
   private fun whileStatementSource(whileStatement: WhileStatement): Source =
     spaceSeparated(
       WHILE_KEYWORD,
-      inParentheses(expressionSource(whileStatement.conditionExpression)),
-      statementSource(whileStatement.body)
+      inParentheses(expressionSource(whileStatement.conditionExpression!!)),
+      statementSource(whileStatement.body),
     )
 
   private fun throwStatementSource(throwStatement: ThrowStatement): Source =
@@ -277,7 +237,7 @@ internal data class StatementRenderer(
       spaceSeparated(tryStatement.catchClauses.map(::catchClauseSource)),
       tryStatement.finallyBlock
         ?.let { spaceSeparated(FINALLY_KEYWORD, statementSource(it)) }
-        .orEmpty()
+        .orEmpty(),
     )
 
   private fun catchClauseSource(catchClause: CatchClause): Source =
@@ -294,10 +254,10 @@ internal data class StatementRenderer(
       inParentheses(
         colonSeparated(
           nameRenderer.nameSource(variable),
-          nameRenderer.typeDescriptorSource(type.toNonNullable())
+          nameRenderer.typeDescriptorSource(type.toNonNullable()),
         )
       ),
-      blockSource(body)
+      blockSource(body),
     )
 
   companion object {
@@ -309,4 +269,12 @@ internal data class StatementRenderer(
           listOf(this)
         }
   }
+
+  private fun yieldStatementSource(yieldStatement: YieldStatement): Source =
+    // TODO(b/377873836): Decide how to label switch expressions to avoid possible incorrect
+    // interactions between constructs.
+    spaceSeparated(
+      join(RETURN_KEYWORD, labelReference("run")),
+      yieldStatement.expression?.let(::expressionSource).orEmpty(),
+    )
 }

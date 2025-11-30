@@ -19,14 +19,15 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.j2cl.transpiler.ast.AbstractRewriter;
 import com.google.j2cl.transpiler.ast.BinaryExpression;
 import com.google.j2cl.transpiler.ast.Block;
+import com.google.j2cl.transpiler.ast.BreakOrContinueStatement;
 import com.google.j2cl.transpiler.ast.BreakStatement;
 import com.google.j2cl.transpiler.ast.CatchClause;
 import com.google.j2cl.transpiler.ast.CompilationUnit;
-import com.google.j2cl.transpiler.ast.ContinueStatement;
 import com.google.j2cl.transpiler.ast.IfStatement;
 import com.google.j2cl.transpiler.ast.Label;
 import com.google.j2cl.transpiler.ast.LabeledStatement;
@@ -140,10 +141,7 @@ public class ImplementFinallyViaControlFlow extends NormalizationPass {
 
           /** Returns true if the label encloses the original try-finally statement. */
           private boolean isLabelEnclosingTry(Label label) {
-            return getParent(
-                    n ->
-                        n instanceof LabeledStatement && ((LabeledStatement) n).getLabel() == label)
-                != null;
+            return getParent(n -> n instanceof LabeledStatement l && l.getLabel() == label) != null;
           }
 
           @Override
@@ -293,21 +291,13 @@ public class ImplementFinallyViaControlFlow extends NormalizationPass {
             }
 
             @Override
-            public Statement rewriteContinueStatement(ContinueStatement continueStatement) {
-              Label targetLabel = continueStatement.getLabelReference().getTarget();
+            public Statement rewriteBreakOrContinueStatement(
+                BreakOrContinueStatement breakOrContinueStatement) {
+              Label targetLabel = breakOrContinueStatement.getLabelReference().getTarget();
               if (!isLabelEnclosingTry.test(targetLabel)) {
-                return continueStatement;
+                return breakOrContinueStatement;
               }
-              return rewriteExit(continueStatement);
-            }
-
-            @Override
-            public Statement rewriteBreakStatement(BreakStatement breakStatement) {
-              Label targetLabel = breakStatement.getLabelReference().getTarget();
-              if (!isLabelEnclosingTry.test(targetLabel)) {
-                return breakStatement;
-              }
-              return rewriteExit(breakStatement);
+              return rewriteExit(breakOrContinueStatement);
             }
           });
 
@@ -406,7 +396,7 @@ public class ImplementFinallyViaControlFlow extends NormalizationPass {
       }
       SwitchStatement.Builder dispatchStatementBuilder =
           SwitchStatement.newBuilder()
-              .setSwitchExpression(exitSelectorVariable.createReference())
+              .setExpression(exitSelectorVariable.createReference())
               .setSourcePosition(originalTryStatement.getSourcePosition());
       // The normal control flow path has an exit selector of 0; returns, breaks, continues and
       // throws will have their own value starting from 1 and will have a branch in the switch.
@@ -414,7 +404,7 @@ public class ImplementFinallyViaControlFlow extends NormalizationPass {
       for (Statement exitStatement : exitStatements) {
         dispatchStatementBuilder.addCases(
             SwitchCase.newBuilder()
-                .setCaseExpression(NumberLiteral.fromInt(exitSelectorValue))
+                .setCaseExpressions(ImmutableList.of(NumberLiteral.fromInt(exitSelectorValue)))
                 .setStatements(exitStatement)
                 .build());
         exitSelectorValue++;

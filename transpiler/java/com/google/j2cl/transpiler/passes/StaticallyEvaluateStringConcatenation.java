@@ -36,7 +36,6 @@ public class StaticallyEvaluateStringConcatenation extends NormalizationPass {
           @Override
           public Node rewriteBinaryExpression(BinaryExpression binaryExpression) {
             if (binaryExpression.isStringConcatenation()) {
-
               StringLiteral lhs = convertToStringLiteral(binaryExpression.getLeftOperand());
               StringLiteral rhs = convertToStringLiteral(binaryExpression.getRightOperand());
               if (lhs != null && rhs != null) {
@@ -50,20 +49,19 @@ public class StaticallyEvaluateStringConcatenation extends NormalizationPass {
 
   @Nullable
   private static StringLiteral convertToStringLiteral(Expression expression) {
-    if (expression instanceof StringLiteral) {
-      return (StringLiteral) expression;
-    } else {
-      if (expression instanceof NumberLiteral) {
-        // Char literals are stored as NumberLiterals with an Integer object as its value. So we
-        // need to determine whether it is a char, and if so apply the right conversion to String.
-        boolean isChar = TypeDescriptors.isPrimitiveChar(expression.getTypeDescriptor());
-        Number value = ((NumberLiteral) expression).getValue();
-        return new StringLiteral(
-            isChar ? String.valueOf((char) value.intValue()) : String.valueOf(value));
-      } else if (expression instanceof BooleanLiteral) {
-        return new StringLiteral(String.valueOf(((BooleanLiteral) expression).getValue()));
-      }
-    }
-    return null;
+    return switch (expression) {
+      case StringLiteral literal -> literal;
+
+      case NumberLiteral literal
+          when TypeDescriptors.isPrimitiveChar(expression.getTypeDescriptor()) ->
+          // Char literals are stored as NumberLiterals with an Integer object as its value. So we
+          // need to determine whether it is a char, and if so apply the right conversion to String.
+          new StringLiteral(String.valueOf((char) literal.getValue().intValue()));
+      case NumberLiteral literal -> new StringLiteral(String.valueOf(literal.getValue()));
+
+      case BooleanLiteral literal -> new StringLiteral(String.valueOf(literal.getValue()));
+
+      default -> null;
+    };
   }
 }

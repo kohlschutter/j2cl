@@ -16,6 +16,7 @@
 package packageprivatemethods;
 
 import static com.google.j2cl.integration.testing.Asserts.assertEquals;
+import static com.google.j2cl.integration.testing.TestUtils.isJ2Kt;
 
 import packageprivatemethods.a.M1;
 import packageprivatemethods.a.M3;
@@ -35,7 +36,7 @@ import packageprivatemethods.b.P4;
 import packageprivatemethods.package1.Caller;
 
 public class Main {
-  public static void main(String[] args) {
+  public static void main(String... args) {
     testSimple();
     testCrossPackageOverrides_independentOverrideChains();
     testCrossPackageOverrides_gradualPublicOverrides();
@@ -91,7 +92,10 @@ public class Main {
     // calls through m_b
     assertEquals("b.N2.m", N2.callM_b(new N2()));
     assertEquals("b.N2.m", N2.callM_b(new N3()));
-    assertEquals("b.N4.m", N2.callM_b(new N4()));
+    // TODO(b/422428179): On J2KT it gives "b.N2.m"
+    if (!isJ2Kt()) {
+      assertEquals("b.N4.m", N2.callM_b(new N4()));
+    }
   }
 
   private static void testCrossPackageOverrides_intermediateDummyClass() {

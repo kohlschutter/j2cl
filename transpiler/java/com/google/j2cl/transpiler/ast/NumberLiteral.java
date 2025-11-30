@@ -25,17 +25,34 @@ import java.util.Objects;
 
 /** Number literal node. */
 @Visitable
-public class NumberLiteral extends Literal {
-  public static NumberLiteral fromInt(int value) {
-    return new NumberLiteral(PrimitiveTypes.INT, value);
+public final class NumberLiteral extends Literal {
+
+  public static NumberLiteral fromByte(byte value) {
+    return new NumberLiteral(PrimitiveTypes.BYTE, value);
+  }
+
+  public static NumberLiteral fromShort(short value) {
+    return new NumberLiteral(PrimitiveTypes.SHORT, value);
   }
 
   public static NumberLiteral fromChar(int value) {
     return new NumberLiteral(PrimitiveTypes.CHAR, value);
   }
 
+  public static NumberLiteral fromInt(int value) {
+    return new NumberLiteral(PrimitiveTypes.INT, value);
+  }
+
   public static NumberLiteral fromLong(long value) {
     return new NumberLiteral(PrimitiveTypes.LONG, value);
+  }
+
+  public static NumberLiteral fromFloat(float value) {
+    return new NumberLiteral(PrimitiveTypes.FLOAT, value);
+  }
+
+  public static NumberLiteral fromDouble(double value) {
+    return new NumberLiteral(PrimitiveTypes.DOUBLE, value);
   }
 
   private final PrimitiveTypeDescriptor typeDescriptor;
@@ -90,14 +107,10 @@ public class NumberLiteral extends Literal {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof NumberLiteral)) {
-      return false;
-    }
-    NumberLiteral that = (NumberLiteral) o;
-    return Objects.equals(typeDescriptor, that.typeDescriptor) && Objects.equals(value, that.value);
+    return this == o
+        || (o instanceof NumberLiteral other
+            && Objects.equals(typeDescriptor, other.typeDescriptor)
+            && Objects.equals(value, other.value));
   }
 
   @Override

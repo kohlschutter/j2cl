@@ -85,6 +85,8 @@ public class OutputGeneratorStage {
     final LinkedHashMap<String, Set<String>> generatedEntryPointsAndServices = new LinkedHashMap<>();
 
     for (CompilationUnit compilationUnit : library.getCompilationUnits()) {
+      problems.abortIfCancelled();
+
       for (Type type : compilationUnit.getTypes()) {
         List<Import> imports = ImportGatherer.gatherImports(type);
 
@@ -165,12 +167,15 @@ public class OutputGeneratorStage {
         String headerRelativePath = typeRelativePath + jsHeaderGenerator.getSuffix();
         output.write(headerRelativePath, javaScriptHeaderSource);
 
+        problems.abortIfCancelled();
+
         if (libraryInfoOutputPath != null || shouldGenerateReadableLibraryInfo) {
           libraryInfoBuilder.addType(
               type,
               headerRelativePath,
               implRelativePath,
               jsImplGenerator.getOutputSourceInfoByMember());
+          problems.abortIfCancelled();
         }
       }
 
@@ -179,6 +184,7 @@ public class OutputGeneratorStage {
         output.copyFile(compilationUnit.getFilePath(), compilationUnit.getPackageRelativePath());
       }
     }
+    problems.abortIfCancelled();
 
     if (shouldGenerateReadableLibraryInfo) {
       output.write("library_info_debug.json", libraryInfoBuilder.toJson(problems));
@@ -283,7 +289,7 @@ public class OutputGeneratorStage {
       return SourceMapGeneratorStage.generateSourceMaps(
           type, javaSourcePositionByOutputSourcePosition);
     } catch (IOException e) {
-      problems.fatal(FatalError.CANNOT_WRITE_FILE, e.toString());
+      problems.fatal(FatalError.CANNOT_WRITE_FILE, e.getMessage());
       return null;
     }
   }

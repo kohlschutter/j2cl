@@ -49,7 +49,7 @@ public class Casts {
 
   private void functionForInstanceofTest() {}
 
-  public void testCastObjectAfterInstanceOf() {
+  public void testCastVariableAfterInstanceOf() {
     Object o = new Object();
     if (o instanceof Casts) {
       Casts c = (Casts) o;
@@ -74,6 +74,8 @@ public class Casts {
       functionForInstanceofTest();
       Casts cNotAvoidCastsTo = (Casts) o;
     }
+
+    Casts c = o instanceof Casts ? (Casts) o : null;
   }
 
   /** Class for testing purposes */
@@ -105,6 +107,8 @@ public class Casts {
       functionForInstanceofTest();
       Casts cNotAvoidCastsTo = (Casts) foo.field;
     }
+
+    Casts c = foo.field instanceof Casts ? (Casts) foo.field : null;
   }
 
   public void testCaseMethodAfterInstanceOf() {
@@ -112,11 +116,15 @@ public class Casts {
     if (foo.method() instanceof Casts) {
       Casts cNotAvoidCastsTo = (Casts) foo.method();
     }
+
+    Casts c = foo.method() instanceof Casts ? (Casts) foo.method() : null;
   }
 
   public void testPrecedence() {
     Object foo = "foo";
     Object bar = "bar";
-    String s = (String) (false ? foo : bar);
+    Integer notString = 123;
+    String s1 = (String) (false ? foo : bar);
+    String s2 = (String) ("foo" + notString);
   }
 }

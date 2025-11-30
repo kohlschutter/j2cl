@@ -26,8 +26,8 @@ import com.google.j2cl.transpiler.ast.TypeDescriptor;
 
 /**
  * Inserts a cast for the return type of methods where Java might have inferred the return type
- * based on the usage site. This avoids a potential type mistmatch error in JSCompiler due to the
- * combination of its type inference algoritm and its invariant generics semantics, which are
+ * based on the usage site. This avoids a potential type mismatch error in JSCompiler due to the
+ * combination of its type inference algorithm and its invariant generics semantics, which are
  * different from Java.
  */
 public class InsertTypeAnnotationOnGenericReturnTypes extends NormalizationPass {
@@ -48,8 +48,8 @@ public class InsertTypeAnnotationOnGenericReturnTypes extends NormalizationPass 
             boolean methodReturnHasTypeVariables =
                 !returnTypeDescriptor.getAllTypeVariables().isEmpty();
             boolean methodReturnIsGenericType =
-                returnTypeDescriptor instanceof DeclaredTypeDescriptor
-                    && ((DeclaredTypeDescriptor) returnTypeDescriptor).hasTypeArguments();
+                returnTypeDescriptor instanceof DeclaredTypeDescriptor descriptor
+                    && descriptor.hasTypeArguments();
 
             // If the return is not inferred and specialized in Java there is nothing to fixup.
             boolean isReturnSpecialized =
@@ -63,7 +63,7 @@ public class InsertTypeAnnotationOnGenericReturnTypes extends NormalizationPass 
                 && isReturnSpecialized) {
               return JsDocCastExpression.newBuilder()
                   .setExpression(methodCall)
-                  .setCastType(methodCall.getTypeDescriptor())
+                  .setCastTypeDescriptor(methodCall.getTypeDescriptor())
                   .build();
             }
             return methodCall;

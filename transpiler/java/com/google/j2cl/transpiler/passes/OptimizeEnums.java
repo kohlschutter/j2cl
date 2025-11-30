@@ -137,10 +137,18 @@ public class OptimizeEnums extends NormalizationPass {
       return false;
     }
 
+    // Only optimize the cases where the instantiation appears directly in the initializer. Do not
+    // optimize if the initialization was extracted into a method by the Kotlin frontend.
+    if (!type.getEnumFields().stream()
+        .map(Field::getInitializer)
+        .allMatch(NewInstance.class::isInstance)) {
+      return false;
+    }
+
     // We can only optimize enums where compile time constants are used to initialize enum fields.
     return type.getEnumFields().stream()
         .map(Field::getInitializer)
-        // We only expect ctor calls.
+        // We only expect ctor calls at this point.
         .map(NewInstance.class::cast)
         .flatMap(c -> c.getArguments().stream())
         .allMatch(Expression::isCompileTimeConstant);
@@ -153,8 +161,8 @@ public class OptimizeEnums extends NormalizationPass {
       // this() or super() calls and instance fields assignments.
 
       for (Statement s : ctor.getBody().getStatements()) {
-        if (s instanceof ExpressionStatement) {
-          Expression expression = ((ExpressionStatement) s).getExpression();
+        if (s instanceof ExpressionStatement expressionStatement) {
+          Expression expression = expressionStatement.getExpression();
           if (isTrivialThisCall(expression) || isTrivialFieldAssignment(expression)) {
             continue;
           }
@@ -166,11 +174,10 @@ public class OptimizeEnums extends NormalizationPass {
   }
 
   private static boolean isTrivialThisCall(Expression expression) {
-    if (!(expression instanceof MethodCall)) {
+    if (!(expression instanceof MethodCall methodCall)) {
       return false;
     }
 
-    MethodCall methodCall = (MethodCall) expression;
     if (!methodCall.getTarget().isConstructor()) {
       return false;
     }
@@ -187,8 +194,8 @@ public class OptimizeEnums extends NormalizationPass {
     BinaryExpression binaryExpression = (BinaryExpression) expression;
     Expression left = binaryExpression.getLeftOperand();
     Expression right = binaryExpression.getRightOperand();
-    if (!(left instanceof FieldAccess
-        && ((FieldAccess) left).getQualifier() instanceof ThisReference)) {
+    if (!(left instanceof FieldAccess fieldAccess
+        && fieldAccess.getQualifier() instanceof ThisReference)) {
       return false;
     }
     // instance field assignments are allowed as long as they are a compile time constant or a

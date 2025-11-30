@@ -17,43 +17,118 @@ package protobuf;
 
 import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.Internal.ProtoNonnullApi;
+import com.google.protobuf.Parser;
+import org.jspecify.annotations.NullMarked;
 
+/**
+ * Proto message, as if it was generated from:
+ *
+ * <pre>{@code
+ * message MyMessage {
+ *   int32 foo = 1;
+ *   int32 foo_bar = 2;
+ *   int32 x = 3;
+ *   int32 x_value = 4;
+ *   int32 x_y_z = 5;
+ *   int32 x_y_z_values = 6;
+ * }
+ * }</pre>
+ */
 @ProtoNonnullApi
+@NullMarked
 public class MyMessage extends GeneratedMessage {
+  public Parser<MyMessage> getParserForType() {
+    throw new RuntimeException();
+  }
 
-  public final int testField;
+  public int getFoo() {
+    throw new RuntimeException();
+  }
 
-  public int getTestField() {
-    return testField;
+  public int getFooBar() {
+    throw new RuntimeException();
+  }
+
+  public int getX() {
+    throw new RuntimeException();
+  }
+
+  public int getXValue() {
+    throw new RuntimeException();
+  }
+
+  public int getXYZ() {
+    throw new RuntimeException();
+  }
+
+  public int getXYZValues() {
+    throw new RuntimeException();
   }
 
   public static MyMessage getDefaultInstance() {
-    return new MyMessage(0);
+    throw new RuntimeException();
   }
 
   public static Builder newBuilder() {
-    return new Builder();
+    throw new RuntimeException();
   }
 
   private MyMessage(int testField) {
-    this.testField = testField;
+    throw new RuntimeException();
   }
 
   @ProtoNonnullApi
   public static class Builder extends GeneratedMessage.Builder {
-    public int testField;
-
-    public int getTestField() {
-      return testField;
+    public int getFoo() {
+      throw new RuntimeException();
     }
 
-    public Builder setTestField(int testField) {
-      this.testField = testField;
-      return this;
+    public int getFooBar() {
+      throw new RuntimeException();
+    }
+
+    public int getX() {
+      throw new RuntimeException();
+    }
+
+    public int getXValue() {
+      throw new RuntimeException();
+    }
+
+    public int getXYZ() {
+      throw new RuntimeException();
+    }
+
+    public int getXYZValues() {
+      throw new RuntimeException();
+    }
+
+    public Builder setFoo(int foo) {
+      throw new RuntimeException();
+    }
+
+    public Builder setFooBar(int foo) {
+      throw new RuntimeException();
+    }
+
+    public Builder setX(int x) {
+      throw new RuntimeException();
+    }
+
+    public Builder setXValue(int xValue) {
+      throw new RuntimeException();
+    }
+
+    public Builder setXYZ(int xyz) {
+      throw new RuntimeException();
+    }
+
+    public Builder setXYZValues(int xyzValues) {
+      throw new RuntimeException();
     }
 
     public MyMessage build() {
-      return new MyMessage(testField);
+      throw new RuntimeException();
     }
 
     private Builder() {}

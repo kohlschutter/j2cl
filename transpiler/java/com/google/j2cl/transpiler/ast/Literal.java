@@ -21,20 +21,21 @@ import com.google.j2cl.common.visitor.Visitable;
 
 /** Abstract superclass for value literal expressions. */
 @Visitable
-public abstract class Literal extends Expression {
+public abstract sealed class Literal extends Expression implements AnnotationValue
+    permits NumberLiteral, BooleanLiteral, StringLiteral, TypeLiteral, NullLiteral {
 
   public static Literal fromValue(Object constantValue, TypeDescriptor typeDescriptor) {
-    if (constantValue instanceof Boolean) {
-      return BooleanLiteral.get((boolean) constantValue);
+    if (constantValue instanceof Boolean value) {
+      return BooleanLiteral.get(value);
     }
-    if (constantValue instanceof Number) {
-      return new NumberLiteral(typeDescriptor.toUnboxedType(), (Number) constantValue);
+    if (constantValue instanceof Number value) {
+      return new NumberLiteral(typeDescriptor.toUnboxedType(), value);
     }
-    if (constantValue instanceof Character) {
-      return NumberLiteral.fromChar((Character) constantValue);
+    if (constantValue instanceof Character value) {
+      return NumberLiteral.fromChar(value);
     }
-    if (constantValue instanceof String) {
-      return new StringLiteral((String) constantValue);
+    if (constantValue instanceof String value) {
+      return new StringLiteral(value);
     }
     throw new InternalCompilerError(
         "Unexpected type for compile time constant: %s", constantValue.getClass().getSimpleName());
@@ -60,6 +61,16 @@ public abstract class Literal extends Expression {
     return true;
   }
 
+  @Override
+  public Literal getConstantValue() {
+    return this;
+  }
+
+  @Override
+  public boolean canBeNull() {
+    return false;
+  }
+
   public abstract String getSourceText();
 
   @Override
@@ -67,6 +78,12 @@ public abstract class Literal extends Expression {
     // Literals never need enclosing parens.
     return Precedence.HIGHEST;
   }
+
+  @Override
+  public abstract boolean equals(Object o);
+
+  @Override
+  public abstract int hashCode();
 
   @Override
   Node acceptInternal(Processor processor) {
