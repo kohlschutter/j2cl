@@ -73,7 +73,7 @@ alias(
 
 alias(
     name = "javac_standalone",
-    actual = "@com_sun_tools_javac_standalone//jar",
+    actual = "@maven//:com_kohlschutter_jdk_compiler_standalone_jdk21",
 )
 
 alias(
