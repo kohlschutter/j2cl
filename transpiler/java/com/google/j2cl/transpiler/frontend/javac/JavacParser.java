@@ -70,7 +70,7 @@ public class JavacParser {
             .collect(toImmutableMap(FileInfo::sourcePath, FileInfo::targetPath));
 
     try {
-      JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+      JavaCompiler compiler = new standalone.com.sun.tools.javac.api.JavacTool();
       DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
       JavacFileManager fileManager =
           (JavacFileManager)
