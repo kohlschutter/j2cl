@@ -15,11 +15,9 @@
  */
 package com.google.j2cl.transpiler.frontend.jdt;
 
-import com.google.j2cl.common.Problems;
-import com.google.j2cl.common.Problems.FatalError;
-import com.google.j2cl.common.ZipFiles;
-import com.google.j2cl.transpiler.frontend.common.PackageInfo;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +25,11 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+
+import com.google.j2cl.common.Problems;
+import com.google.j2cl.common.Problems.FatalError;
+import com.google.j2cl.common.ZipFiles;
+import com.google.j2cl.transpiler.frontend.common.PackageInfo;
 
 /**
  * A cache for information on package-info files that are needed for transpilation, like JsInterop
@@ -80,19 +83,47 @@ public class PackageInfoCache {
 
   private void indexPackageInfo(List<Path> classPathEntries) {
     for (Path classPathEntry : classPathEntries) {
-      try (ZipFile zipFile = new ZipFile(classPathEntry.toFile())) {
-        for (ZipEntry entry : ZipFiles.entries(zipFile)) {
-          if (entry.getName().endsWith("package-info.class")) {
-            var packageInfo = PackageInfo.read(zipFile.getInputStream(entry));
-            packageReportByTypeName.put(packageInfo.getPackageName(), packageInfo);
-          }
-        }
-        problems.abortIfCancelled();
-      } catch (ZipException e) {
-        problems.fatal(FatalError.CANNOT_EXTRACT_ZIP, classPathEntry, e.getMessage());
-      } catch (IOException e) {
-        problems.fatal(FatalError.CANNOT_OPEN_FILE, e.getMessage());
+      if (Files.isDirectory(classPathEntry)) {
+        indexPackageInfoDirectory(classPathEntry);
+      } else {
+        indexPackageInfoZipEntry(classPathEntry);
       }
     }
   }
+
+  private void indexPackageInfoDirectory(Path classPathEntry) {
+    try {
+      Files.find(classPathEntry, 8, (path, attr) -> {
+        if (path.getFileName().toString().endsWith("package-info.class")) {
+          try (InputStream in = Files.newInputStream(path)) {
+            var packageInfo = PackageInfo.read(in);
+            packageReportByTypeName.put(packageInfo.getPackageName(), packageInfo);
+          } catch (IOException e) {
+            problems.fatal(FatalError.CANNOT_OPEN_FILE, e.getMessage());
+          }
+          problems.abortIfCancelled();
+        }
+        return true;
+      });
+    } catch (IOException e) {
+      problems.fatal(FatalError.CANNOT_OPEN_FILE, e.getMessage());
+    }
+  }
+    
+  private void indexPackageInfoZipEntry(Path classPathEntry) {
+    try (ZipFile zipFile = new ZipFile(classPathEntry.toFile())) {
+      for (ZipEntry entry : ZipFiles.entries(zipFile)) {
+        if (entry.getName().endsWith("package-info.class")) {
+          var packageInfo = PackageInfo.read(zipFile.getInputStream(entry));
+          packageReportByTypeName.put(packageInfo.getPackageName(), packageInfo);
+        }
+      }
+      problems.abortIfCancelled();
+    } catch (ZipException e) {
+      problems.fatal(FatalError.CANNOT_EXTRACT_ZIP, classPathEntry, e.getMessage());
+    } catch (IOException e) {
+      problems.fatal(FatalError.CANNOT_OPEN_FILE, e.getMessage());
+    }
+  }
+
 }
