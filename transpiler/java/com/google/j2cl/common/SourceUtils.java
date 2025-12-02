@@ -120,6 +120,9 @@ public class SourceUtils {
   }
 
   private static void cleanupDirectory(Path directory, Problems problems) {
+    if (directory == null) {
+      return;
+    }
     try {
       if (Files.exists(directory)) {
         MoreFiles.deleteRecursively(directory, RecursiveDeleteOption.ALLOW_INSECURE);
