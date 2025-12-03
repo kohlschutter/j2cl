@@ -958,6 +958,9 @@ public class JdtEnvironment {
   }
 
   public void initWellKnownTypes(Iterable<ITypeBinding> typesToResolve) {
+    if (TypeDescriptors.isInitialized()) {
+      return; // FIXME: (jacline) can we assume they never change? (these are some bootstrap classes)
+    }
     checkState(!TypeDescriptors.isInitialized());
 
     TypeDescriptors.SingletonBuilder builder = new TypeDescriptors.SingletonBuilder();
