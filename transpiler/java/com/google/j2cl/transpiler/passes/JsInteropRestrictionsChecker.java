@@ -2093,19 +2093,20 @@ public class JsInteropRestrictionsChecker {
 
     // TODO(b/129550499): Remove this check once NormalizeConstructors is fixed to handle arbitrary
     // constructor delegation chains for JsConstructor classes.
-    for (Method constructor : type.getConstructors()) {
-      if (constructor.getDescriptor().isJsConstructor()) {
-        continue;
-      }
-      MethodDescriptor delegatedConstructor =
-          AstUtils.getConstructorInvocation(constructor).getTarget();
-      if (delegatedConstructor == null || !delegatedConstructor.isJsConstructor()) {
-        problems.error(
-            type.getSourcePosition(),
-            "Constructor '%s' should delegate to the JsConstructor '%s'. (b/129550499)",
-            constructor.getReadableDescription(),
-            jsConstructorDescriptor.getReadableDescription());
-        return false;
+    if (type.isClass()) {
+      for (Method constructor : type.getConstructors()) {
+        if (constructor.getDescriptor().isJsConstructor()) {
+          continue;
+        }
+        MethodDescriptor delegatedConstructor = AstUtils.getConstructorInvocation(constructor)
+            .getTarget();
+        if (delegatedConstructor == null || !delegatedConstructor.isJsConstructor()) {
+          problems.error(type.getSourcePosition(),
+              "Constructor '%s' should delegate to the JsConstructor '%s'. (b/129550499)",
+              constructor.getReadableDescription(), jsConstructorDescriptor
+                  .getReadableDescription());
+          return false;
+        }
       }
     }
 
