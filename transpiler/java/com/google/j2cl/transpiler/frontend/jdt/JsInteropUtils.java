@@ -98,6 +98,8 @@ public final class JsInteropUtils {
         .setJsOverlay(jsOverlay)
         .setJsAsync(jsAsync)
         .setHasJsMemberAnnotation(memberAnnotation != null)
+        .setJsImplementationProvidedSeparately(JsInteropAnnotationUtils
+            .isJsImplementationProvidedSeparately(member))
         .build();
   }
 
