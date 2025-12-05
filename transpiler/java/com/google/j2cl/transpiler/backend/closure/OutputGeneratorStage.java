@@ -194,61 +194,37 @@ public class OutputGeneratorStage {
       OutputUtils.writeToFile(libraryInfoOutputPath, libraryInfoBuilder.toByteArray(), problems);
     }
 
-    if (generatedExterns.length() > 0 ) {
+    if (generatedExterns.length() > 0) {
       output.write("generated-externs.js",
-          "/**\n* @fileoverview Generated extern definitions\n* @suppress {checkVars}\n* @externs\n*/\n" + generatedExterns);
+          "/**\n* @fileoverview Generated extern definitions\n* @suppress {checkVars}\n* @externs\n*/\n"
+              + generatedExterns);
     }
 
     if (!generatedEntryPointsAndServices.isEmpty()) {
-      StringBuilder sb = new StringBuilder();
-      sb.append("goog.module('jacline.generated.entrypoints.t_" + Long.toHexString(System
-          .nanoTime()) + ".r_" + Long.toHexString(new Random().nextLong()) + "');\n");
-      int c = 0;
+      StringBuilder sbEpMap = new StringBuilder();
 
-      boolean hasServiceLoaderImport = false;
+      for (Map.Entry<String, Set<String>> en : generatedEntryPointsAndServices.entrySet()) {
+        String entryPoint = en.getKey();
+        Set<String> services = en.getValue();
 
-      for (int phase = 0; phase < 2; phase++) {
-        for (Map.Entry<String, Set<String>> en : generatedEntryPointsAndServices.entrySet()) {
-          String entryPoint = en.getKey();
-          Set<String> services = en.getValue();
-          if (phase == 0) {
-            if (services == null) {
-              continue;
+        if (services != null && !services.isEmpty()) {
+          sbEpMap.append(entryPoint);
+          sbEpMap.append('=');
+          boolean first = true;
+          for (String service : services) {
+            if (first) {
+              first = false;
+            } else {
+              sbEpMap.append(',');
             }
-          } else {
-            if (services != null) {
-              continue;
-            }
+            sbEpMap.append(service);
           }
-
-          if (services != null) {
-            if (!hasServiceLoaderImport) {
-              hasServiceLoaderImport = true;
-              sb.append("var ServiceLoader = goog.require('java.util.ServiceLoader');\n");
-              sb.append("let Class = goog.require('java.lang.Class$impl');\n");
-            }
-          }
-
-          String entryPointVar = "cl_" + (++c);
-          sb.append("var " + entryPointVar + " = goog.require('" + entryPoint + "');\n");
-          sb.append("if (" + entryPointVar + ".$clinit) " + entryPointVar + ".$clinit();\n");
-
-          if (services != null) {
-            for (String service : services) {
-              String serviceVar = "cl_" + (++c);
-              sb.append("var " + serviceVar + " = goog.require('" + service + "');\n");
-              sb.append(
-                  "ServiceLoader.m_jaclineRegisterService__java_lang_Class__java_util_ServiceLoader_ServiceProvider__void(Class.$get("
-                      + serviceVar + "), function() { return " + entryPointVar
-                      + ".$create__(); });\n");
-            }
-          }
-          sb.append("\n");
+          sbEpMap.append('\n');
         }
       }
 
-      output.write("generated-entrypoints.js", "/**\n* @fileoverview Generated entry points\n*/\n"
-          + sb.toString());
+      output.write("service-providers.properties",
+          "# jacline ServiceLoader implementation mappings\n" + sbEpMap.toString());
     }
 
     // Error if any of the native implementation files were not used.
