@@ -63,11 +63,11 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
   public static final String FILE_SUFFIX = ".impl.java.js";
   private boolean haveClassImport = false;
   private final boolean generateNativeStub;
-  private final Map<String, Set<String>> generatedEntryPointsAndServices;
+  private final Map<String, EntryPointInfo> generatedEntryPointsAndServices;
   private final Set<String> jscSuppressions;
 
   public JavaScriptImplGenerator(Problems problems, Type type, List<Import> imports,
-      SourceBuilder sourceBuilder, Map<String, Set<String>> generatedEntryPointsAndServices) {
+      SourceBuilder sourceBuilder, Map<String, EntryPointInfo> generatedEntryPointsAndServices) {
     super(problems, type, imports, sourceBuilder);
     this.generatedEntryPointsAndServices = generatedEntryPointsAndServices;
     this.closureTypesGenerator = new ClosureTypesGenerator(environment);
@@ -190,11 +190,13 @@ public class JavaScriptImplGenerator extends JavaScriptGenerator {
   private void registerGeneratedEntryPoint() {
     Set<String> services = type.getDeclaration().getJsServiceProviderServices();
 
-    if (!type.getDeclaration().isJsEntryPoint() && services == null) {
+    boolean isEntryPoint = type.getDeclaration().isJsEntryPoint();
+    if (!isEntryPoint && services == null) {
       return;
     }
 
-    generatedEntryPointsAndServices.put(type.getQualifiedJsName(), services);
+    generatedEntryPointsAndServices.put(type.getQualifiedJsName(), new EntryPointInfo(
+        isEntryPoint, services));
   }
 
   private void renderImports() {

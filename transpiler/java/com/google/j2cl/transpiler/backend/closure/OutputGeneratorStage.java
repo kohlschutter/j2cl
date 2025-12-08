@@ -82,7 +82,7 @@ public class OutputGeneratorStage {
     LibraryInfoBuilder libraryInfoBuilder = new LibraryInfoBuilder();
 
     final StringBuilder generatedExterns = new StringBuilder();
-    final LinkedHashMap<String, Set<String>> generatedEntryPointsAndServices = new LinkedHashMap<>();
+    final LinkedHashMap<String, EntryPointInfo> generatedEntryPointsAndServices = new LinkedHashMap<>();
 
     for (CompilationUnit compilationUnit : library.getCompilationUnits()) {
       problems.abortIfCancelled();
@@ -201,34 +201,64 @@ public class OutputGeneratorStage {
     }
 
     if (!generatedEntryPointsAndServices.isEmpty()) {
-      StringBuilder sbEpMap = new StringBuilder();
+      writeServiceProvidersProperties(generatedEntryPointsAndServices);
 
-      for (Map.Entry<String, Set<String>> en : generatedEntryPointsAndServices.entrySet()) {
-        String entryPoint = en.getKey();
-        Set<String> services = en.getValue();
-
-        if (services != null && !services.isEmpty()) {
-          sbEpMap.append(entryPoint);
-          sbEpMap.append('=');
-          boolean first = true;
-          for (String service : services) {
-            if (first) {
-              first = false;
-            } else {
-              sbEpMap.append(',');
-            }
-            sbEpMap.append(service);
-          }
-          sbEpMap.append('\n');
-        }
-      }
-
-      output.write("service-providers.properties",
-          "# jacline ServiceLoader implementation mappings\n" + sbEpMap.toString());
+      writeGeneratedEntrypoints(generatedEntryPointsAndServices);
     }
 
     // Error if any of the native implementation files were not used.
     nativeJavaScriptFileResolver.checkAllFilesUsed();
+  }
+
+  private void writeServiceProvidersProperties(
+      Map<String, EntryPointInfo> generatedEntryPointsAndServices) {
+    StringBuilder sb = new StringBuilder();
+
+    for (Map.Entry<String, EntryPointInfo> en : generatedEntryPointsAndServices.entrySet()) {
+      String entryPoint = en.getKey();
+      Set<String> services = en.getValue().services();
+
+      if (services != null && !services.isEmpty()) {
+        sb.append(entryPoint);
+        sb.append('=');
+        boolean first = true;
+        for (String service : services) {
+          if (first) {
+            first = false;
+          } else {
+            sb.append(',');
+          }
+          sb.append(service);
+        }
+        sb.append('\n');
+      }
+    }
+
+    output.write("service-providers.properties", "# jacline ServiceLoader implementation mappings\n"
+        + sb.toString());
+  }
+
+  private void writeGeneratedEntrypoints(
+      Map<String, EntryPointInfo> generatedEntryPointsAndServices) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("goog.module('jacline.generated.entrypoints.t_" + Long.toHexString(System
+        .nanoTime()) + ".r_" + Long.toHexString(new Random().nextLong()) + "');\n");
+
+    int c = 0;
+    for (Map.Entry<String, EntryPointInfo> en : generatedEntryPointsAndServices.entrySet()) {
+      String entryPoint = en.getKey();
+      EntryPointInfo epi = en.getValue();
+      if (!epi.isEntrypoint()) {
+        continue; // handled above
+      }
+
+      String entryPointVar = "cl_" + (++c);
+      sb.append("var " + entryPointVar + " = goog.require('" + entryPoint + "');\n");
+      sb.append("if (" + entryPointVar + ".$clinit) " + entryPointVar + ".$clinit();\n");
+    }
+
+    output.write("generated-entrypoints.js", "/**\n* @fileoverview Generated entry points\n*/\n"
+        + sb.toString());
   }
 
   private static final String SOURCE_MAP_SUFFIX = ".js.map";
